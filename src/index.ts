@@ -16,15 +16,17 @@ const typeDefs = `#graphql
   type Article {
     id: ID
     title: String
+    description: String
     article: String
     author: String
     image: String 
   }
 
   input ArticleInput {
-    title: String
-    article: String
-    author: String
+    title: String!
+    description: String!
+    article: String!
+    author: String!
     image: String 
   }
 
@@ -45,6 +47,7 @@ const Article = mongoose.model(
   'Article',
   new mongoose.Schema({
     title: String,
+    description: String,
     article: String,
     author: String,
     image: String,
@@ -61,7 +64,7 @@ const resolvers = {
 
         return res;
       } catch (error) {
-        throw new Error('Failed to fetch books');
+        throw new Error('Failed to fetch articles');
       }
     },
 
@@ -73,6 +76,7 @@ const resolvers = {
       return {
         id: res[0]._id,
         title: res[0].title,
+        description: res[0].description,
         article: res[0].article,
         author: res[0].author,
         image: res[0].image,
@@ -87,6 +91,7 @@ const resolvers = {
       return {
         id: res[0]._id,
         title: res[0].title,
+        description: res[0].description,
         article: res[0].article,
         author: res[0].author,
         image: res[0].image,
@@ -98,6 +103,7 @@ const resolvers = {
     addArticle: async (_: any, { input }: any) => {
       const createArticle = new Article({
         title: input.title,
+        description: input.description,
         article: input.article,
         author: input.author,
         image: input.image,
@@ -109,6 +115,7 @@ const resolvers = {
 
       return {
         title: res.title,
+        description: res.description,
         article: res.article,
         author: res.author,
         image: res.image,
