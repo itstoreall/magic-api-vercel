@@ -18,10 +18,17 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const uuid_1 = require("uuid");
 dotenv_1.default.config();
 const PORT = process.env.PORT || 4001;
 mongoose_1.default.connect(process.env.MONGO_DB);
 const typeDefs = `#graphql
+
+  type Access {
+    login: String
+    password: String
+    token: String
+  }
 
   type Article {
     id: ID
@@ -30,6 +37,12 @@ const typeDefs = `#graphql
     article: String
     author: String
     image: String 
+  }
+
+  input AccessInput {
+    login: String
+    password: String
+    token: String
   }
 
   input ArticleInput {
@@ -41,17 +54,24 @@ const typeDefs = `#graphql
   }
 
   type Query {
+    getAdmin(login: String!, password: String!): Access
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
   }
 
   type Mutation {
+    admin(input: AccessInput): Access
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;
+const Admin = mongoose_1.default.model('Admin', new mongoose_1.default.Schema({
+    login: String,
+    password: String,
+    token: String,
+}));
 const Article = mongoose_1.default.model('Article', new mongoose_1.default.Schema({
     title: String,
     description: String,
@@ -61,6 +81,22 @@ const Article = mongoose_1.default.model('Article', new mongoose_1.default.Schem
 }));
 const resolvers = {
     Query: {
+        getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const admin = yield Admin.find({ login, password });
+                console.log('getAdmin:', admin);
+                if (admin === null || admin === void 0 ? void 0 : admin.length) {
+                    return {
+                        login: admin[0].login,
+                        password: admin[0].password,
+                        token: admin[0].token,
+                    };
+                }
+            }
+            catch (e) {
+                throw new Error(`Failed to fetch admin: ${e}`);
+            }
+        }),
         articles: () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const res = yield Article.find();
@@ -72,33 +108,51 @@ const resolvers = {
             }
         }),
         getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const res = yield Article.find({ _id: ID });
-            console.log('getArticleById:', res);
+            const article = yield Article.find({ _id: ID });
+            console.log('getArticleById:', article);
             return {
-                id: res[0]._id,
-                title: res[0].title,
-                description: res[0].description,
-                article: res[0].article,
-                author: res[0].author,
-                image: res[0].image,
+                id: article[0]._id,
+                title: article[0].title,
+                description: article[0].description,
+                article: article[0].article,
+                author: article[0].author,
+                image: article[0].image,
             };
         }),
         getArticleByTitle(_, { title }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const res = yield Article.find({ title });
-                console.log('getArticleByTitle:', res);
+                const article = yield Article.find({ title });
+                console.log('getArticleByTitle:', article);
                 return {
-                    id: res[0]._id,
-                    title: res[0].title,
-                    description: res[0].description,
-                    article: res[0].article,
-                    author: res[0].author,
-                    image: res[0].image,
+                    id: article[0]._id,
+                    title: article[0].title,
+                    description: article[0].description,
+                    article: article[0].article,
+                    author: article[0].author,
+                    image: article[0].image,
                 };
             });
         },
     },
     Mutation: {
+        admin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+            const { login, password } = input;
+            if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+                const createAccess = new Admin({
+                    login,
+                    password,
+                    token: (0, uuid_1.v4)(),
+                });
+                const access = yield createAccess.save();
+                return {
+                    login: access.login,
+                    password: access.password,
+                    token: access.token,
+                };
+            }
+            else
+                throw new Error('Access denied!');
+        }),
         addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             const createArticle = new Article({
                 title: input.title,
@@ -131,6 +185,24 @@ const resolvers = {
         },
     },
 };
+function getAdmin(login, password) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield Admin.find({ login, password });
+        console.log('getAdmin:', res);
+        let _token = '';
+        if (!((_a = res[0]) === null || _a === void 0 ? void 0 : _a.token)) {
+            _token = (0, uuid_1.v4)();
+        }
+        else
+            console.log('getAdmin:', res);
+        return {
+            login: res[0].login,
+            password: res[0].password,
+            token: _token,
+        };
+    });
+}
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 const server = new server_1.ApolloServer({

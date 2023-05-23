@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { v4 as uuid } from 'uuid';
 
 dotenv.config();
 
@@ -13,6 +14,12 @@ mongoose.connect(process.env.MONGO_DB);
 
 const typeDefs = `#graphql
 
+  type Access {
+    login: String
+    password: String
+    token: String
+  }
+
   type Article {
     id: ID
     title: String
@@ -20,6 +27,12 @@ const typeDefs = `#graphql
     article: String
     author: String
     image: String 
+  }
+
+  input AccessInput {
+    login: String
+    password: String
+    token: String
   }
 
   input ArticleInput {
@@ -31,17 +44,28 @@ const typeDefs = `#graphql
   }
 
   type Query {
+    getAdmin(login: String!, password: String!): Access
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
   }
 
   type Mutation {
+    admin(input: AccessInput): Access
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;
+
+const Admin = mongoose.model(
+  'Admin',
+  new mongoose.Schema({
+    login: String,
+    password: String,
+    token: String,
+  })
+);
 
 const Article = mongoose.model(
   'Article',
@@ -56,6 +80,24 @@ const Article = mongoose.model(
 
 const resolvers = {
   Query: {
+    getAdmin: async (_: any, { login, password }: any) => {
+      try {
+        const admin = await Admin.find({ login, password });
+
+        console.log('getAdmin:', admin);
+
+        if (admin?.length) {
+          return {
+            login: admin[0].login,
+            password: admin[0].password,
+            token: admin[0].token,
+          };
+        }
+      } catch (e) {
+        throw new Error(`Failed to fetch admin: ${e}`);
+      }
+    },
+
     articles: async () => {
       try {
         const res = await Article.find();
@@ -69,37 +111,57 @@ const resolvers = {
     },
 
     getArticleById: async (_: any, { ID }: any) => {
-      const res = await Article.find({ _id: ID });
+      const article = await Article.find({ _id: ID });
 
-      console.log('getArticleById:', res);
+      console.log('getArticleById:', article);
 
       return {
-        id: res[0]._id,
-        title: res[0].title,
-        description: res[0].description,
-        article: res[0].article,
-        author: res[0].author,
-        image: res[0].image,
+        id: article[0]._id,
+        title: article[0].title,
+        description: article[0].description,
+        article: article[0].article,
+        author: article[0].author,
+        image: article[0].image,
       };
     },
 
     async getArticleByTitle(_: any, { title }: any) {
-      const res = await Article.find({ title });
+      const article = await Article.find({ title });
 
-      console.log('getArticleByTitle:', res);
+      console.log('getArticleByTitle:', article);
 
       return {
-        id: res[0]._id,
-        title: res[0].title,
-        description: res[0].description,
-        article: res[0].article,
-        author: res[0].author,
-        image: res[0].image,
+        id: article[0]._id,
+        title: article[0].title,
+        description: article[0].description,
+        article: article[0].article,
+        author: article[0].author,
+        image: article[0].image,
       };
     },
   },
 
   Mutation: {
+    admin: async (_: any, { input }: any) => {
+      const { login, password } = input;
+
+      if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+        const createAccess = new Admin({
+          login,
+          password,
+          token: uuid(),
+        });
+
+        const access = await createAccess.save();
+
+        return {
+          login: access.login,
+          password: access.password,
+          token: access.token,
+        };
+      } else throw new Error('Access denied!');
+    },
+
     addArticle: async (_: any, { input }: any) => {
       const createArticle = new Article({
         title: input.title,
@@ -141,6 +203,23 @@ const resolvers = {
     },
   },
 };
+
+async function getAdmin(login: string, password: string) {
+  const res = await Admin.find({ login, password });
+  console.log('getAdmin:', res);
+
+  let _token = '';
+
+  if (!res[0]?.token) {
+    _token = uuid();
+  } else console.log('getAdmin:', res);
+
+  return {
+    login: res[0].login,
+    password: res[0].password,
+    token: _token,
+  };
+}
 
 const app = express();
 
