@@ -10,6 +10,9 @@ dotenv.config();
 
 mongoose.connect(process.env.MONGO_DB);
 
+const envLogin = process.env.LOGIN;
+const envPassword = process.env.PASSWORD;
+
 const typeDefs = `#graphql
 
   type Access {
@@ -143,7 +146,9 @@ const resolvers = {
     updateAdmin: async (_: any, { input }: any) => {
       const { login, password } = input;
 
-      if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+      console.log('env access:', envLogin, envPassword);
+
+      if (login == envLogin && password == envPassword) {
         const admin = await getAdmin(input);
 
         const accessInput = {

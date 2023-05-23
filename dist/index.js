@@ -21,6 +21,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
 dotenv_1.default.config();
 mongoose_1.default.connect(process.env.MONGO_DB);
+const envLogin = process.env.LOGIN;
+const envPassword = process.env.PASSWORD;
 const typeDefs = `#graphql
 
   type Access {
@@ -136,7 +138,8 @@ const resolvers = {
     Mutation: {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             const { login, password } = input;
-            if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+            console.log('env access:', envLogin, envPassword);
+            if (login == envLogin && password == envPassword) {
                 const admin = yield getAdmin(input);
                 const accessInput = {
                     login,
