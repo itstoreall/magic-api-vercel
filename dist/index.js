@@ -20,7 +20,6 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
 dotenv_1.default.config();
-const PORT = process.env.PORT || 4001;
 mongoose_1.default.connect(process.env.MONGO_DB);
 const typeDefs = `#graphql
 
@@ -61,7 +60,7 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    admin(input: AccessInput): Access
+    updateAdmin(input: AccessInput): Access
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
@@ -135,9 +134,34 @@ const resolvers = {
         },
     },
     Mutation: {
-        admin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+        updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             const { login, password } = input;
             if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+                const admin = yield getAdmin(input);
+                const accessInput = {
+                    login,
+                    password,
+                    token: (0, uuid_1.v4)(),
+                };
+                // -------------------- Update:
+                if (admin === null || admin === void 0 ? void 0 : admin.length) {
+                    console.log('admin 1 ===>', admin);
+                    const updatedAccess = (yield Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
+                    console.log('wasEdited:', updatedAccess);
+                    if (updatedAccess) {
+                        const admin = yield getAdmin(input);
+                        return {
+                            login: admin[0].login,
+                            password: admin[0].password,
+                            token: admin[0].token,
+                        };
+                    }
+                    else
+                        throw new Error('Admin update error!');
+                }
+                else
+                    console.log('admin 2 ===>', admin);
+                // -------------------- Create:
                 const createAccess = new Admin({
                     login,
                     password,
@@ -185,24 +209,9 @@ const resolvers = {
         },
     },
 };
-function getAdmin(login, password) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield Admin.find({ login, password });
-        console.log('getAdmin:', res);
-        let _token = '';
-        if (!((_a = res[0]) === null || _a === void 0 ? void 0 : _a.token)) {
-            _token = (0, uuid_1.v4)();
-        }
-        else
-            console.log('getAdmin:', res);
-        return {
-            login: res[0].login,
-            password: res[0].password,
-            token: _token,
-        };
-    });
-}
+const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield Admin.find({ login: input.login, password: input.password }); });
+// --------------------------------- Server:
+const PORT = process.env.PORT || 4001;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 const server = new server_1.ApolloServer({

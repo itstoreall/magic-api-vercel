@@ -8,8 +8,6 @@ import { v4 as uuid } from 'uuid';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 4001;
-
 mongoose.connect(process.env.MONGO_DB);
 
 const typeDefs = `#graphql
@@ -51,7 +49,7 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    admin(input: AccessInput): Access
+    updateAdmin(input: AccessInput): Access
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
@@ -142,10 +140,42 @@ const resolvers = {
   },
 
   Mutation: {
-    admin: async (_: any, { input }: any) => {
+    updateAdmin: async (_: any, { input }: any) => {
       const { login, password } = input;
 
       if (login === process.env.LOGIN && password === process.env.PASSWORD) {
+        const admin = await getAdmin(input);
+
+        const accessInput = {
+          login,
+          password,
+          token: uuid(),
+        };
+
+        // -------------------- Update:
+
+        if (admin?.length) {
+          console.log('admin 1 ===>', admin);
+
+          const updatedAccess = (
+            await Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
+          ).modifiedCount;
+
+          console.log('wasEdited:', updatedAccess);
+
+          if (updatedAccess) {
+            const admin = await getAdmin(input);
+
+            return {
+              login: admin[0].login,
+              password: admin[0].password,
+              token: admin[0].token,
+            };
+          } else throw new Error('Admin update error!');
+        } else console.log('admin 2 ===>', admin);
+
+        // -------------------- Create:
+
         const createAccess = new Admin({
           login,
           password,
@@ -204,22 +234,12 @@ const resolvers = {
   },
 };
 
-async function getAdmin(login: string, password: string) {
-  const res = await Admin.find({ login, password });
-  console.log('getAdmin:', res);
+const getAdmin = async (input: { login: string; password: string }) =>
+  await Admin.find({ login: input.login, password: input.password });
 
-  let _token = '';
+// --------------------------------- Server:
 
-  if (!res[0]?.token) {
-    _token = uuid();
-  } else console.log('getAdmin:', res);
-
-  return {
-    login: res[0].login,
-    password: res[0].password,
-    token: _token,
-  };
-}
+const PORT = process.env.PORT || 4001;
 
 const app = express();
 
