@@ -10,6 +10,7 @@ dotenv.config();
 
 mongoose.connect(process.env.MONGO_DB);
 
+const PORT = process.env.PORT || 4001;
 const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
 
@@ -46,6 +47,7 @@ const typeDefs = `#graphql
 
   type Query {
     getAdmin(login: String!, password: String!): Access
+    isAdmin(token: String!): Boolean
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
@@ -96,6 +98,18 @@ const resolvers = {
         }
       } catch (e) {
         throw new Error(`Failed to fetch admin: ${e}`);
+      }
+    },
+
+    isAdmin: async (_: any, { token }: any) => {
+      try {
+        const admin = await Admin.findOne({ token });
+
+        console.log('isAdmin:', admin);
+
+        return admin ? admin.token === token : false;
+      } catch (e) {
+        throw new Error(`Failed to check isAdmin: ${e}`);
       }
     },
 
@@ -160,13 +174,11 @@ const resolvers = {
         // -------------------- Update:
 
         if (admin?.length) {
-          console.log('admin 1 ===>', admin);
-
           const updatedAccess = (
             await Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
           ).modifiedCount;
 
-          console.log('wasEdited:', updatedAccess);
+          console.log('wasUpdated:', updatedAccess);
 
           if (updatedAccess) {
             const admin = await getAdmin(input);
@@ -177,7 +189,7 @@ const resolvers = {
               token: admin[0].token,
             };
           } else throw new Error('Admin update error!');
-        } else console.log('admin 2 ===>', admin);
+        } else console.log('No admin in db:', admin);
 
         // -------------------- Create:
 
@@ -243,8 +255,6 @@ const getAdmin = async (input: { login: string; password: string }) =>
   await Admin.find({ login: input.login, password: input.password });
 
 // --------------------------------- Server:
-
-const PORT = process.env.PORT || 4001;
 
 const app = express();
 

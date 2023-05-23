@@ -21,6 +21,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
 dotenv_1.default.config();
 mongoose_1.default.connect(process.env.MONGO_DB);
+const PORT = process.env.PORT || 4001;
 const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
 const typeDefs = `#graphql
@@ -56,6 +57,7 @@ const typeDefs = `#graphql
 
   type Query {
     getAdmin(login: String!, password: String!): Access
+    isAdmin(token: String!): Boolean
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
@@ -96,6 +98,16 @@ const resolvers = {
             }
             catch (e) {
                 throw new Error(`Failed to fetch admin: ${e}`);
+            }
+        }),
+        isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const admin = yield Admin.findOne({ token });
+                console.log('isAdmin:', admin);
+                return admin ? admin.token === token : false;
+            }
+            catch (e) {
+                throw new Error(`Failed to check isAdmin: ${e}`);
             }
         }),
         articles: () => __awaiter(void 0, void 0, void 0, function* () {
@@ -148,9 +160,8 @@ const resolvers = {
                 };
                 // -------------------- Update:
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
-                    console.log('admin 1 ===>', admin);
                     const updatedAccess = (yield Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
-                    console.log('wasEdited:', updatedAccess);
+                    console.log('wasUpdated:', updatedAccess);
                     if (updatedAccess) {
                         const admin = yield getAdmin(input);
                         return {
@@ -163,7 +174,7 @@ const resolvers = {
                         throw new Error('Admin update error!');
                 }
                 else
-                    console.log('admin 2 ===>', admin);
+                    console.log('No admin in db:', admin);
                 // -------------------- Create:
                 const createAccess = new Admin({
                     login,
@@ -214,7 +225,6 @@ const resolvers = {
 };
 const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield Admin.find({ login: input.login, password: input.password }); });
 // --------------------------------- Server:
-const PORT = process.env.PORT || 4001;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 const server = new server_1.ApolloServer({
