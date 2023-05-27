@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,7 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = require("@apollo/server");
 const standalone_1 = require("@apollo/server/standalone");
-const mongoose_1 = __importDefault(require("mongoose"));
+const mongoose_1 = __importStar(require("mongoose"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -36,9 +59,11 @@ const typeDefs = `#graphql
     id: ID
     title: String
     description: String
-    article: String
+    text: String
     author: String
     image: String 
+    views: String
+    tags: [String]
   }
 
   input AccessInput {
@@ -50,9 +75,10 @@ const typeDefs = `#graphql
   input ArticleInput {
     title: String!
     description: String!
-    article: String!
+    text: String!
     author: String!
     image: String 
+    tags: [String]
   }
 
   type Query {
@@ -70,18 +96,26 @@ const typeDefs = `#graphql
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;
+console.log('NODE_ENV production:', process.env.NODE_ENV === 'production');
+console.log('NODE_ENV development:', process.env.NODE_ENV === 'development');
 const Admin = mongoose_1.default.model('Admin', new mongoose_1.default.Schema({
     login: String,
     password: String,
     token: String,
 }));
-const Article = mongoose_1.default.model('Article', new mongoose_1.default.Schema({
+const defaultConfig = {
     title: String,
     description: String,
-    article: String,
+    text: String,
     author: String,
     image: String,
-}));
+    views: String,
+};
+const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
+const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
+const ArticleModel = process.env.NODE_ENV === 'production'
+    ? ProdArticle
+    : process.env.NODE_ENV === 'development' && DevArticle;
 const resolvers = {
     Query: {
         getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -110,9 +144,10 @@ const resolvers = {
                 throw new Error(`Failed to check isAdmin: ${e}`);
             }
         }),
+        // -------------------------- Articles
         articles: () => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const res = yield Article.find();
+                const res = yield ArticleModel.find();
                 console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
                 return res;
             }
@@ -121,28 +156,32 @@ const resolvers = {
             }
         }),
         getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const article = yield Article.find({ _id: ID });
+            const article = yield ArticleModel.find({ _id: ID });
             console.log('getArticleById:', article);
             return {
                 id: article[0]._id,
                 title: article[0].title,
                 description: article[0].description,
-                article: article[0].article,
+                text: article[0].text,
                 author: article[0].author,
                 image: article[0].image,
+                views: article[0].views,
+                tags: article[0].tags,
             };
         }),
         getArticleByTitle(_, { title }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const article = yield Article.find({ title });
+                const article = yield ArticleModel.find({ title });
                 console.log('getArticleByTitle:', article);
                 return {
                     id: article[0]._id,
                     title: article[0].title,
                     description: article[0].description,
-                    article: article[0].article,
+                    text: article[0].text,
                     author: article[0].author,
                     image: article[0].image,
+                    views: article[0].views,
+                    tags: article[0].tags,
                 };
             });
         },
@@ -191,32 +230,37 @@ const resolvers = {
             else
                 throw new Error('Access denied!');
         }),
+        // -------------------------- Articles
         addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            const createArticle = new Article({
+            const createArticle = new ArticleModel({
                 title: input.title,
                 description: input.description,
-                article: input.article,
+                text: input.text,
                 author: input.author,
                 image: input.image,
+                tags: input.tags,
             });
             const res = yield createArticle.save();
             console.log('addArticle:', res);
             return {
                 title: res.title,
                 description: res.description,
-                article: res.article,
+                text: res.text,
                 author: res.author,
                 image: res.image,
+                views: res.views,
+                tags: res.tags,
             };
         }),
         deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const wasDeleted = (yield Article.deleteOne({ _id: ID })).deletedCount;
+            const wasDeleted = (yield ArticleModel.deleteOne({ _id: ID }))
+                .deletedCount;
             console.log('wasDeleted:', wasDeleted);
             return wasDeleted;
         }),
         editArticle(_, { ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const wasEdited = (yield Article.updateOne({ _id: ID }, Object.assign({}, articleInput))).modifiedCount;
+                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, Object.assign({}, articleInput))).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
             });
@@ -233,7 +277,7 @@ const server = new server_1.ApolloServer({
 });
 (0, standalone_1.startStandaloneServer)(server, {
     listen: { port: Number(PORT) },
-}).then(({ url }) => console.log(`🚀 Server listening at: ${String(url)}`));
+}).then(({ url }) => console.log(`  * ${process.env.NODE_ENV} server ★(◔.◔)★ ${String(url)}`));
 /*
 import express, { Request, Response } from 'express';
 

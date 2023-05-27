@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -26,9 +26,11 @@ const typeDefs = `#graphql
     id: ID
     title: String
     description: String
-    article: String
+    text: String
     author: String
     image: String 
+    views: String
+    tags: [String]
   }
 
   input AccessInput {
@@ -40,9 +42,10 @@ const typeDefs = `#graphql
   input ArticleInput {
     title: String!
     description: String!
-    article: String!
+    text: String!
     author: String!
     image: String 
+    tags: [String]
   }
 
   type Query {
@@ -61,6 +64,9 @@ const typeDefs = `#graphql
   }
 `;
 
+console.log('NODE_ENV production:', process.env.NODE_ENV === 'production');
+console.log('NODE_ENV development:', process.env.NODE_ENV === 'development');
+
 const Admin = mongoose.model(
   'Admin',
   new mongoose.Schema({
@@ -70,16 +76,35 @@ const Admin = mongoose.model(
   })
 );
 
-const Article = mongoose.model(
-  'Article',
+const defaultConfig = {
+  title: String,
+  description: String,
+  text: String,
+  author: String,
+  image: String,
+  views: String,
+};
+
+const ProdArticle = mongoose.model(
+  'prod_article',
   new mongoose.Schema({
-    title: String,
-    description: String,
-    article: String,
-    author: String,
-    image: String,
+    ...defaultConfig,
+    tags: { type: [Schema.Types.String], default: [] },
   })
 );
+
+const DevArticle = mongoose.model(
+  'dev_article',
+  new mongoose.Schema({
+    ...defaultConfig,
+    tags: { type: [Schema.Types.String], default: [] },
+  })
+);
+
+const ArticleModel =
+  process.env.NODE_ENV === 'production'
+    ? ProdArticle
+    : process.env.NODE_ENV === 'development' && DevArticle;
 
 const resolvers = {
   Query: {
@@ -113,9 +138,11 @@ const resolvers = {
       }
     },
 
+    // -------------------------- Articles
+
     articles: async () => {
       try {
-        const res = await Article.find();
+        const res = await ArticleModel.find();
 
         console.log('articles:', res?.length);
 
@@ -126,7 +153,7 @@ const resolvers = {
     },
 
     getArticleById: async (_: any, { ID }: any) => {
-      const article = await Article.find({ _id: ID });
+      const article = await ArticleModel.find({ _id: ID });
 
       console.log('getArticleById:', article);
 
@@ -134,14 +161,16 @@ const resolvers = {
         id: article[0]._id,
         title: article[0].title,
         description: article[0].description,
-        article: article[0].article,
+        text: article[0].text,
         author: article[0].author,
         image: article[0].image,
+        views: article[0].views,
+        tags: article[0].tags,
       };
     },
 
     async getArticleByTitle(_: any, { title }: any) {
-      const article = await Article.find({ title });
+      const article = await ArticleModel.find({ title });
 
       console.log('getArticleByTitle:', article);
 
@@ -149,9 +178,11 @@ const resolvers = {
         id: article[0]._id,
         title: article[0].title,
         description: article[0].description,
-        article: article[0].article,
+        text: article[0].text,
         author: article[0].author,
         image: article[0].image,
+        views: article[0].views,
+        tags: article[0].tags,
       };
     },
   },
@@ -209,13 +240,16 @@ const resolvers = {
       } else throw new Error('Access denied!');
     },
 
+    // -------------------------- Articles
+
     addArticle: async (_: any, { input }: any) => {
-      const createArticle = new Article({
+      const createArticle = new ArticleModel({
         title: input.title,
         description: input.description,
-        article: input.article,
+        text: input.text,
         author: input.author,
         image: input.image,
+        tags: input.tags,
       });
 
       const res = await createArticle.save();
@@ -225,14 +259,17 @@ const resolvers = {
       return {
         title: res.title,
         description: res.description,
-        article: res.article,
+        text: res.text,
         author: res.author,
         image: res.image,
+        views: res.views,
+        tags: res.tags,
       };
     },
 
     deleteArticle: async (_: any, { ID }: any) => {
-      const wasDeleted = (await Article.deleteOne({ _id: ID })).deletedCount;
+      const wasDeleted = (await ArticleModel.deleteOne({ _id: ID }))
+        .deletedCount;
 
       console.log('wasDeleted:', wasDeleted);
 
@@ -241,7 +278,7 @@ const resolvers = {
 
     async editArticle(_: any, { ID, articleInput }: any) {
       const wasEdited = (
-        await Article.updateOne({ _id: ID }, { ...articleInput })
+        await ArticleModel.updateOne({ _id: ID }, { ...articleInput })
       ).modifiedCount;
 
       console.log('wasEdited:', wasEdited);
@@ -267,7 +304,9 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: Number(PORT) },
-}).then(({ url }) => console.log(`🚀 Server listening at: ${String(url)}`));
+}).then(({ url }) =>
+  console.log(`  * ${process.env.NODE_ENV} server ★(◔.◔)★ ${String(url)}`)
+);
 
 /*
 import express, { Request, Response } from 'express';
