@@ -37,6 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = require("@apollo/server");
 const standalone_1 = require("@apollo/server/standalone");
+const graphql_iso_date_1 = require("graphql-iso-date");
 const mongoose_1 = __importStar(require("mongoose"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
@@ -48,6 +49,7 @@ const PORT = process.env.PORT || 4001;
 const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
 const typeDefs = `#graphql
+scalar Date
 
   type Access {
     login: String
@@ -64,6 +66,7 @@ const typeDefs = `#graphql
     image: String 
     views: String
     tags: [String]
+    timestamp: Date
   }
 
   input AccessInput {
@@ -110,6 +113,7 @@ const defaultConfig = {
     author: String,
     image: String,
     views: String,
+    timestamp: { type: Date, default: Date.now },
 };
 const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
 const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
@@ -167,6 +171,7 @@ const resolvers = {
                 image: article[0].image,
                 views: article[0].views,
                 tags: article[0].tags,
+                timestamp: article[0].timestamp,
             };
         }),
         getArticleByTitle(_, { title }) {
@@ -182,6 +187,7 @@ const resolvers = {
                     image: article[0].image,
                     views: article[0].views,
                     tags: article[0].tags,
+                    timestamp: article[0].timestamp,
                 };
             });
         },
@@ -250,6 +256,7 @@ const resolvers = {
                 image: res.image,
                 views: res.views,
                 tags: res.tags,
+                timestamp: res.timestamp,
             };
         }),
         deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -266,6 +273,7 @@ const resolvers = {
             });
         },
     },
+    Date: graphql_iso_date_1.GraphQLDate,
 };
 const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield Admin.find({ login: input.login, password: input.password }); });
 // --------------------------------- Server:

@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { GraphQLDate } from 'graphql-iso-date';
 import mongoose, { Schema } from 'mongoose';
 import express from 'express';
 import cors from 'cors';
@@ -15,6 +16,7 @@ const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
 
 const typeDefs = `#graphql
+scalar Date
 
   type Access {
     login: String
@@ -31,6 +33,7 @@ const typeDefs = `#graphql
     image: String 
     views: String
     tags: [String]
+    timestamp: Date
   }
 
   input AccessInput {
@@ -83,6 +86,7 @@ const defaultConfig = {
   author: String,
   image: String,
   views: String,
+  timestamp: { type: Date, default: Date.now },
 };
 
 const ProdArticle = mongoose.model(
@@ -166,6 +170,7 @@ const resolvers = {
         image: article[0].image,
         views: article[0].views,
         tags: article[0].tags,
+        timestamp: article[0].timestamp,
       };
     },
 
@@ -183,6 +188,7 @@ const resolvers = {
         image: article[0].image,
         views: article[0].views,
         tags: article[0].tags,
+        timestamp: article[0].timestamp,
       };
     },
   },
@@ -264,6 +270,7 @@ const resolvers = {
         image: res.image,
         views: res.views,
         tags: res.tags,
+        timestamp: res.timestamp,
       };
     },
 
@@ -286,6 +293,8 @@ const resolvers = {
       return wasEdited;
     },
   },
+
+  Date: GraphQLDate,
 };
 
 const getAdmin = async (input: { login: string; password: string }) =>
