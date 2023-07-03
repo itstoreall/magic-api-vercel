@@ -6,6 +6,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
+import getImg from './base64';
+import cloudinaryHandler from './cloudinaryHandler';
+
+// console.log('getImg', getImg);
+// cloudinaryHandler();
 
 dotenv.config();
 

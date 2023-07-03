@@ -43,6 +43,8 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
+// console.log('getImg', getImg);
+// cloudinaryHandler();
 dotenv_1.default.config();
 mongoose_1.default.connect(process.env.MONGO_DB);
 const PORT = process.env.PORT || 4001;
