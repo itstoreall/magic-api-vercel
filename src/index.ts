@@ -6,13 +6,61 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
-import getImg from './base64';
-import cloudinaryHandler from './cloudinaryHandler';
-
-// console.log('getImg', getImg);
-// cloudinaryHandler();
+import * as web3Storage from './ipfs/web3Storage';
+import { DEFAULT_IPFS_CID } from './constants';
+// import base64Img from './base64';
+// import cloudinaryHandler from './cloudinaryHandler';
+// import { uploadToIpfs } from './ipfs';
+// import uploadToIpfs from './ipfs/uploadToIpfs';
 
 dotenv.config();
+
+const defaultCid = DEFAULT_IPFS_CID;
+
+// ---
+
+// uploadToIpfs(base64Img);
+
+// const secureUrl = uploadToIpfs(getImg);
+
+// console.log(222, 'uploaded secureUrl:', secureUrl);
+
+// const uploadedImg = cloudinaryHandler.uploadImage(getImg);
+// console.log('uploadedImg', uploadedImg);
+
+// cloudinaryHandler.deleteImage('astraia_uploads/usspgwq5l2ow9euj9eru');
+// console.log('deletedImg', deletedImg);
+
+// const imageUrl =
+//   'https://res.cloudinary.com/astraia/image/upload/v1688374698/astraia_uploads/cd0urvylztaii5kptzf3.png';
+// const publicId = imageUrl.split('/').pop().split('.').slice(0, -1).join('.');
+
+// console.log('publicId', publicId);
+
+// cloudinaryHandler.deleteImage(publicId);
+
+// web3Storage.upload(base64Img);
+
+const list = async () => {
+  const res = await web3Storage.list();
+  console.log('list:', res);
+};
+
+const retrieve = async () => {
+  const res = await web3Storage.retrieve(defaultCid);
+  console.log('retrieved cid:', res);
+};
+
+const checkStatus = async () => {
+  const res = await web3Storage.checkStatus(defaultCid);
+  console.log('status:', res);
+};
+
+// list();
+// retrieve();
+// checkStatus();
+
+// ---
 
 mongoose.connect(process.env.MONGO_DB);
 
@@ -36,6 +84,7 @@ scalar Date
     text: String
     author: String
     image: String 
+    ipfs: String 
     views: String
     tags: [String]
     timestamp: Date
@@ -53,6 +102,7 @@ scalar Date
     text: String!
     author: String!
     image: String 
+    ipfs: String 
     tags: [String]
   }
 
@@ -90,6 +140,7 @@ const defaultConfig = {
   text: String,
   author: String,
   image: String,
+  ipfs: String,
   views: String,
   timestamp: { type: Date, default: Date.now },
 };
@@ -173,6 +224,7 @@ const resolvers = {
         text: article[0].text,
         author: article[0].author,
         image: article[0].image,
+        ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
         timestamp: article[0].timestamp,
@@ -191,6 +243,7 @@ const resolvers = {
         text: article[0].text,
         author: article[0].author,
         image: article[0].image,
+        ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
         timestamp: article[0].timestamp,
@@ -254,12 +307,22 @@ const resolvers = {
     // -------------------------- Articles
 
     addArticle: async (_: any, { input }: any) => {
+      // const secureUrl = await cloudinaryHandler.uploadImage(input.image);
+      // const secureUrl = await uploadToIpfs(input.image);
+
+      // console.log(222, 'uploaded secureUrl:', secureUrl);
+
+      // console.log('image', input.image);
+
+      const cid = await web3Storage.upload(input.image);
+
       const createArticle = new ArticleModel({
         title: input.title,
         description: input.description,
         text: input.text,
         author: input.author,
         image: input.image,
+        ipfs: cid ? cid : defaultCid,
         tags: input.tags,
       });
 
@@ -273,6 +336,7 @@ const resolvers = {
         text: res.text,
         author: res.author,
         image: res.image,
+        ipfs: res.ipfs,
         views: res.views,
         tags: res.tags,
         timestamp: res.timestamp,
@@ -289,8 +353,18 @@ const resolvers = {
     },
 
     async editArticle(_: any, { ID, articleInput }: any) {
+      // console.log(222, 'articleInput', articleInput);
+
+      // console.log('image', input.image);
+
+      const cid = await web3Storage.upload(articleInput.image);
+
       const wasEdited = (
-        await ArticleModel.updateOne({ _id: ID }, { ...articleInput })
+        await ArticleModel.updateOne(
+          { _id: ID },
+          // { ...articleInput }
+          { ...articleInput, ipfs: cid ? cid : defaultCid }
+        )
       ).modifiedCount;
 
       console.log('wasEdited:', wasEdited);

@@ -43,9 +43,44 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
-// console.log('getImg', getImg);
-// cloudinaryHandler();
+const web3Storage = __importStar(require("./ipfs/web3Storage"));
+const constants_1 = require("./constants");
+// import base64Img from './base64';
+// import cloudinaryHandler from './cloudinaryHandler';
+// import { uploadToIpfs } from './ipfs';
+// import uploadToIpfs from './ipfs/uploadToIpfs';
 dotenv_1.default.config();
+const defaultCid = constants_1.DEFAULT_IPFS_CID;
+// ---
+// uploadToIpfs(base64Img);
+// const secureUrl = uploadToIpfs(getImg);
+// console.log(222, 'uploaded secureUrl:', secureUrl);
+// const uploadedImg = cloudinaryHandler.uploadImage(getImg);
+// console.log('uploadedImg', uploadedImg);
+// cloudinaryHandler.deleteImage('astraia_uploads/usspgwq5l2ow9euj9eru');
+// console.log('deletedImg', deletedImg);
+// const imageUrl =
+//   'https://res.cloudinary.com/astraia/image/upload/v1688374698/astraia_uploads/cd0urvylztaii5kptzf3.png';
+// const publicId = imageUrl.split('/').pop().split('.').slice(0, -1).join('.');
+// console.log('publicId', publicId);
+// cloudinaryHandler.deleteImage(publicId);
+// web3Storage.upload(base64Img);
+const list = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield web3Storage.list();
+    console.log('list:', res);
+});
+const retrieve = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield web3Storage.retrieve(defaultCid);
+    console.log('retrieved cid:', res);
+});
+const checkStatus = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield web3Storage.checkStatus(defaultCid);
+    console.log('status:', res);
+});
+// list();
+// retrieve();
+// checkStatus();
+// ---
 mongoose_1.default.connect(process.env.MONGO_DB);
 const PORT = process.env.PORT || 4001;
 const envLogin = process.env.LOGIN;
@@ -66,6 +101,7 @@ scalar Date
     text: String
     author: String
     image: String 
+    ipfs: String 
     views: String
     tags: [String]
     timestamp: Date
@@ -83,6 +119,7 @@ scalar Date
     text: String!
     author: String!
     image: String 
+    ipfs: String 
     tags: [String]
   }
 
@@ -114,6 +151,7 @@ const defaultConfig = {
     text: String,
     author: String,
     image: String,
+    ipfs: String,
     views: String,
     timestamp: { type: Date, default: Date.now },
 };
@@ -171,6 +209,7 @@ const resolvers = {
                 text: article[0].text,
                 author: article[0].author,
                 image: article[0].image,
+                ipfs: article[0].ipfs,
                 views: article[0].views,
                 tags: article[0].tags,
                 timestamp: article[0].timestamp,
@@ -187,6 +226,7 @@ const resolvers = {
                     text: article[0].text,
                     author: article[0].author,
                     image: article[0].image,
+                    ipfs: article[0].ipfs,
                     views: article[0].views,
                     tags: article[0].tags,
                     timestamp: article[0].timestamp,
@@ -240,12 +280,18 @@ const resolvers = {
         }),
         // -------------------------- Articles
         addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+            // const secureUrl = await cloudinaryHandler.uploadImage(input.image);
+            // const secureUrl = await uploadToIpfs(input.image);
+            // console.log(222, 'uploaded secureUrl:', secureUrl);
+            // console.log('image', input.image);
+            const cid = yield web3Storage.upload(input.image);
             const createArticle = new ArticleModel({
                 title: input.title,
                 description: input.description,
                 text: input.text,
                 author: input.author,
                 image: input.image,
+                ipfs: cid ? cid : defaultCid,
                 tags: input.tags,
             });
             const res = yield createArticle.save();
@@ -256,6 +302,7 @@ const resolvers = {
                 text: res.text,
                 author: res.author,
                 image: res.image,
+                ipfs: res.ipfs,
                 views: res.views,
                 tags: res.tags,
                 timestamp: res.timestamp,
@@ -269,7 +316,10 @@ const resolvers = {
         }),
         editArticle(_, { ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, Object.assign({}, articleInput))).modifiedCount;
+                // console.log(222, 'articleInput', articleInput);
+                // console.log('image', input.image);
+                const cid = yield web3Storage.upload(articleInput.image);
+                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, Object.assign(Object.assign({}, articleInput), { ipfs: cid ? cid : defaultCid }))).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
             });
