@@ -1,3 +1,4 @@
+import path from 'path';
 import process from 'process';
 import {
   Web3Storage,
@@ -6,11 +7,11 @@ import {
   File,
   Filelike,
 } from 'web3.storage';
-import { IPFS_TEMP_FOLDER_PATH, IPFS_TEMP_IMAGE_PATH } from '../constants';
+// import { IPFS_TEMP_IMAGE_PATH } from '../constants';
 import fs from 'fs';
 
-const tempImagePath = IPFS_TEMP_IMAGE_PATH;
-const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
+// const tempImagePath = IPFS_TEMP_IMAGE_PATH;
+// const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 
 // Client
 const getStorage = () => {
@@ -24,13 +25,11 @@ const getStorage = () => {
   return new Web3Storage({ token: token });
 };
 
-// ---
-
 // Converter
 const convertFromBase64TiImg = (base64Data: string) => {
   const base64 = base64Data.split(',')[1];
   const buffer = Buffer.from(base64, 'base64');
-  fs.writeFileSync(tempImagePath, buffer);
+  fs.writeFileSync(path.join(__dirname, 'images', 'astraia-image.jpg'), buffer);
 };
 
 // Uploader
@@ -38,40 +37,21 @@ export const upload = async (base64Img: string) => {
   try {
     convertFromBase64TiImg(base64Img);
 
+    // /*
     const storage = getStorage();
-    const files = await getFilesFromPath(tempImagePath);
+    const files = await getFilesFromPath(
+      path.join(__dirname, 'images', 'astraia-image.jpg')
+    );
     const cid = await storage.put(files as Iterable<Filelike>);
 
     console.log('web3.storage CID:', cid);
 
     return cid;
+    // */
   } catch (e) {
     console.error('Error web3.storage upload:', e);
   }
 };
-// // Uploader
-// export const upload = async (base64Img: any) => {
-//   try {
-//     convertFromBase64TiImg(base64Img);
-
-//     // /*
-//     const storage = getStorage();
-//     // const files = [];
-
-//     const pathFiles = await getFilesFromPath('src/ipfs/temp/astraia-image.jpg');
-//     // files.push(...pathFiles);
-
-//     const cid = await storage.put(pathFiles);
-//     console.log('web3.storage CID:', cid);
-
-//     return cid;
-//     // */
-//   } catch (e) {
-//     console.error('Error web3.storage upload:', e);
-//   }
-// };
-
-// ---
 
 // Retrieve
 export const retrieve = async (cid: string) => {

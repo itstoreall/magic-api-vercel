@@ -8,36 +8,13 @@ import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
 import * as web3Storage from './ipfs/web3Storage';
 import { DEFAULT_IPFS_CID } from './constants';
-// import base64Img from './base64';
-// import cloudinaryHandler from './cloudinaryHandler';
-// import { uploadToIpfs } from './ipfs';
-// import uploadToIpfs from './ipfs/uploadToIpfs';
+import base64Img from './base64';
 
 dotenv.config();
 
 const defaultCid = DEFAULT_IPFS_CID;
 
 // ---
-
-// uploadToIpfs(base64Img);
-
-// const secureUrl = uploadToIpfs(getImg);
-
-// console.log(222, 'uploaded secureUrl:', secureUrl);
-
-// const uploadedImg = cloudinaryHandler.uploadImage(getImg);
-// console.log('uploadedImg', uploadedImg);
-
-// cloudinaryHandler.deleteImage('astraia_uploads/usspgwq5l2ow9euj9eru');
-// console.log('deletedImg', deletedImg);
-
-// const imageUrl =
-//   'https://res.cloudinary.com/astraia/image/upload/v1688374698/astraia_uploads/cd0urvylztaii5kptzf3.png';
-// const publicId = imageUrl.split('/').pop().split('.').slice(0, -1).join('.');
-
-// console.log('publicId', publicId);
-
-// cloudinaryHandler.deleteImage(publicId);
 
 // web3Storage.upload(base64Img);
 
