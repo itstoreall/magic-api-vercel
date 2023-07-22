@@ -2,8 +2,8 @@ import path from 'path';
 import process from 'process';
 import {
   Web3Storage,
-  getFilesFromPath,
-  filesFromPath,
+  // getFilesFromPath,
+  // filesFromPath,
   File,
   Filelike,
 } from 'web3.storage';
@@ -25,23 +25,19 @@ const getStorage = () => {
   return new Web3Storage({ token: token });
 };
 
-// Converter
-const convertFromBase64TiImg = (base64Data: string) => {
-  const base64 = base64Data.split(',')[1];
+// Preparation
+const prepareFiles = (base64Data: string) => {
+  const base64 = base64Data.split(';base64,').pop();
   const buffer = Buffer.from(base64, 'base64');
-  fs.writeFileSync(path.join(__dirname, 'images', 'astraia-image.jpg'), buffer);
+  return [new File([buffer], 'astraia-image.jpg')];
 };
 
 // Uploader
 export const upload = async (base64Img: string) => {
   try {
-    convertFromBase64TiImg(base64Img);
-
     // /*
+    const files = prepareFiles(base64Img);
     const storage = getStorage();
-    const files = await getFilesFromPath(
-      path.join(__dirname, 'images', 'astraia-image.jpg')
-    );
     const cid = await storage.put(files as Iterable<Filelike>);
 
     console.log('web3.storage CID:', cid);

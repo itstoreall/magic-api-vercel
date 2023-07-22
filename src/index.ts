@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
 import * as web3Storage from './ipfs/web3Storage';
 import { DEFAULT_IPFS_CID } from './constants';
-import base64Img from './base64';
+// import base64Img from './base64';
 
 dotenv.config();
 

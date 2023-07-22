@@ -45,6 +45,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
 const web3Storage = __importStar(require("./ipfs/web3Storage"));
 const constants_1 = require("./constants");
+// import base64Img from './base64';
 dotenv_1.default.config();
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
 // ---

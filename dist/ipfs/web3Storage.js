@@ -20,11 +20,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.list = exports.checkStatus = exports.retrieve = exports.upload = void 0;
-const path_1 = __importDefault(require("path"));
 const process_1 = __importDefault(require("process"));
 const web3_storage_1 = require("web3.storage");
-// import { IPFS_TEMP_IMAGE_PATH } from '../constants';
-const fs_1 = __importDefault(require("fs"));
 // const tempImagePath = IPFS_TEMP_IMAGE_PATH;
 // const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 // Client
@@ -36,19 +33,18 @@ const getStorage = () => {
     }
     return new web3_storage_1.Web3Storage({ token: token });
 };
-// Converter
-const convertFromBase64TiImg = (base64Data) => {
-    const base64 = base64Data.split(',')[1];
+// Preparation
+const prepareFiles = (base64Data) => {
+    const base64 = base64Data.split(';base64,').pop();
     const buffer = Buffer.from(base64, 'base64');
-    fs_1.default.writeFileSync(path_1.default.join(__dirname, 'images', 'astraia-image.jpg'), buffer);
+    return [new web3_storage_1.File([buffer], 'astraia-image.jpg')];
 };
 // Uploader
 const upload = (base64Img) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        convertFromBase64TiImg(base64Img);
         // /*
+        const files = prepareFiles(base64Img);
         const storage = getStorage();
-        const files = yield (0, web3_storage_1.getFilesFromPath)(path_1.default.join(__dirname, 'images', 'astraia-image.jpg'));
         const cid = yield storage.put(files);
         console.log('web3.storage CID:', cid);
         return cid;
