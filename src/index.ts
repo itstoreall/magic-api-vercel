@@ -60,7 +60,7 @@ scalar Date
     description: String
     text: String
     author: String
-    image: String 
+    #image: String 
     ipfs: String 
     views: String
     tags: [String]
@@ -116,7 +116,7 @@ const defaultConfig = {
   description: String,
   text: String,
   author: String,
-  image: String,
+  // image: String,
   ipfs: String,
   views: String,
   timestamp: { type: Date, default: Date.now },
@@ -200,7 +200,7 @@ const resolvers = {
         description: article[0].description,
         text: article[0].text,
         author: article[0].author,
-        image: article[0].image,
+        // image: article[0].image,
         ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
@@ -219,7 +219,7 @@ const resolvers = {
         description: article[0].description,
         text: article[0].text,
         author: article[0].author,
-        image: article[0].image,
+        // image: article[0].image,
         ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
@@ -284,13 +284,6 @@ const resolvers = {
     // -------------------------- Articles
 
     addArticle: async (_: any, { input }: any) => {
-      // const secureUrl = await cloudinaryHandler.uploadImage(input.image);
-      // const secureUrl = await uploadToIpfs(input.image);
-
-      // console.log(222, 'uploaded secureUrl:', secureUrl);
-
-      // console.log('image', input.image);
-
       const cid = await web3Storage.upload(input.image);
 
       const createArticle = new ArticleModel({
@@ -298,7 +291,7 @@ const resolvers = {
         description: input.description,
         text: input.text,
         author: input.author,
-        image: input.image,
+        // image: input.image,
         ipfs: cid ? cid : defaultCid,
         tags: input.tags,
       });
@@ -312,7 +305,7 @@ const resolvers = {
         description: res.description,
         text: res.text,
         author: res.author,
-        image: res.image,
+        // image: res.image,
         ipfs: res.ipfs,
         views: res.views,
         tags: res.tags,
