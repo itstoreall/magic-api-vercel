@@ -138,10 +138,13 @@ const DevArticle = mongoose.model(
   })
 );
 
-const ArticleModel =
-  process.env.NODE_ENV === 'production'
-    ? ProdArticle
-    : process.env.NODE_ENV === 'development' && DevArticle;
+// const ArticleModel =
+//   process.env.NODE_ENV === 'production'
+//     ? ProdArticle
+//     : process.env.NODE_ENV === 'development' && DevArticle;
+
+// const ArticleModel = ProdArticle
+const ArticleModel = DevArticle;
 
 const resolvers = {
   Query: {
@@ -284,15 +287,19 @@ const resolvers = {
     // -------------------------- Articles
 
     addArticle: async (_: any, { input }: any) => {
-      const cid = await web3Storage.upload(input.image);
+      const base64 = input.image;
+      let cid: string = defaultCid;
+
+      if (base64) {
+        cid = await web3Storage.upload(base64);
+      }
 
       const createArticle = new ArticleModel({
         title: input.title,
         description: input.description,
         text: input.text,
         author: input.author,
-        // image: input.image,
-        ipfs: cid ? cid : defaultCid,
+        ipfs: cid,
         tags: input.tags,
       });
 
@@ -325,21 +332,32 @@ const resolvers = {
     async editArticle(_: any, { ID, articleInput }: any) {
       // console.log(222, 'articleInput', articleInput);
 
-      // console.log('image', input.image);
+      console.log('articleInput -->', articleInput.image);
 
-      const cid = await web3Storage.upload(articleInput.image);
+      // /*
+      const base64 = articleInput.image;
+      let cid: string;
+
+      if (base64) {
+        cid = await web3Storage.upload(base64);
+      }
+
+      const updatedImage = { ...articleInput, ipfs: cid };
+      const onlyText = { ...articleInput };
 
       const wasEdited = (
         await ArticleModel.updateOne(
           { _id: ID },
           // { ...articleInput }
-          { ...articleInput, ipfs: cid ? cid : defaultCid }
+          // { ...articleInput, ipfs: cid ? cid : defaultCid }
+          base64 ? updatedImage : onlyText
         )
       ).modifiedCount;
 
       console.log('wasEdited:', wasEdited);
 
       return wasEdited;
+      // */
     },
   },
 

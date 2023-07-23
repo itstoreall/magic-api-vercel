@@ -21,7 +21,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.list = exports.checkStatus = exports.retrieve = exports.upload = void 0;
 const process_1 = __importDefault(require("process"));
+const constants_1 = require("../constants");
 const web3_storage_1 = require("web3.storage");
+// import { IPFS_TEMP_IMAGE_PATH } from '../constants';
+// import fs from 'fs';
+const defaultCid = constants_1.DEFAULT_IPFS_CID;
 // const tempImagePath = IPFS_TEMP_IMAGE_PATH;
 // const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 // Client
@@ -47,7 +51,7 @@ const upload = (base64Img) => __awaiter(void 0, void 0, void 0, function* () {
         const storage = getStorage();
         const cid = yield storage.put(files);
         console.log('web3.storage CID:', cid);
-        return cid;
+        return cid || defaultCid;
         // */
     }
     catch (e) {

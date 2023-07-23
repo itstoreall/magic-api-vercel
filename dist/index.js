@@ -142,9 +142,12 @@ const defaultConfig = {
 };
 const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
 const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
-const ArticleModel = process.env.NODE_ENV === 'production'
-    ? ProdArticle
-    : process.env.NODE_ENV === 'development' && DevArticle;
+// const ArticleModel =
+//   process.env.NODE_ENV === 'production'
+//     ? ProdArticle
+//     : process.env.NODE_ENV === 'development' && DevArticle;
+// const ArticleModel = ProdArticle
+const ArticleModel = DevArticle;
 const resolvers = {
     Query: {
         getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -265,14 +268,17 @@ const resolvers = {
         }),
         // -------------------------- Articles
         addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            const cid = yield web3Storage.upload(input.image);
+            const base64 = input.image;
+            let cid = defaultCid;
+            if (base64) {
+                cid = yield web3Storage.upload(base64);
+            }
             const createArticle = new ArticleModel({
                 title: input.title,
                 description: input.description,
                 text: input.text,
                 author: input.author,
-                // image: input.image,
-                ipfs: cid ? cid : defaultCid,
+                ipfs: cid,
                 tags: input.tags,
             });
             const res = yield createArticle.save();
@@ -298,11 +304,22 @@ const resolvers = {
         editArticle(_, { ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {
                 // console.log(222, 'articleInput', articleInput);
-                // console.log('image', input.image);
-                const cid = yield web3Storage.upload(articleInput.image);
-                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, Object.assign(Object.assign({}, articleInput), { ipfs: cid ? cid : defaultCid }))).modifiedCount;
+                console.log('articleInput -->', articleInput.image);
+                // /*
+                const base64 = articleInput.image;
+                let cid;
+                if (base64) {
+                    cid = yield web3Storage.upload(base64);
+                }
+                const updatedImage = Object.assign(Object.assign({}, articleInput), { ipfs: cid });
+                const onlyText = Object.assign({}, articleInput);
+                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, 
+                // { ...articleInput }
+                // { ...articleInput, ipfs: cid ? cid : defaultCid }
+                base64 ? updatedImage : onlyText)).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
+                // */
             });
         },
     },

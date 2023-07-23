@@ -1,15 +1,11 @@
 import path from 'path';
 import process from 'process';
-import {
-  Web3Storage,
-  // getFilesFromPath,
-  // filesFromPath,
-  File,
-  Filelike,
-} from 'web3.storage';
+import { DEFAULT_IPFS_CID } from '../constants';
+import { Web3Storage, File, Filelike } from 'web3.storage';
 // import { IPFS_TEMP_IMAGE_PATH } from '../constants';
-import fs from 'fs';
+// import fs from 'fs';
 
+const defaultCid = DEFAULT_IPFS_CID;
 // const tempImagePath = IPFS_TEMP_IMAGE_PATH;
 // const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 
@@ -42,7 +38,7 @@ export const upload = async (base64Img: string) => {
 
     console.log('web3.storage CID:', cid);
 
-    return cid;
+    return cid || defaultCid;
     // */
   } catch (e) {
     console.error('Error web3.storage upload:', e);
