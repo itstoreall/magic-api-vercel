@@ -2,12 +2,8 @@ import path from 'path';
 import process from 'process';
 import { DEFAULT_IPFS_CID } from '../constants';
 import { Web3Storage, File, Filelike } from 'web3.storage';
-// import { IPFS_TEMP_IMAGE_PATH } from '../constants';
-// import fs from 'fs';
 
 const defaultCid = DEFAULT_IPFS_CID;
-// const tempImagePath = IPFS_TEMP_IMAGE_PATH;
-// const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 
 // Client
 const getStorage = () => {
@@ -23,8 +19,11 @@ const getStorage = () => {
 
 // Preparation
 const prepareFiles = (base64Data: string) => {
+  if (!base64Data?.includes('base64')) return null;
+
   const base64 = base64Data.split(';base64,').pop();
   const buffer = Buffer.from(base64, 'base64');
+
   return [new File([buffer], 'astraia-image.jpg')];
 };
 
@@ -89,6 +88,7 @@ export const list = async () => {
     for await (const upload of storage.list()) {
       imageList.push(upload);
     }
+
     return imageList;
   } catch (e) {
     console.error('Error web3.storage list:', e);

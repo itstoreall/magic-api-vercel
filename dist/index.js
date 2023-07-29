@@ -45,27 +45,34 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const uuid_1 = require("uuid");
 const web3Storage = __importStar(require("./ipfs/web3Storage"));
 const constants_1 = require("./constants");
+/* // ---
+
 // import base64Img from './base64';
+
+web3Storage.upload(base64Img);
+
+const list = async () => {
+  const res = await web3Storage.list();
+  console.log('list:', res);
+};
+
+const retrieve = async () => {
+  const res = await web3Storage.retrieve(defaultCid);
+  console.log('retrieved cid:', res);
+};
+
+const checkStatus = async () => {
+  const res = await web3Storage.checkStatus(defaultCid);
+  console.log('status:', res);
+};
+
+list();
+retrieve();
+checkStatus();
+
+// --- */
 dotenv_1.default.config();
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
-// ---
-// web3Storage.upload(base64Img);
-const list = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield web3Storage.list();
-    console.log('list:', res);
-});
-const retrieve = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield web3Storage.retrieve(defaultCid);
-    console.log('retrieved cid:', res);
-});
-const checkStatus = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield web3Storage.checkStatus(defaultCid);
-    console.log('status:', res);
-});
-// list();
-// retrieve();
-// checkStatus();
-// ---
 mongoose_1.default.connect(process.env.MONGO_DB);
 const PORT = process.env.PORT || 4001;
 const envLogin = process.env.LOGIN;
@@ -85,7 +92,6 @@ scalar Date
     description: String
     text: String
     author: String
-    #image: String 
     ipfs: String 
     views: String
     tags: [String]
@@ -135,17 +141,26 @@ const defaultConfig = {
     description: String,
     text: String,
     author: String,
-    // image: String,
     ipfs: String,
     views: String,
     timestamp: { type: Date, default: Date.now },
 };
-const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
+/*
+const ProdArticle = mongoose.model(
+  'prod_article',
+  new mongoose.Schema({
+    ...defaultConfig,
+    tags: { type: [Schema.Types.String], default: [] },
+  })
+);
+// */
 const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
-// const ArticleModel =
-//   process.env.NODE_ENV === 'production'
-//     ? ProdArticle
-//     : process.env.NODE_ENV === 'development' && DevArticle;
+/*
+const ArticleModel =
+  process.env.NODE_ENV === 'production'
+    ? ProdArticle
+    : process.env.NODE_ENV === 'development' && DevArticle;
+// */
 // const ArticleModel = ProdArticle
 const ArticleModel = DevArticle;
 const resolvers = {
@@ -181,6 +196,7 @@ const resolvers = {
             try {
                 const res = yield ArticleModel.find();
                 console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
+                console.log('articles:', res);
                 return res;
             }
             catch (error) {
@@ -196,7 +212,6 @@ const resolvers = {
                 description: article[0].description,
                 text: article[0].text,
                 author: article[0].author,
-                // image: article[0].image,
                 ipfs: article[0].ipfs,
                 views: article[0].views,
                 tags: article[0].tags,
@@ -213,7 +228,6 @@ const resolvers = {
                     description: article[0].description,
                     text: article[0].text,
                     author: article[0].author,
-                    // image: article[0].image,
                     ipfs: article[0].ipfs,
                     views: article[0].views,
                     tags: article[0].tags,
@@ -288,7 +302,6 @@ const resolvers = {
                 description: res.description,
                 text: res.text,
                 author: res.author,
-                // image: res.image,
                 ipfs: res.ipfs,
                 views: res.views,
                 tags: res.tags,
@@ -303,20 +316,19 @@ const resolvers = {
         }),
         editArticle(_, { ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {
-                // console.log(222, 'articleInput', articleInput);
-                console.log('articleInput -->', articleInput.image);
+                console.log('articleInput -->', articleInput);
                 // /*
                 const base64 = articleInput.image;
                 let cid;
                 if (base64) {
+                    console.log('is base64 -->', base64);
                     cid = yield web3Storage.upload(base64);
                 }
                 const updatedImage = Object.assign(Object.assign({}, articleInput), { ipfs: cid });
                 const onlyText = Object.assign({}, articleInput);
-                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, 
-                // { ...articleInput }
-                // { ...articleInput, ipfs: cid ? cid : defaultCid }
-                base64 ? updatedImage : onlyText)).modifiedCount;
+                delete onlyText.image;
+                console.log('onlyText', onlyText);
+                const wasEdited = (yield ArticleModel.updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
                 // */

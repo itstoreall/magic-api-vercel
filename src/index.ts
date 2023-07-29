@@ -8,15 +8,12 @@ import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
 import * as web3Storage from './ipfs/web3Storage';
 import { DEFAULT_IPFS_CID } from './constants';
+
+/* // ---
+
 // import base64Img from './base64';
 
-dotenv.config();
-
-const defaultCid = DEFAULT_IPFS_CID;
-
-// ---
-
-// web3Storage.upload(base64Img);
+web3Storage.upload(base64Img);
 
 const list = async () => {
   const res = await web3Storage.list();
@@ -33,11 +30,15 @@ const checkStatus = async () => {
   console.log('status:', res);
 };
 
-// list();
-// retrieve();
-// checkStatus();
+list();
+retrieve();
+checkStatus();
 
-// ---
+// --- */
+
+dotenv.config();
+
+const defaultCid = DEFAULT_IPFS_CID;
 
 mongoose.connect(process.env.MONGO_DB);
 
@@ -60,7 +61,6 @@ scalar Date
     description: String
     text: String
     author: String
-    #image: String 
     ipfs: String 
     views: String
     tags: [String]
@@ -116,12 +116,12 @@ const defaultConfig = {
   description: String,
   text: String,
   author: String,
-  // image: String,
   ipfs: String,
   views: String,
   timestamp: { type: Date, default: Date.now },
 };
 
+/*
 const ProdArticle = mongoose.model(
   'prod_article',
   new mongoose.Schema({
@@ -129,6 +129,7 @@ const ProdArticle = mongoose.model(
     tags: { type: [Schema.Types.String], default: [] },
   })
 );
+// */
 
 const DevArticle = mongoose.model(
   'dev_article',
@@ -138,10 +139,12 @@ const DevArticle = mongoose.model(
   })
 );
 
-// const ArticleModel =
-//   process.env.NODE_ENV === 'production'
-//     ? ProdArticle
-//     : process.env.NODE_ENV === 'development' && DevArticle;
+/*
+const ArticleModel =
+  process.env.NODE_ENV === 'production'
+    ? ProdArticle
+    : process.env.NODE_ENV === 'development' && DevArticle;
+// */
 
 // const ArticleModel = ProdArticle
 const ArticleModel = DevArticle;
@@ -185,6 +188,7 @@ const resolvers = {
         const res = await ArticleModel.find();
 
         console.log('articles:', res?.length);
+        console.log('articles:', res);
 
         return res;
       } catch (error) {
@@ -203,7 +207,6 @@ const resolvers = {
         description: article[0].description,
         text: article[0].text,
         author: article[0].author,
-        // image: article[0].image,
         ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
@@ -222,7 +225,6 @@ const resolvers = {
         description: article[0].description,
         text: article[0].text,
         author: article[0].author,
-        // image: article[0].image,
         ipfs: article[0].ipfs,
         views: article[0].views,
         tags: article[0].tags,
@@ -312,7 +314,6 @@ const resolvers = {
         description: res.description,
         text: res.text,
         author: res.author,
-        // image: res.image,
         ipfs: res.ipfs,
         views: res.views,
         tags: res.tags,
@@ -330,27 +331,28 @@ const resolvers = {
     },
 
     async editArticle(_: any, { ID, articleInput }: any) {
-      // console.log(222, 'articleInput', articleInput);
-
-      console.log('articleInput -->', articleInput.image);
+      console.log('articleInput -->', articleInput);
 
       // /*
       const base64 = articleInput.image;
+
       let cid: string;
 
       if (base64) {
+        console.log('is base64 -->', base64);
         cid = await web3Storage.upload(base64);
       }
 
       const updatedImage = { ...articleInput, ipfs: cid };
       const onlyText = { ...articleInput };
+      delete onlyText.image;
+
+      console.log('onlyText', onlyText);
 
       const wasEdited = (
         await ArticleModel.updateOne(
           { _id: ID },
-          // { ...articleInput }
-          // { ...articleInput, ipfs: cid ? cid : defaultCid }
-          base64 ? updatedImage : onlyText
+          base64 ? { ...updatedImage } : { ...onlyText }
         )
       ).modifiedCount;
 

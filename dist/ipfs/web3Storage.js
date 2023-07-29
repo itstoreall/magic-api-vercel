@@ -23,11 +23,7 @@ exports.list = exports.checkStatus = exports.retrieve = exports.upload = void 0;
 const process_1 = __importDefault(require("process"));
 const constants_1 = require("../constants");
 const web3_storage_1 = require("web3.storage");
-// import { IPFS_TEMP_IMAGE_PATH } from '../constants';
-// import fs from 'fs';
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
-// const tempImagePath = IPFS_TEMP_IMAGE_PATH;
-// const tempFolderPath = IPFS_TEMP_FOLDER_PATH;
 // Client
 const getStorage = () => {
     const token = process_1.default.env.WEB3_STORAGE_API_TOKEN;
@@ -39,6 +35,8 @@ const getStorage = () => {
 };
 // Preparation
 const prepareFiles = (base64Data) => {
+    if (!(base64Data === null || base64Data === void 0 ? void 0 : base64Data.includes('base64')))
+        return null;
     const base64 = base64Data.split(';base64,').pop();
     const buffer = Buffer.from(base64, 'base64');
     return [new web3_storage_1.File([buffer], 'astraia-image.jpg')];
