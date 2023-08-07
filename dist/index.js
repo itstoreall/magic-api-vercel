@@ -72,11 +72,12 @@ checkStatus();
 
 // --- */
 dotenv_1.default.config();
-const defaultCid = constants_1.DEFAULT_IPFS_CID;
-mongoose_1.default.connect(process.env.MONGO_DB);
+const db = process.env.MONGO_DB;
 const PORT = process.env.PORT || 4001;
+const nodeEnv = process.env.NODE_ENV;
 const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
+const defaultCid = constants_1.DEFAULT_IPFS_CID;
 const typeDefs = `#graphql
 scalar Date
 
@@ -129,8 +130,9 @@ scalar Date
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;
-console.log('NODE_ENV production:', process.env.NODE_ENV === 'production');
-console.log('NODE_ENV development:', process.env.NODE_ENV === 'development');
+// console.log('nodeEnv prod:', nodeEnv === 'production');
+// console.log('nodeEnv dev:', nodeEnv === 'development');
+mongoose_1.default.connect(db);
 const Admin = mongoose_1.default.model('Admin', new mongoose_1.default.Schema({
     login: String,
     password: String,
@@ -145,24 +147,17 @@ const defaultConfig = {
     views: String,
     timestamp: { type: Date, default: Date.now },
 };
-/*
-const ProdArticle = mongoose.model(
-  'prod_article',
-  new mongoose.Schema({
-    ...defaultConfig,
-    tags: { type: [Schema.Types.String], default: [] },
-  })
-);
+// /*
+const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
 // */
 const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
-/*
-const ArticleModel =
-  process.env.NODE_ENV === 'production'
+// /*
+const ArticleModel = process.env.NODE_ENV === 'production'
     ? ProdArticle
     : process.env.NODE_ENV === 'development' && DevArticle;
 // */
 // const ArticleModel = ProdArticle
-const ArticleModel = DevArticle;
+// const ArticleModel = DevArticle;
 const resolvers = {
     Query: {
         getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -196,7 +191,7 @@ const resolvers = {
             try {
                 const res = yield ArticleModel.find();
                 console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
-                console.log('articles:', res);
+                // console.log('articles:', res);
                 return res;
             }
             catch (error) {
@@ -339,6 +334,7 @@ const resolvers = {
 };
 const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield Admin.find({ login: input.login, password: input.password }); });
 // --------------------------------- Server:
+const model = ArticleModel.modelName;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 const server = new server_1.ApolloServer({
@@ -347,7 +343,11 @@ const server = new server_1.ApolloServer({
 });
 (0, standalone_1.startStandaloneServer)(server, {
     listen: { port: Number(PORT) },
-}).then(({ url }) => console.log(`  * ${process.env.NODE_ENV} server ★(◔.◔)★ ${String(url)}`));
+}).then(({ url }) => {
+    console.log(``);
+    console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)} - ${model} db`);
+    console.log(``);
+});
 /*
 import express, { Request, Response } from 'express';
 

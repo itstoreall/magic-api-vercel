@@ -1,7 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { GraphQLDate } from 'graphql-iso-date';
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -38,13 +38,12 @@ checkStatus();
 
 dotenv.config();
 
-const defaultCid = DEFAULT_IPFS_CID;
-
-mongoose.connect(process.env.MONGO_DB);
-
+const db = process.env.MONGO_DB;
 const PORT = process.env.PORT || 4001;
+const nodeEnv = process.env.NODE_ENV;
 const envLogin = process.env.LOGIN;
 const envPassword = process.env.PASSWORD;
+const defaultCid = DEFAULT_IPFS_CID;
 
 const typeDefs = `#graphql
 scalar Date
@@ -99,8 +98,10 @@ scalar Date
   }
 `;
 
-console.log('NODE_ENV production:', process.env.NODE_ENV === 'production');
-console.log('NODE_ENV development:', process.env.NODE_ENV === 'development');
+// console.log('nodeEnv prod:', nodeEnv === 'production');
+// console.log('nodeEnv dev:', nodeEnv === 'development');
+
+mongoose.connect(db);
 
 const Admin = mongoose.model(
   'Admin',
@@ -121,7 +122,7 @@ const defaultConfig = {
   timestamp: { type: Date, default: Date.now },
 };
 
-/*
+// /*
 const ProdArticle = mongoose.model(
   'prod_article',
   new mongoose.Schema({
@@ -139,7 +140,7 @@ const DevArticle = mongoose.model(
   })
 );
 
-/*
+// /*
 const ArticleModel =
   process.env.NODE_ENV === 'production'
     ? ProdArticle
@@ -147,7 +148,7 @@ const ArticleModel =
 // */
 
 // const ArticleModel = ProdArticle
-const ArticleModel = DevArticle;
+// const ArticleModel = DevArticle;
 
 const resolvers = {
   Query: {
@@ -188,7 +189,7 @@ const resolvers = {
         const res = await ArticleModel.find();
 
         console.log('articles:', res?.length);
-        console.log('articles:', res);
+        // console.log('articles:', res);
 
         return res;
       } catch (error) {
@@ -371,6 +372,7 @@ const getAdmin = async (input: { login: string; password: string }) =>
 
 // --------------------------------- Server:
 
+const model = ArticleModel.modelName;
 const app = express();
 
 app.use(cors());
@@ -382,9 +384,11 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: Number(PORT) },
-}).then(({ url }) =>
-  console.log(`  * ${process.env.NODE_ENV} server ★(◔.◔)★ ${String(url)}`)
-);
+}).then(({ url }) => {
+  console.log(``);
+  console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)} - ${model} db`);
+  console.log(``);
+});
 
 /*
 import express, { Request, Response } from 'express';
