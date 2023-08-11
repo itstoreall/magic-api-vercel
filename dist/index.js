@@ -75,8 +75,10 @@ dotenv_1.default.config();
 const db = process.env.MONGO_DB;
 const PORT = process.env.PORT || 4001;
 const nodeEnv = process.env.NODE_ENV;
-const envLogin = process.env.LOGIN;
-const envPassword = process.env.PASSWORD;
+const envLoginMila = process.env.LOGIN_MILA;
+const envPasswordMila = process.env.PASSWORD_MILA;
+const envLoginSerhii = process.env.LOGIN_SERHII;
+const envPasswordSerhii = process.env.PASSWORD_SERHII;
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
 const typeDefs = `#graphql
 scalar Date
@@ -85,6 +87,17 @@ scalar Date
     login: String
     password: String
     token: String
+    name: String
+  }
+
+  type ApdateAdminResponse {
+    token: String
+    author: String
+  }
+
+  type IsAdminResponse {
+    isAdmin: Boolean
+    author: String
   }
 
   type Article {
@@ -117,14 +130,14 @@ scalar Date
 
   type Query {
     getAdmin(login: String!, password: String!): Access
-    isAdmin(token: String!): Boolean
+    isAdmin(token: String!): IsAdminResponse
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
   }
 
   type Mutation {
-    updateAdmin(input: AccessInput): Access
+    updateAdmin(input: AccessInput): ApdateAdminResponse
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
@@ -137,6 +150,7 @@ const Admin = mongoose_1.default.model('Admin', new mongoose_1.default.Schema({
     login: String,
     password: String,
     token: String,
+    name: String,
 }));
 const defaultConfig = {
     title: String,
@@ -169,6 +183,7 @@ const resolvers = {
                         login: admin[0].login,
                         password: admin[0].password,
                         token: admin[0].token,
+                        name: admin[0].name,
                     };
                 }
             }
@@ -179,8 +194,9 @@ const resolvers = {
         isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const admin = yield Admin.findOne({ token });
-                console.log('isAdmin:', admin);
-                return admin ? admin.token === token : false;
+                return admin
+                    ? { isAdmin: true, author: admin.name }
+                    : { isAdmin: false, author: '' };
             }
             catch (e) {
                 throw new Error(`Failed to check isAdmin: ${e}`);
@@ -234,13 +250,17 @@ const resolvers = {
     Mutation: {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             const { login, password } = input;
-            console.log('env access:', envLogin, envPassword);
-            if (login == envLogin && password == envPassword) {
+            console.log('env access Mila:', envLoginMila, envPasswordMila);
+            console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
+            const isMila = login == envLoginMila && password == envPasswordMila;
+            const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
+            if (isMila || isSerhii) {
                 const admin = yield getAdmin(input);
                 const accessInput = {
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
+                    name: isMila ? 'Mila' : 'Serhii',
                 };
                 // -------------------- Update:
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
@@ -249,9 +269,8 @@ const resolvers = {
                     if (updatedAccess) {
                         const admin = yield getAdmin(input);
                         return {
-                            login: admin[0].login,
-                            password: admin[0].password,
                             token: admin[0].token,
+                            author: admin[0].name,
                         };
                     }
                     else
@@ -264,12 +283,12 @@ const resolvers = {
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
+                    name: isMila ? 'Mila' : 'Serhii',
                 });
                 const access = yield createAccess.save();
                 return {
-                    login: access.login,
-                    password: access.password,
                     token: access.token,
+                    author: access.name,
                 };
             }
             else

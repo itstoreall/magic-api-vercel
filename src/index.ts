@@ -41,8 +41,10 @@ dotenv.config();
 const db = process.env.MONGO_DB;
 const PORT = process.env.PORT || 4001;
 const nodeEnv = process.env.NODE_ENV;
-const envLogin = process.env.LOGIN;
-const envPassword = process.env.PASSWORD;
+const envLoginMila = process.env.LOGIN_MILA;
+const envPasswordMila = process.env.PASSWORD_MILA;
+const envLoginSerhii = process.env.LOGIN_SERHII;
+const envPasswordSerhii = process.env.PASSWORD_SERHII;
 const defaultCid = DEFAULT_IPFS_CID;
 
 const typeDefs = `#graphql
@@ -52,6 +54,17 @@ scalar Date
     login: String
     password: String
     token: String
+    name: String
+  }
+
+  type ApdateAdminResponse {
+    token: String
+    author: String
+  }
+
+  type IsAdminResponse {
+    isAdmin: Boolean
+    author: String
   }
 
   type Article {
@@ -84,14 +97,14 @@ scalar Date
 
   type Query {
     getAdmin(login: String!, password: String!): Access
-    isAdmin(token: String!): Boolean
+    isAdmin(token: String!): IsAdminResponse
     articles: [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
   }
 
   type Mutation {
-    updateAdmin(input: AccessInput): Access
+    updateAdmin(input: AccessInput): ApdateAdminResponse
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
@@ -109,6 +122,7 @@ const Admin = mongoose.model(
     login: String,
     password: String,
     token: String,
+    name: String,
   })
 );
 
@@ -163,6 +177,7 @@ const resolvers = {
             login: admin[0].login,
             password: admin[0].password,
             token: admin[0].token,
+            name: admin[0].name,
           };
         }
       } catch (e) {
@@ -170,13 +185,13 @@ const resolvers = {
       }
     },
 
-    isAdmin: async (_: any, { token }: any) => {
+    isAdmin: async (_: any, { token }: { token: string }) => {
       try {
         const admin = await Admin.findOne({ token });
 
-        console.log('isAdmin:', admin);
-
-        return admin ? admin.token === token : false;
+        return admin
+          ? { isAdmin: true, author: admin.name }
+          : { isAdmin: false, author: '' };
       } catch (e) {
         throw new Error(`Failed to check isAdmin: ${e}`);
       }
@@ -238,15 +253,20 @@ const resolvers = {
     updateAdmin: async (_: any, { input }: any) => {
       const { login, password } = input;
 
-      console.log('env access:', envLogin, envPassword);
+      console.log('env access Mila:', envLoginMila, envPasswordMila);
+      console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
 
-      if (login == envLogin && password == envPassword) {
+      const isMila = login == envLoginMila && password == envPasswordMila;
+      const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
+
+      if (isMila || isSerhii) {
         const admin = await getAdmin(input);
 
         const accessInput = {
           login,
           password,
           token: uuid(),
+          name: isMila ? 'Mila' : 'Serhii',
         };
 
         // -------------------- Update:
@@ -262,9 +282,8 @@ const resolvers = {
             const admin = await getAdmin(input);
 
             return {
-              login: admin[0].login,
-              password: admin[0].password,
               token: admin[0].token,
+              author: admin[0].name,
             };
           } else throw new Error('Admin update error!');
         } else console.log('No admin in db:', admin);
@@ -275,14 +294,14 @@ const resolvers = {
           login,
           password,
           token: uuid(),
+          name: isMila ? 'Mila' : 'Serhii',
         });
 
         const access = await createAccess.save();
 
         return {
-          login: access.login,
-          password: access.password,
           token: access.token,
+          author: access.name,
         };
       } else throw new Error('Access denied!');
     },
