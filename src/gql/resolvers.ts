@@ -1,5 +1,4 @@
 import { GraphQLDate } from 'graphql-iso-date';
-import mongoose, { Document, Schema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 import dotenv from 'dotenv';
 import { DEFAULT_IPFS_CID } from '../constants';
@@ -56,7 +55,6 @@ const resolvers = {
         const res = await CurrentModel.find();
 
         console.log('articles:', res?.length);
-        // console.log('articles:', res);
 
         return res;
       } catch (error) {
@@ -80,8 +78,6 @@ const resolvers = {
         tags: article[0].tags,
         timestamp: article[0].timestamp,
       };
-
-      // return mapArticleDocumentToResponse(article);
     },
 
     async getArticleByTitle(_: any, { title }: any) {

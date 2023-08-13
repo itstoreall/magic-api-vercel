@@ -84,7 +84,6 @@ const resolvers = {
             try {
                 const res = yield CurrentModel.find();
                 console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
-                // console.log('articles:', res);
                 return res;
             }
             catch (error) {
@@ -105,7 +104,6 @@ const resolvers = {
                 tags: article[0].tags,
                 timestamp: article[0].timestamp,
             };
-            // return mapArticleDocumentToResponse(article);
         }),
         getArticleByTitle(_, { title }) {
             return __awaiter(this, void 0, void 0, function* () {
