@@ -79,23 +79,16 @@ const ArticleModel =
 //   views: String,
 //   timestamp: { type: Date, default: Date.now },
 // });
-/*
-const ProdArticle = mongoose.model(
-  'prod_article',
-  new mongoose.Schema({
-    ...defaultConfigSchema.obj,
-    tags: { type: [Schema.Types.String], default: [] },
-  })
-);
+// /*
+const ProdArticle = mongoose_1.default.model('prod_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
 // */
 const DevArticle = mongoose_1.default.model('dev_article', new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } })));
-/*
-const CurrentModel =
-  process.env.NODE_ENV === 'production'
+// /*
+const CurrentModel = process.env.NODE_ENV === 'production'
     ? ProdArticle
     : process.env.NODE_ENV === 'development' && DevArticle;
 // */
 // const ArticleModel = ProdArticle
-const CurrentModel = DevArticle;
+// const CurrentModel = DevArticle;
 exports.default = { Admin, CurrentModel };
 //# sourceMappingURL=index.js.map

@@ -64,11 +64,11 @@ const ArticleModel =
 //   timestamp: { type: Date, default: Date.now },
 // });
 
-/*
+// /*
 const ProdArticle = mongoose.model(
   'prod_article',
   new mongoose.Schema({
-    ...defaultConfigSchema.obj,
+    ...defaultConfig,
     tags: { type: [Schema.Types.String], default: [] },
   })
 );
@@ -82,7 +82,7 @@ const DevArticle = mongoose.model(
   })
 );
 
-/*
+// /*
 const CurrentModel =
   process.env.NODE_ENV === 'production'
     ? ProdArticle
@@ -90,6 +90,6 @@ const CurrentModel =
 // */
 
 // const ArticleModel = ProdArticle
-const CurrentModel = DevArticle;
+// const CurrentModel = DevArticle;
 
 export default { Admin, CurrentModel };
