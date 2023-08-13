@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // "types": ["node", "@types/mongoose"],
     "module": "commonjs",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

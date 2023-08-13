@@ -1,26 +1,13 @@
 import { GraphQLDate } from 'graphql-iso-date';
-import { Model, Types } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 import dotenv from 'dotenv';
 import { DEFAULT_IPFS_CID } from '../constants';
 import db from '../db';
+import { getAdmin } from './utils/admin';
 import * as web3Storage from '../ipfs/web3Storage';
 dotenv.config();
 
 const defaultCid = DEFAULT_IPFS_CID;
-
-export interface IArticleBase {
-  // id: String;
-  title: string;
-  description: string;
-  text: string;
-  author: string;
-  ipfs: string;
-  views: string;
-  timestamp: Date;
-  tags: string[];
-}
-interface IDevArticleModel extends IArticleBase, Document {}
 
 const { AdminModel, CurrentModel } = db;
 
@@ -29,71 +16,7 @@ const envPasswordMila = process.env.PASSWORD_MILA;
 const envLoginSerhii = process.env.LOGIN_SERHII;
 const envPasswordSerhii = process.env.PASSWORD_SERHII;
 
-export const typeDefs = `#graphql
-scalar Date
-
-  type Access {
-    login: String
-    password: String
-    token: String
-    name: String
-  }
-
-  type ApdateAdminResponse {
-    token: String
-    author: String
-  }
-
-  type IsAdminResponse {
-    isAdmin: Boolean
-    author: String
-  }
-
-  type Article {
-    id: ID
-    title: String
-    description: String
-    text: String
-    author: String
-    ipfs: String 
-    views: String
-    tags: [String]
-    timestamp: Date
-  }
-
-  input AccessInput {
-    login: String
-    password: String
-    token: String
-  }
-
-  input ArticleInput {
-    title: String!
-    description: String!
-    text: String!
-    author: String!
-    image: String 
-    ipfs: String 
-    tags: [String]
-  }
-
-  type Query {
-    getAdmin(login: String!, password: String!): Access
-    isAdmin(token: String!): IsAdminResponse
-    articles: [Article]
-    getArticleById(ID: ID!): Article
-    getArticleByTitle(title: String!): Article
-  }
-
-  type Mutation {
-    updateAdmin(input: AccessInput): ApdateAdminResponse
-    addArticle(input: ArticleInput): Article
-    deleteArticle(ID: ID!): Boolean
-    editArticle(ID: ID!, articleInput: ArticleInput): Boolean
-  }
-`;
-
-export const resolvers = {
+const resolvers = {
   Query: {
     getAdmin: async (_: any, { login, password }: any) => {
       try {
@@ -318,5 +241,4 @@ export const resolvers = {
   Date: GraphQLDate,
 };
 
-const getAdmin = async (input: { login: string; password: string }) =>
-  await AdminModel.find({ login: input.login, password: input.password });
+export default resolvers;
