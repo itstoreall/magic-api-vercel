@@ -347,7 +347,7 @@ const server = new server_1.ApolloServer({
 });
 (0, standalone_1.startStandaloneServer)(server, {
     listen: { port: Number(PORT) },
-}).then(({ url }) => console.log(`  * ${process.env.NODE_ENV} server ★(◔.◔)★ ${String(url)}`));
+}).then(({ url }) => console.log(`  * server ★(◔.◔)★ ${String(url)}`));
 /*
 import express, { Request, Response } from 'express';
 
