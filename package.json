@@ -8,6 +8,7 @@
   "license": "ISC",
   "scripts": {
     "start": "nodemon src/index.ts",
+    "start:dev": "NODE_ENV=production nodemon src/index.ts",
     "dev": "NODE_ENV=development nodemon src/index.ts",
     "prod": "NODE_ENV=production nodemon src/index.ts",
     "build": "rimraf dist && tsc",
