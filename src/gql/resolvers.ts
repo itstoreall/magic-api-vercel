@@ -4,11 +4,10 @@ import dotenv from 'dotenv';
 import { DEFAULT_IPFS_CID } from '../constants';
 import db from '../db';
 import * as web3Storage from '../ipfs/web3Storage';
+import { getAdmin } from './utils/admin';
 dotenv.config();
 
 const defaultCid = DEFAULT_IPFS_CID;
-
-const { Admin, CurrentModel } = db;
 
 const envLoginMila = process.env.LOGIN_MILA;
 const envPasswordMila = process.env.PASSWORD_MILA;
@@ -19,7 +18,7 @@ const resolvers = {
   Query: {
     getAdmin: async (_: any, { login, password }: any) => {
       try {
-        const admin = await Admin.find({ login, password });
+        const admin = await db.Admin.find({ login, password });
 
         console.log('getAdmin:', admin);
 
@@ -38,7 +37,7 @@ const resolvers = {
 
     isAdmin: async (_: any, { token }: { token: string }) => {
       try {
-        const admin = await Admin.findOne({ token });
+        const admin = await db.Admin.findOne({ token });
 
         return admin
           ? { isAdmin: true, author: admin.name }
@@ -52,7 +51,7 @@ const resolvers = {
 
     articles: async () => {
       try {
-        const res = await CurrentModel.find();
+        const res = await db.CurrentModel.find();
 
         console.log('articles:', res?.length);
 
@@ -63,7 +62,7 @@ const resolvers = {
     },
 
     getArticleById: async (_: any, { ID }: any) => {
-      const article = await CurrentModel.find({ _id: ID });
+      const article = await db.CurrentModel.find({ _id: ID });
 
       console.log('getArticleById:', article);
 
@@ -81,7 +80,7 @@ const resolvers = {
     },
 
     async getArticleByTitle(_: any, { title }: any) {
-      const article = await CurrentModel.find({ title });
+      const article = await db.CurrentModel.find({ title });
 
       console.log('getArticleByTitle:', article);
 
@@ -123,7 +122,7 @@ const resolvers = {
 
         if (admin?.length) {
           const updatedAccess = (
-            await Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
+            await db.Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
           ).modifiedCount;
 
           console.log('wasUpdated:', updatedAccess);
@@ -140,7 +139,7 @@ const resolvers = {
 
         // -------------------- Create:
 
-        const createAccess = new Admin({
+        const createAccess = new db.Admin({
           login,
           password,
           token: uuid(),
@@ -166,7 +165,7 @@ const resolvers = {
         cid = await web3Storage.upload(base64);
       }
 
-      const createArticle = new CurrentModel({
+      const createArticle = new db.CurrentModel({
         title: input.title,
         description: input.description,
         text: input.text,
@@ -192,7 +191,7 @@ const resolvers = {
     },
 
     deleteArticle: async (_: any, { ID }: { ID: string }) => {
-      const wasDeleted = (await CurrentModel.deleteOne({ _id: ID }))
+      const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
         .deletedCount;
 
       console.log('wasDeleted:', wasDeleted);
@@ -220,7 +219,7 @@ const resolvers = {
       console.log('onlyText', onlyText);
 
       const wasEdited = (
-        await CurrentModel.updateOne(
+        await db.CurrentModel.updateOne(
           { _id: ID },
           base64 ? { ...updatedImage } : { ...onlyText }
         )
@@ -235,8 +234,5 @@ const resolvers = {
 
   Date: GraphQLDate,
 };
-
-export const getAdmin = async (input: { login: string; password: string }) =>
-  await Admin.find({ login: input.login, password: input.password });
 
 export default resolvers;

@@ -35,16 +35,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdmin = void 0;
 const graphql_iso_date_1 = require("graphql-iso-date");
 const uuid_1 = require("uuid");
 const dotenv_1 = __importDefault(require("dotenv"));
 const constants_1 = require("../constants");
 const db_1 = __importDefault(require("../db"));
 const web3Storage = __importStar(require("../ipfs/web3Storage"));
+const admin_1 = require("./utils/admin");
 dotenv_1.default.config();
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
-const { Admin, CurrentModel } = db_1.default;
 const envLoginMila = process.env.LOGIN_MILA;
 const envPasswordMila = process.env.PASSWORD_MILA;
 const envLoginSerhii = process.env.LOGIN_SERHII;
@@ -53,7 +52,7 @@ const resolvers = {
     Query: {
         getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const admin = yield Admin.find({ login, password });
+                const admin = yield db_1.default.Admin.find({ login, password });
                 console.log('getAdmin:', admin);
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
                     return {
@@ -70,7 +69,7 @@ const resolvers = {
         }),
         isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const admin = yield Admin.findOne({ token });
+                const admin = yield db_1.default.Admin.findOne({ token });
                 return admin
                     ? { isAdmin: true, author: admin.name }
                     : { isAdmin: false, author: '' };
@@ -82,7 +81,7 @@ const resolvers = {
         // -------------------------- Articles
         articles: () => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const res = yield CurrentModel.find();
+                const res = yield db_1.default.CurrentModel.find();
                 console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
                 return res;
             }
@@ -91,7 +90,7 @@ const resolvers = {
             }
         }),
         getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const article = yield CurrentModel.find({ _id: ID });
+            const article = yield db_1.default.CurrentModel.find({ _id: ID });
             console.log('getArticleById:', article);
             return {
                 id: article[0]._id,
@@ -107,7 +106,7 @@ const resolvers = {
         }),
         getArticleByTitle(_, { title }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const article = yield CurrentModel.find({ title });
+                const article = yield db_1.default.CurrentModel.find({ title });
                 console.log('getArticleByTitle:', article);
                 return {
                     id: article[0]._id,
@@ -131,7 +130,7 @@ const resolvers = {
             const isMila = login == envLoginMila && password == envPasswordMila;
             const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
             if (isMila || isSerhii) {
-                const admin = yield (0, exports.getAdmin)(input);
+                const admin = yield (0, admin_1.getAdmin)(input);
                 const accessInput = {
                     login,
                     password,
@@ -140,10 +139,10 @@ const resolvers = {
                 };
                 // -------------------- Update:
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
-                    const updatedAccess = (yield Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
+                    const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
                     console.log('wasUpdated:', updatedAccess);
                     if (updatedAccess) {
-                        const admin = yield (0, exports.getAdmin)(input);
+                        const admin = yield (0, admin_1.getAdmin)(input);
                         return {
                             token: admin[0].token,
                             author: admin[0].name,
@@ -155,7 +154,7 @@ const resolvers = {
                 else
                     console.log('No admin in db:', admin);
                 // -------------------- Create:
-                const createAccess = new Admin({
+                const createAccess = new db_1.default.Admin({
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
@@ -177,7 +176,7 @@ const resolvers = {
             if (base64) {
                 cid = yield web3Storage.upload(base64);
             }
-            const createArticle = new CurrentModel({
+            const createArticle = new db_1.default.CurrentModel({
                 title: input.title,
                 description: input.description,
                 text: input.text,
@@ -199,7 +198,7 @@ const resolvers = {
             };
         }),
         deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const wasDeleted = (yield CurrentModel.deleteOne({ _id: ID }))
+            const wasDeleted = (yield db_1.default.CurrentModel.deleteOne({ _id: ID }))
                 .deletedCount;
             console.log('wasDeleted:', wasDeleted);
             return wasDeleted;
@@ -218,7 +217,7 @@ const resolvers = {
                 const onlyText = Object.assign({}, articleInput);
                 delete onlyText.image;
                 console.log('onlyText', onlyText);
-                const wasEdited = (yield CurrentModel.updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
+                const wasEdited = (yield db_1.default.CurrentModel.updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
                 // */
@@ -227,7 +226,5 @@ const resolvers = {
     },
     Date: graphql_iso_date_1.GraphQLDate,
 };
-const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield Admin.find({ login: input.login, password: input.password }); });
-exports.getAdmin = getAdmin;
 exports.default = resolvers;
 //# sourceMappingURL=resolvers.js.map
