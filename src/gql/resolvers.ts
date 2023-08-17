@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { DEFAULT_IPFS_CID } from '../constants';
 import db from '../db';
 import * as web3Storage from '../ipfs/web3Storage';
-import { getAdmin } from './utils/admin';
+import { getAdmin, getBlog } from './utils/admin';
 dotenv.config();
 
 const defaultCid = DEFAULT_IPFS_CID;
@@ -16,6 +16,7 @@ const envPasswordSerhii = process.env.PASSWORD_SERHII;
 
 const resolvers = {
   Query: {
+    /*
     getAdmin: async (_: any, { login, password }: any) => {
       try {
         const admin = await db.Admin.find({ login, password });
@@ -34,6 +35,7 @@ const resolvers = {
         throw new Error(`Failed to fetch admin: ${e}`);
       }
     },
+    */
 
     isAdmin: async (_: any, { token }: { token: string }) => {
       try {
@@ -100,7 +102,12 @@ const resolvers = {
 
   Mutation: {
     updateAdmin: async (_: any, { input }: any) => {
-      const { login, password } = input;
+      const { login, password, blog: title } = input;
+
+      const admInput = { login, password };
+      const blogInput = { title };
+
+      console.log('login, password, blog:', login, password, title);
 
       console.log('env access Mila:', envLoginMila, envPasswordMila);
       console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
@@ -109,7 +116,39 @@ const resolvers = {
       const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
 
       if (isMila || isSerhii) {
-        const admin = await getAdmin(input);
+        const admin = await getAdmin(admInput);
+
+        // ---
+
+        const blog = await getBlog(blogInput);
+
+        // -------------------- Create Blog:
+
+        if (blog?.length) {
+          console.log('is blog', blog);
+        } else {
+          console.log('No blog in db:', blog);
+
+          const createBlog = new db.Blog({
+            title,
+            authors: [isMila ? 'Mila' : 'Serhii'],
+          });
+
+          console.log('createBlog:', createBlog);
+
+          const createdBlog = await createBlog.save();
+
+          console.log('createdBlog:', createdBlog);
+
+          /*
+          return {
+            title: createdBlog.title,
+            authors: createdBlog.authors,
+          };
+          */
+        }
+
+        // ---
 
         const accessInput = {
           login,
@@ -118,7 +157,7 @@ const resolvers = {
           name: isMila ? 'Mila' : 'Serhii',
         };
 
-        // -------------------- Update:
+        // -------------------- Update Admin:
 
         if (admin?.length) {
           const updatedAccess = (
@@ -128,7 +167,7 @@ const resolvers = {
           console.log('wasUpdated:', updatedAccess);
 
           if (updatedAccess) {
-            const admin = await getAdmin(input);
+            const admin = await getAdmin(admInput);
 
             return {
               token: admin[0].token,
@@ -137,7 +176,7 @@ const resolvers = {
           } else throw new Error('Admin update error!');
         } else console.log('No admin in db:', admin);
 
-        // -------------------- Create:
+        // -------------------- Create Admin:
 
         const createAccess = new db.Admin({
           login,
