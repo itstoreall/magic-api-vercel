@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typeDefs = `#graphql
   scalar Date
 
+  #type Blog {
+    #title: String
+    #authors: [String]
+  #}
+
   type Access {
     login: String
     password: String
@@ -13,6 +18,7 @@ const typeDefs = `#graphql
   type ApdateAdminResponse {
     token: String
     author: String
+    blog: String
   }
 
   type IsAdminResponse {
@@ -33,6 +39,7 @@ const typeDefs = `#graphql
   }
 
   input AccessInput {
+    blog: String
     login: String
     password: String
     token: String
@@ -49,7 +56,8 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    getAdmin(login: String!, password: String!): Access
+    #getBlog(title: String!): Blog
+    #getAdmin(login: String!, password: String!): Access
     isAdmin(token: String!): IsAdminResponse
     articles: [Article]
     getArticleById(ID: ID!): Article
