@@ -12,8 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdmin = void 0;
+exports.getBlog = exports.getAdmin = void 0;
 const db_1 = __importDefault(require("../../db"));
 const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield db_1.default.Admin.find({ login: input.login, password: input.password }); });
 exports.getAdmin = getAdmin;
+const getBlog = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield db_1.default.Blog.find({ title: input.title }); });
+exports.getBlog = getBlog;
 //# sourceMappingURL=admin.js.map

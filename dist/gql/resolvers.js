@@ -50,23 +50,26 @@ const envLoginSerhii = process.env.LOGIN_SERHII;
 const envPasswordSerhii = process.env.PASSWORD_SERHII;
 const resolvers = {
     Query: {
-        getAdmin: (_, { login, password }) => __awaiter(void 0, void 0, void 0, function* () {
-            try {
-                const admin = yield db_1.default.Admin.find({ login, password });
-                console.log('getAdmin:', admin);
-                if (admin === null || admin === void 0 ? void 0 : admin.length) {
-                    return {
-                        login: admin[0].login,
-                        password: admin[0].password,
-                        token: admin[0].token,
-                        name: admin[0].name,
-                    };
-                }
+        /*
+        getAdmin: async (_: any, { login, password }: any) => {
+          try {
+            const admin = await db.Admin.find({ login, password });
+    
+            console.log('getAdmin:', admin);
+    
+            if (admin?.length) {
+              return {
+                login: admin[0].login,
+                password: admin[0].password,
+                token: admin[0].token,
+                name: admin[0].name,
+              };
             }
-            catch (e) {
-                throw new Error(`Failed to fetch admin: ${e}`);
-            }
-        }),
+          } catch (e) {
+            throw new Error(`Failed to fetch admin: ${e}`);
+          }
+        },
+        */
         isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const admin = yield db_1.default.Admin.findOne({ token });
@@ -124,25 +127,51 @@ const resolvers = {
     },
     Mutation: {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            const { login, password } = input;
+            const { login, password, blog: title } = input;
+            const admInput = { login, password };
+            const blogInput = { title };
+            console.log('login, password, blog:', login, password, title);
             console.log('env access Mila:', envLoginMila, envPasswordMila);
             console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
             const isMila = login == envLoginMila && password == envPasswordMila;
             const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
             if (isMila || isSerhii) {
-                const admin = yield (0, admin_1.getAdmin)(input);
+                const admin = yield (0, admin_1.getAdmin)(admInput);
+                // ---
+                const blog = yield (0, admin_1.getBlog)(blogInput);
+                // -------------------- Create Blog:
+                if (blog === null || blog === void 0 ? void 0 : blog.length) {
+                    console.log('is blog', blog);
+                }
+                else {
+                    console.log('No blog in db:', blog);
+                    const createBlog = new db_1.default.Blog({
+                        title,
+                        authors: [isMila ? 'Mila' : 'Serhii'],
+                    });
+                    console.log('createBlog:', createBlog);
+                    const createdBlog = yield createBlog.save();
+                    console.log('createdBlog:', createdBlog);
+                    /*
+                    return {
+                      title: createdBlog.title,
+                      authors: createdBlog.authors,
+                    };
+                    */
+                }
+                // ---
                 const accessInput = {
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
                     name: isMila ? 'Mila' : 'Serhii',
                 };
-                // -------------------- Update:
+                // -------------------- Update Admin:
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
                     const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
                     console.log('wasUpdated:', updatedAccess);
                     if (updatedAccess) {
-                        const admin = yield (0, admin_1.getAdmin)(input);
+                        const admin = yield (0, admin_1.getAdmin)(admInput);
                         return {
                             token: admin[0].token,
                             author: admin[0].name,
@@ -153,7 +182,7 @@ const resolvers = {
                 }
                 else
                     console.log('No admin in db:', admin);
-                // -------------------- Create:
+                // -------------------- Create Admin:
                 const createAccess = new db_1.default.Admin({
                     login,
                     password,

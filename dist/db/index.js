@@ -37,6 +37,10 @@ const Admin = mongoose_1.default.model('Admin', new mongoose_1.default.Schema({
     token: String,
     name: String,
 }));
+const Blog = mongoose_1.default.model('Blog', new mongoose_1.default.Schema({
+    title: String,
+    authors: { type: [mongoose_1.Schema.Types.String], default: [] },
+}));
 const defaultConfig = {
     title: String,
     description: String,
@@ -57,5 +61,5 @@ const CurrentModel = process.env.NODE_ENV === 'production'
 // */
 // const ArticleModel = ProdArticle
 // const CurrentModel = DevArticle;
-exports.default = { Admin, CurrentModel };
+exports.default = { Admin, CurrentModel, Blog };
 //# sourceMappingURL=index.js.map

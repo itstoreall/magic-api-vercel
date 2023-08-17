@@ -16,6 +16,14 @@ const Admin = mongoose.model(
   })
 );
 
+const Blog = mongoose.model(
+  'Blog',
+  new mongoose.Schema({
+    title: String,
+    authors: { type: [Schema.Types.String], default: [] },
+  })
+);
+
 const defaultConfig = {
   title: String,
   description: String,
@@ -54,4 +62,4 @@ const CurrentModel =
 // const ArticleModel = ProdArticle
 // const CurrentModel = DevArticle;
 
-export default { Admin, CurrentModel };
+export default { Admin, CurrentModel, Blog };
