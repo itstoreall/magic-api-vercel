@@ -16,6 +16,6 @@ exports.getBlog = exports.getAdmin = void 0;
 const db_1 = __importDefault(require("../../db"));
 const getAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield db_1.default.Admin.find({ login: input.login, password: input.password }); });
 exports.getAdmin = getAdmin;
-const getBlog = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield db_1.default.Blog.find({ title: input.title }); });
+const getBlog = (input) => __awaiter(void 0, void 0, void 0, function* () { return yield db_1.default.Blog.find({ title: input.source }); });
 exports.getBlog = getBlog;
 //# sourceMappingURL=admin.js.map

@@ -15,15 +15,16 @@ const typeDefs = `#graphql
     name: String
   }
 
-  type ApdateAdminResponse {
+  type UpdateAdminResponse {
     token: String
     author: String
-    blog: String
+    blog: [String]
   }
 
   type IsAdminResponse {
     isAdmin: Boolean
     author: String
+    blog: [String]
   }
 
   type Article {
@@ -65,7 +66,7 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    updateAdmin(input: AccessInput): ApdateAdminResponse
+    updateAdmin(input: AccessInput): UpdateAdminResponse
     addArticle(input: ArticleInput): Article
     deleteArticle(ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
