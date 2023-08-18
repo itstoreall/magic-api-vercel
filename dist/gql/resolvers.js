@@ -73,9 +73,15 @@ const resolvers = {
         isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const admin = yield db_1.default.Admin.findOne({ token });
+                console.log(1, {
+                    isAdmin: true,
+                    author: admin.name,
+                    blog: admin.blogs,
+                });
+                // console.log(2, admin);
                 return admin
-                    ? { isAdmin: true, author: admin.name }
-                    : { isAdmin: false, author: '' };
+                    ? { isAdmin: true, author: admin.name, blog: admin.blogs }
+                    : { isAdmin: false, author: '', blog: null };
             }
             catch (e) {
                 throw new Error(`Failed to check isAdmin: ${e}`);
@@ -127,29 +133,28 @@ const resolvers = {
     },
     Mutation: {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            const { login, password, blog: title } = input;
+            console.log(1, input);
+            const { login, password, blog: source } = input;
             const admInput = { login, password };
-            const blogInput = { title };
-            console.log('login, password, blog:', login, password, title);
+            const blogInput = { source };
+            console.log('login, password, blog:', login, password, source);
             console.log('env access Mila:', envLoginMila, envPasswordMila);
             console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
             const isMila = login == envLoginMila && password == envPasswordMila;
             const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
             if (isMila || isSerhii) {
-                const admin = yield (0, admin_1.getAdmin)(admInput);
-                // ---
-                const blog = yield (0, admin_1.getBlog)(blogInput);
+                const author = isMila ? 'Mila' : 'Serhii';
                 // -------------------- Create Blog:
+                const blog = yield (0, admin_1.getBlog)(blogInput);
                 if (blog === null || blog === void 0 ? void 0 : blog.length) {
                     console.log('is blog', blog);
                 }
                 else {
                     console.log('No blog in db:', blog);
                     const createBlog = new db_1.default.Blog({
-                        title,
-                        authors: [isMila ? 'Mila' : 'Serhii'],
+                        title: source,
+                        authors: [author],
                     });
-                    console.log('createBlog:', createBlog);
                     const createdBlog = yield createBlog.save();
                     console.log('createdBlog:', createdBlog);
                     /*
@@ -159,15 +164,16 @@ const resolvers = {
                     };
                     */
                 }
-                // ---
-                const accessInput = {
-                    login,
-                    password,
-                    token: (0, uuid_1.v4)(),
-                    name: isMila ? 'Mila' : 'Serhii',
-                };
                 // -------------------- Update Admin:
+                const admin = yield (0, admin_1.getAdmin)(admInput);
+                // const author = isMila ? 'Mila' : 'Serhii'
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
+                    const accessInput = {
+                        login,
+                        password,
+                        token: (0, uuid_1.v4)(),
+                        name: author,
+                    };
                     const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
                     console.log('wasUpdated:', updatedAccess);
                     if (updatedAccess) {
@@ -175,6 +181,7 @@ const resolvers = {
                         return {
                             token: admin[0].token,
                             author: admin[0].name,
+                            blog: admin[0].blogs,
                         };
                     }
                     else
@@ -187,12 +194,14 @@ const resolvers = {
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
-                    name: isMila ? 'Mila' : 'Serhii',
+                    name: author,
+                    blogs: [source],
                 });
                 const access = yield createAccess.save();
                 return {
                     token: access.token,
                     author: access.name,
+                    blog: access.blogs,
                 };
             }
             else
