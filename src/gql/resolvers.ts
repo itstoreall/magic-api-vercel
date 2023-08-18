@@ -41,9 +41,16 @@ const resolvers = {
       try {
         const admin = await db.Admin.findOne({ token });
 
+        console.log(1, {
+          isAdmin: true,
+          author: admin.name,
+          blog: admin.blogs,
+        });
+        // console.log(2, admin);
+
         return admin
-          ? { isAdmin: true, author: admin.name }
-          : { isAdmin: false, author: '' };
+          ? { isAdmin: true, author: admin.name, blog: admin.blogs }
+          : { isAdmin: false, author: '', blog: null };
       } catch (e) {
         throw new Error(`Failed to check isAdmin: ${e}`);
       }
@@ -102,12 +109,13 @@ const resolvers = {
 
   Mutation: {
     updateAdmin: async (_: any, { input }: any) => {
-      const { login, password, blog: title } = input;
+      console.log(1, input);
+      const { login, password, blog: source } = input;
 
       const admInput = { login, password };
-      const blogInput = { title };
+      const blogInput = { source };
 
-      console.log('login, password, blog:', login, password, title);
+      console.log('login, password, blog:', login, password, source);
 
       console.log('env access Mila:', envLoginMila, envPasswordMila);
       console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
@@ -116,13 +124,11 @@ const resolvers = {
       const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
 
       if (isMila || isSerhii) {
-        const admin = await getAdmin(admInput);
-
-        // ---
-
-        const blog = await getBlog(blogInput);
+        const author = isMila ? 'Mila' : 'Serhii';
 
         // -------------------- Create Blog:
+
+        const blog = await getBlog(blogInput);
 
         if (blog?.length) {
           console.log('is blog', blog);
@@ -130,11 +136,9 @@ const resolvers = {
           console.log('No blog in db:', blog);
 
           const createBlog = new db.Blog({
-            title,
-            authors: [isMila ? 'Mila' : 'Serhii'],
+            title: source,
+            authors: [author],
           });
-
-          console.log('createBlog:', createBlog);
 
           const createdBlog = await createBlog.save();
 
@@ -148,18 +152,19 @@ const resolvers = {
           */
         }
 
-        // ---
-
-        const accessInput = {
-          login,
-          password,
-          token: uuid(),
-          name: isMila ? 'Mila' : 'Serhii',
-        };
-
         // -------------------- Update Admin:
 
+        const admin = await getAdmin(admInput);
+        // const author = isMila ? 'Mila' : 'Serhii'
+
         if (admin?.length) {
+          const accessInput = {
+            login,
+            password,
+            token: uuid(),
+            name: author,
+          };
+
           const updatedAccess = (
             await db.Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
           ).modifiedCount;
@@ -172,6 +177,7 @@ const resolvers = {
             return {
               token: admin[0].token,
               author: admin[0].name,
+              blog: admin[0].blogs,
             };
           } else throw new Error('Admin update error!');
         } else console.log('No admin in db:', admin);
@@ -182,7 +188,8 @@ const resolvers = {
           login,
           password,
           token: uuid(),
-          name: isMila ? 'Mila' : 'Serhii',
+          name: author,
+          blogs: [source],
         });
 
         const access = await createAccess.save();
@@ -190,6 +197,7 @@ const resolvers = {
         return {
           token: access.token,
           author: access.name,
+          blog: access.blogs,
         };
       } else throw new Error('Access denied!');
     },
