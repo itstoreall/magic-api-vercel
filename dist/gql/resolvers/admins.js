@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,6 +39,7 @@ const admin_1 = require("./../utils/admin");
 const uuid_1 = require("uuid");
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("../../db"));
+const adnimService = __importStar(require("../../services/admin.service"));
 dotenv_1.default.config();
 const envLoginMila = process.env.LOGIN_MILA;
 const envPasswordMila = process.env.PASSWORD_MILA;
@@ -44,25 +68,22 @@ const adminResolvers = {
         },
         */
         isAdmin: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
-            // console.log(0, 'token blog', token, blog);
-            try {
-                const admin = yield db_1.default.Admin.findOne({ token });
-                // console.log(1, 'admin', admin);
-                if (admin.blogs.includes(blog)) {
-                    const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
-                    const success = {
-                        isAdmin: true,
-                        author: admin.name,
-                        blog: currentBlog,
-                    };
-                    const failed = { isAdmin: false, author: '', blog: '' };
-                    console.log(1, 'is admin in db:', success);
-                    return admin ? success : failed;
-                }
+            console.log(0, 'token, blog', token, blog);
+            const admin = yield adnimService.getAdminByToken(token);
+            if (admin && admin.blogs.includes(blog)) {
+                console.log(1, 'is admin in db:', admin);
+                const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
+                const success = {
+                    isAdmin: true,
+                    author: admin.name,
+                    blog: currentBlog,
+                };
+                console.log(1, 'success res:', success);
+                return success;
             }
-            catch (e) {
-                throw new Error(`Failed to check isAdmin: ${e}`);
-            }
+            else
+                console.log(0, 'no admin in db');
+            return { isAdmin: false, author: '', blog: '' };
         }),
     },
     Mutation: {
