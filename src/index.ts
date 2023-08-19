@@ -2,9 +2,9 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express from 'express';
 import cors from 'cors';
+import db from './db';
 import typeDefs from './gql/typeDefs';
 import resolvers from './gql/resolvers';
-import db from './db';
 
 const nodeEnv = process.env.NODE_ENV;
 const PORT = process.env.PORT || 4001;
