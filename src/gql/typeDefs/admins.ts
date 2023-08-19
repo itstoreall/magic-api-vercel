@@ -9,13 +9,13 @@ const adminTypeDefs = `#graphql
   type UpdateAdminResponse {
     token: String
     author: String
-    blog: [String]
+    blog: String
   }
 
   type IsAdminResponse {
     isAdmin: Boolean
     author: String
-    blog: [String]
+    blog: String
   }
 
   input AccessInput {
@@ -27,7 +27,7 @@ const adminTypeDefs = `#graphql
 
   type Query {
     #getAdmin(login: String!, password: String!): Access
-    isAdmin(token: String!): IsAdminResponse
+    isAdmin(token: String! blog: String!): IsAdminResponse
   }
 
   type Mutation {

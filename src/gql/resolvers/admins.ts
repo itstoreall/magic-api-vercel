@@ -5,6 +5,35 @@ import db from '../../db';
 
 dotenv.config();
 
+export interface IIsAdminArgs {
+  token: string;
+  blog: string;
+}
+
+export type IsAdminRes = Promise<IIsAdminResponse>;
+
+export interface IIsAdminResponse {
+  isAdmin: boolean;
+  author: string;
+  blog: string | null;
+}
+
+export interface IUpdateAdminInput {
+  input: { login: string; password: string; blog: string };
+}
+
+interface IAdminResolvers {
+  Query: {
+    isAdmin: (parent: any, args: IIsAdminArgs) => IsAdminRes;
+  };
+  // Mutation: {
+  //   updateAdmin: (
+  //     parent: any,
+  //     args: IUpdateAdminInput
+  //   ) => Promise<IUpdateAdminResponse>;
+  // };
+}
+
 const envLoginMila = process.env.LOGIN_MILA;
 const envPasswordMila = process.env.PASSWORD_MILA;
 const envLoginSerhii = process.env.LOGIN_SERHII;
@@ -33,21 +62,29 @@ const adminResolvers = {
     },
     */
 
-    isAdmin: async (_: any, { token }: { token: string }) => {
-      console.log(111);
+    isAdmin: async (_: any, { token, blog }: IIsAdminArgs): IsAdminRes => {
+      // console.log(0, 'token blog', token, blog);
+
       try {
         const admin = await db.Admin.findOne({ token });
 
-        console.log(1, {
-          isAdmin: true,
-          author: admin.name,
-          blog: admin.blogs,
-        });
-        // console.log(2, admin);
+        // console.log(1, 'admin', admin);
 
-        return admin
-          ? { isAdmin: true, author: admin.name, blog: admin.blogs }
-          : { isAdmin: false, author: '', blog: null };
+        if (admin.blogs.includes(blog)) {
+          const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
+
+          const success = {
+            isAdmin: true,
+            author: admin.name,
+            blog: currentBlog,
+          };
+
+          const failed = { isAdmin: false, author: '', blog: '' };
+
+          console.log(1, 'is admin in db:', success);
+
+          return admin ? success : failed;
+        }
       } catch (e) {
         throw new Error(`Failed to check isAdmin: ${e}`);
       }
@@ -55,7 +92,7 @@ const adminResolvers = {
   },
 
   Mutation: {
-    updateAdmin: async (_: any, { input }: any) => {
+    updateAdmin: async (_: any, { input }: IUpdateAdminInput) => {
       console.log(1, input);
       const { login, password, blog: source } = input;
 
@@ -97,7 +134,6 @@ const adminResolvers = {
         // -------------------- Update Admin:
 
         const admin = await getAdmin(admInput);
-        // const author = isMila ? 'Mila' : 'Serhii'
 
         if (admin?.length) {
           const accessInput = {
@@ -119,7 +155,7 @@ const adminResolvers = {
             return {
               token: admin[0].token,
               author: admin[0].name,
-              blog: admin[0].blogs,
+              blog: admin[0].blogs[0],
             };
           } else throw new Error('Admin update error!');
         } else console.log('No admin in db:', admin);
