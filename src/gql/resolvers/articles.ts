@@ -130,8 +130,6 @@ const articleResolvers = {
       // */
     },
   },
-
-  // Date: GraphQLDate,
 };
 
 export default articleResolvers;

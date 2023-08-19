@@ -139,7 +139,6 @@ const articleResolvers = {
             });
         },
     },
-    // Date: GraphQLDate,
 };
 exports.default = articleResolvers;
 //# sourceMappingURL=articles.js.map
