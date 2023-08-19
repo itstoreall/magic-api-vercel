@@ -2,6 +2,7 @@ import { getAdmin, getBlog } from './../utils/admin';
 import { v4 as uuid } from 'uuid';
 import dotenv from 'dotenv';
 import db from '../../db';
+import * as adnimService from '../../services/admin.service';
 
 dotenv.config();
 
@@ -63,31 +64,26 @@ const adminResolvers = {
     */
 
     isAdmin: async (_: any, { token, blog }: IIsAdminArgs): IsAdminRes => {
-      // console.log(0, 'token blog', token, blog);
+      console.log(0, 'token, blog', token, blog);
 
-      try {
-        const admin = await db.Admin.findOne({ token });
+      const admin = await adnimService.getAdminByToken(token);
 
-        // console.log(1, 'admin', admin);
+      if (admin && admin.blogs.includes(blog)) {
+        console.log(1, 'is admin in db:', admin);
+        const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
 
-        if (admin.blogs.includes(blog)) {
-          const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
+        const success = {
+          isAdmin: true,
+          author: admin.name,
+          blog: currentBlog,
+        };
 
-          const success = {
-            isAdmin: true,
-            author: admin.name,
-            blog: currentBlog,
-          };
+        console.log(1, 'success res:', success);
 
-          const failed = { isAdmin: false, author: '', blog: '' };
+        return success;
+      } else console.log(0, 'no admin in db');
 
-          console.log(1, 'is admin in db:', success);
-
-          return admin ? success : failed;
-        }
-      } catch (e) {
-        throw new Error(`Failed to check isAdmin: ${e}`);
-      }
+      return { isAdmin: false, author: '', blog: '' };
     },
   },
 
