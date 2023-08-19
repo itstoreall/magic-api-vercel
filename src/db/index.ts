@@ -18,23 +18,3 @@ const CurrentModel =
 // const CurrentModel = DevArticle;
 
 export default { Admin: models.Admin, CurrentModel, Blog: models.Blog };
-
-/*
-const AdminSchema = new mongoose.Schema({
-  login: String,
-  password: String,
-  token: String,
-  name: String,
-  blogs: [{ type: Schema.Types.ObjectId, ref: 'Blog' }] // Reference to Blog documents
-});
-
-const Admin = mongoose.model('Admin', AdminSchema);
-
-// Modify the Blog Schema
-const BlogSchema = new mongoose.Schema({
-  title: String,
-  authors: [{ type: Schema.Types.ObjectId, ref: 'Admin' }], // Reference to Admin documents
-});
-
-const Blog = mongoose.model('Blog', BlogSchema);
-*/

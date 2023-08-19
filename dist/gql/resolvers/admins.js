@@ -43,19 +43,22 @@ const adminResolvers = {
           }
         },
         */
-        isAdmin: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(111);
+        isAdmin: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
+            // console.log(0, 'token blog', token, blog);
             try {
                 const admin = yield db_1.default.Admin.findOne({ token });
-                console.log(1, {
-                    isAdmin: true,
-                    author: admin.name,
-                    blog: admin.blogs,
-                });
-                // console.log(2, admin);
-                return admin
-                    ? { isAdmin: true, author: admin.name, blog: admin.blogs }
-                    : { isAdmin: false, author: '', blog: null };
+                // console.log(1, 'admin', admin);
+                if (admin.blogs.includes(blog)) {
+                    const currentBlog = admin.blogs[admin.blogs.indexOf(blog)];
+                    const success = {
+                        isAdmin: true,
+                        author: admin.name,
+                        blog: currentBlog,
+                    };
+                    const failed = { isAdmin: false, author: '', blog: '' };
+                    console.log(1, 'is admin in db:', success);
+                    return admin ? success : failed;
+                }
             }
             catch (e) {
                 throw new Error(`Failed to check isAdmin: ${e}`);
@@ -95,7 +98,6 @@ const adminResolvers = {
                 console.log('currentBlog:', currentBlog);
                 // -------------------- Update Admin:
                 const admin = yield (0, admin_1.getAdmin)(admInput);
-                // const author = isMila ? 'Mila' : 'Serhii'
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
                     const accessInput = {
                         login,
@@ -110,7 +112,7 @@ const adminResolvers = {
                         return {
                             token: admin[0].token,
                             author: admin[0].name,
-                            blog: admin[0].blogs,
+                            blog: admin[0].blogs[0],
                         };
                     }
                     else

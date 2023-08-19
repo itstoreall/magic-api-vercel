@@ -17,23 +17,4 @@ const CurrentModel = process.env.NODE_ENV === 'production'
 // const CurrentModel = ProdArticle
 // const CurrentModel = DevArticle;
 exports.default = { Admin: modelHandler_1.default.Admin, CurrentModel, Blog: modelHandler_1.default.Blog };
-/*
-const AdminSchema = new mongoose.Schema({
-  login: String,
-  password: String,
-  token: String,
-  name: String,
-  blogs: [{ type: Schema.Types.ObjectId, ref: 'Blog' }] // Reference to Blog documents
-});
-
-const Admin = mongoose.model('Admin', AdminSchema);
-
-// Modify the Blog Schema
-const BlogSchema = new mongoose.Schema({
-  title: String,
-  authors: [{ type: Schema.Types.ObjectId, ref: 'Admin' }], // Reference to Admin documents
-});
-
-const Blog = mongoose.model('Blog', BlogSchema);
-*/
 //# sourceMappingURL=index.js.map
