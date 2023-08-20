@@ -1,8 +1,10 @@
-import { getAdmin, getBlog } from './../utils/admin';
+import { setCurrentBlog } from './../utils/blog';
+import { createAdmin, getAdminByCreds } from './../utils/admin';
 import { v4 as uuid } from 'uuid';
 import dotenv from 'dotenv';
 import db from '../../db';
 import * as adnimService from '../../services/admin.service';
+import * as blogService from '../../services/blog.service';
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ export type IsAdminRes = Promise<IIsAdminResponse>;
 export interface IIsAdminResponse {
   isAdmin: boolean;
   author: string;
-  blog: string | null;
+  blog: string;
 }
 
 export interface IUpdateAdminInput {
@@ -89,13 +91,11 @@ const adminResolvers = {
 
   Mutation: {
     updateAdmin: async (_: any, { input }: IUpdateAdminInput) => {
-      console.log(1, input);
-      const { login, password, blog: source } = input;
+      console.log('updateAdmin input', input);
 
-      const admInput = { login, password };
-      const blogInput = { source };
+      const { login, password, blog: title } = input;
 
-      console.log('login, password, blog:', login, password, source);
+      console.log('login, password, blog:', login, password, title);
 
       console.log('env access Mila:', envLoginMila, envPasswordMila);
       console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
@@ -105,31 +105,15 @@ const adminResolvers = {
 
       if (isMila || isSerhii) {
         const author = isMila ? 'Mila' : 'Serhii';
-        let currentBlog;
 
-        // -------------------- Create Blog:
+        // -------------------- Get or Create a Blog:
 
-        const blog = await getBlog(blogInput);
-
-        if (blog?.length) {
-          console.log('is blog', blog);
-          currentBlog = blog;
-        } else {
-          console.log('No blog in db:', blog);
-          const newBlog = new db.Blog({
-            title: source,
-            authors: [author],
-          });
-          const createdBlog = await newBlog.save();
-          console.log('createdBlog:', createdBlog);
-          currentBlog = createdBlog;
-        }
-
-        console.log('currentBlog:', currentBlog);
+        const currentBlog = await setCurrentBlog(title, [author]);
+        console.log(1, 'currentBlog:', currentBlog);
 
         // -------------------- Update Admin:
 
-        const admin = await getAdmin(admInput);
+        const admin = await getAdminByCreds(login, password);
 
         if (admin?.length) {
           const accessInput = {
@@ -146,7 +130,7 @@ const adminResolvers = {
           console.log('wasUpdated:', updatedAccess);
 
           if (updatedAccess) {
-            const admin = await getAdmin(admInput);
+            const admin = await getAdminByCreds(login, password);
 
             return {
               token: admin[0].token,
@@ -158,21 +142,17 @@ const adminResolvers = {
 
         // -------------------- Create Admin:
 
-        const createAccess = new db.Admin({
+        const createdAdmin = await createAdmin({
           login,
           password,
           token: uuid(),
           name: author,
-          blogs: [source],
+          blog: title,
         });
 
-        const access = await createAccess.save();
+        console.log(1, 'createdAdmin:', createdAdmin);
 
-        return {
-          token: access.token,
-          author: access.name,
-          blog: access.blogs,
-        };
+        return createdAdmin;
       } else throw new Error('Access denied!');
     },
   },

@@ -32,18 +32,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAdmin = exports.getAdminByCreds = void 0;
-const adminService = __importStar(require("../../services/admin.service"));
-const getAdminByCreds = (login, password) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.getAdminByCreds(login, password); });
-exports.getAdminByCreds = getAdminByCreds;
-const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
-    const newAdmin = yield adminService.createAdmin(args);
-    const successResponse = {
-        token: newAdmin.token,
-        author: newAdmin.name,
-        blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
-    };
-    return successResponse;
+exports.setCurrentBlog = exports.getBlogByTitle = void 0;
+const blogService = __importStar(require("../../services/blog.service"));
+const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
+exports.getBlogByTitle = getBlogByTitle;
+const setCurrentBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield blogService.getBlogByTitle(title);
+    console.log(1, `${(blog === null || blog === void 0 ? void 0 : blog.length) ? 'is' : 'no'} blog in db:`, blog);
+    return (blog === null || blog === void 0 ? void 0 : blog.length) ? blog : yield blogService.addNewBlog(title, author);
+    // if (blog?.length) {
+    //   console.log('is blog', blog);
+    //   return blog;
+    // } else {
+    //   console.log('No blog in db:', blog);
+    //   return await blogService.addNewBlog(title, [author]);
+    // }
 });
-exports.createAdmin = createAdmin;
-//# sourceMappingURL=admin.js.map
+exports.setCurrentBlog = setCurrentBlog;
+//# sourceMappingURL=blog.js.map
