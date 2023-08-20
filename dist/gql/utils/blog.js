@@ -31,22 +31,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setCurrentBlog = exports.getBlogByTitle = void 0;
+exports.handleBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
 const blogService = __importStar(require("../../services/blog.service"));
+dotenv_1.default.config();
+const existingBlogs = process.env.EXISTING_BLOGS;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
 exports.getBlogByTitle = getBlogByTitle;
-const setCurrentBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const blog = yield blogService.getBlogByTitle(title);
-    console.log(1, `${(blog === null || blog === void 0 ? void 0 : blog.length) ? 'is' : 'no'} blog in db:`, blog);
-    return (blog === null || blog === void 0 ? void 0 : blog.length) ? blog : yield blogService.addNewBlog(title, author);
-    // if (blog?.length) {
-    //   console.log('is blog', blog);
-    //   return blog;
-    // } else {
-    //   console.log('No blog in db:', blog);
-    //   return await blogService.addNewBlog(title, [author]);
-    // }
+const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
+    const newBlog = yield blogService.addNewBlog(title, author);
+    return newBlog;
 });
-exports.setCurrentBlog = setCurrentBlog;
+exports.createNewBlog = createNewBlog;
+const handleBlogs = (admin, title, accessInput) => existingBlogs
+    .split(' ')
+    .map(el => el)
+    .includes(title) && accessInput.blogs.push(title);
+exports.handleBlogs = handleBlogs;
 //# sourceMappingURL=blog.js.map
