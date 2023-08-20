@@ -33,3 +33,14 @@ export const createAdmin = async (args: ICreateAdminArgs) => {
     console.error(`Error in createAdmin: ${e.message}`);
   }
 };
+
+export const updateAdmin = async (admin: any, accessInput: any) => {
+  try {
+    const updatedAccess = (
+      await db.Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
+    ).modifiedCount;
+    return updatedAccess;
+  } catch (e) {
+    console.error(`Error in createAdmin: ${e.message}`);
+  }
+};

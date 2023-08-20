@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = void 0;
+exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Admin } = db_1.default;
 const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,4 +48,14 @@ const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.createAdmin = createAdmin;
+const updateAdmin = (admin, accessInput) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
+        return updatedAccess;
+    }
+    catch (e) {
+        console.error(`Error in createAdmin: ${e.message}`);
+    }
+});
+exports.updateAdmin = updateAdmin;
 //# sourceMappingURL=admin.service.js.map
