@@ -12,9 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAdminByToken = void 0;
+exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Admin } = db_1.default;
+const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const admin = yield Admin.find({ login, password: pass });
+        return admin;
+    }
+    catch (e) {
+        console.error(`Error in getAdminByCreds: ${e.message}`);
+    }
+});
+exports.getAdminByCreds = getAdminByCreds;
 const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const admin = yield Admin.findOne({ token });
@@ -25,4 +35,17 @@ const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getAdminByToken = getAdminByToken;
+const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
+    const { login, password, token, name, blog } = args;
+    const config = { login, password, token, name, blogs: [blog] };
+    try {
+        const newAdmin = new db_1.default.Admin(config);
+        const admin = yield newAdmin.save();
+        return admin;
+    }
+    catch (e) {
+        console.error(`Error in createAdmin: ${e.message}`);
+    }
+});
+exports.createAdmin = createAdmin;
 //# sourceMappingURL=admin.service.js.map
