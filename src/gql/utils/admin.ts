@@ -1,7 +1,17 @@
-import db from '../../db';
+import { ICreateAdminArgs } from '../../interfaces/admin';
+import * as adminService from '../../services/admin.service';
 
-export const getAdmin = async (input: { login: string; password: string }) =>
-  await db.Admin.find({ login: input.login, password: input.password });
+export const getAdminByCreds = async (login: string, password: string) =>
+  await adminService.getAdminByCreds(login, password);
 
-export const getBlog = async (input: { source: string }) =>
-  await db.Blog.find({ title: input.source });
+export const createAdmin = async (args: ICreateAdminArgs) => {
+  const newAdmin = await adminService.createAdmin(args);
+
+  const successResponse = {
+    token: newAdmin.token,
+    author: newAdmin.name,
+    blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
+  };
+
+  return successResponse;
+};

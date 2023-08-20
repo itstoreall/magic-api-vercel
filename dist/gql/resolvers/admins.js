@@ -35,6 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const blog_1 = require("./../utils/blog");
 const admin_1 = require("./../utils/admin");
 const uuid_1 = require("uuid");
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -88,37 +89,20 @@ const adminResolvers = {
     },
     Mutation: {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(1, input);
-            const { login, password, blog: source } = input;
-            const admInput = { login, password };
-            const blogInput = { source };
-            console.log('login, password, blog:', login, password, source);
+            console.log('updateAdmin input', input);
+            const { login, password, blog: title } = input;
+            console.log('login, password, blog:', login, password, title);
             console.log('env access Mila:', envLoginMila, envPasswordMila);
             console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
             const isMila = login == envLoginMila && password == envPasswordMila;
             const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
             if (isMila || isSerhii) {
                 const author = isMila ? 'Mila' : 'Serhii';
-                let currentBlog;
-                // -------------------- Create Blog:
-                const blog = yield (0, admin_1.getBlog)(blogInput);
-                if (blog === null || blog === void 0 ? void 0 : blog.length) {
-                    console.log('is blog', blog);
-                    currentBlog = blog;
-                }
-                else {
-                    console.log('No blog in db:', blog);
-                    const newBlog = new db_1.default.Blog({
-                        title: source,
-                        authors: [author],
-                    });
-                    const createdBlog = yield newBlog.save();
-                    console.log('createdBlog:', createdBlog);
-                    currentBlog = createdBlog;
-                }
-                console.log('currentBlog:', currentBlog);
+                // -------------------- Get or Create a Blog:
+                const currentBlog = yield (0, blog_1.setCurrentBlog)(title, [author]);
+                console.log(1, 'currentBlog:', currentBlog);
                 // -------------------- Update Admin:
-                const admin = yield (0, admin_1.getAdmin)(admInput);
+                const admin = yield (0, admin_1.getAdminByCreds)(login, password);
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
                     const accessInput = {
                         login,
@@ -129,7 +113,7 @@ const adminResolvers = {
                     const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
                     console.log('wasUpdated:', updatedAccess);
                     if (updatedAccess) {
-                        const admin = yield (0, admin_1.getAdmin)(admInput);
+                        const admin = yield (0, admin_1.getAdminByCreds)(login, password);
                         return {
                             token: admin[0].token,
                             author: admin[0].name,
@@ -142,19 +126,15 @@ const adminResolvers = {
                 else
                     console.log('No admin in db:', admin);
                 // -------------------- Create Admin:
-                const createAccess = new db_1.default.Admin({
+                const createdAdmin = yield (0, admin_1.createAdmin)({
                     login,
                     password,
                     token: (0, uuid_1.v4)(),
                     name: author,
-                    blogs: [source],
+                    blog: title,
                 });
-                const access = yield createAccess.save();
-                return {
-                    token: access.token,
-                    author: access.name,
-                    blog: access.blogs,
-                };
+                console.log(1, 'createdAdmin:', createdAdmin);
+                return createdAdmin;
             }
             else
                 throw new Error('Access denied!');
