@@ -1,10 +1,7 @@
-import { setCurrentBlog } from './../utils/blog';
-import { createAdmin, getAdminByCreds } from './../utils/admin';
 import { v4 as uuid } from 'uuid';
 import dotenv from 'dotenv';
-import db from '../../db';
-import * as adnimService from '../../services/admin.service';
-import * as blogService from '../../services/blog.service';
+import * as blogUtils from './../utils/blog';
+import * as adminUtils from './../utils/admin';
 
 dotenv.config();
 
@@ -25,6 +22,7 @@ export interface IUpdateAdminInput {
   input: { login: string; password: string; blog: string };
 }
 
+/*
 interface IAdminResolvers {
   Query: {
     isAdmin: (parent: any, args: IIsAdminArgs) => IsAdminRes;
@@ -36,11 +34,7 @@ interface IAdminResolvers {
   //   ) => Promise<IUpdateAdminResponse>;
   // };
 }
-
-const envLoginMila = process.env.LOGIN_MILA;
-const envPasswordMila = process.env.PASSWORD_MILA;
-const envLoginSerhii = process.env.LOGIN_SERHII;
-const envPasswordSerhii = process.env.PASSWORD_SERHII;
+*/
 
 const adminResolvers = {
   Query: {
@@ -68,7 +62,7 @@ const adminResolvers = {
     isAdmin: async (_: any, { token, blog }: IIsAdminArgs): IsAdminRes => {
       console.log(0, 'token, blog', token, blog);
 
-      const admin = await adnimService.getAdminByToken(token);
+      const admin = await adminUtils.getAdminByToken(token);
 
       if (admin && admin.blogs.includes(blog)) {
         console.log(1, 'is admin in db:', admin);
@@ -91,69 +85,70 @@ const adminResolvers = {
 
   Mutation: {
     updateAdmin: async (_: any, { input }: IUpdateAdminInput) => {
-      console.log('updateAdmin input', input);
+      console.log('input:', input);
 
       const { login, password, blog: title } = input;
 
-      console.log('login, password, blog:', login, password, title);
+      if (adminUtils.isGenAdmin(login, password)) {
+        const author = adminUtils.setAuthor(login, password);
+        let currentBlog;
 
-      console.log('env access Mila:', envLoginMila, envPasswordMila);
-      console.log('env access Serhii:', envLoginSerhii, envPasswordSerhii);
+        const blog = await blogUtils.getBlogByTitle(title);
 
-      const isMila = login == envLoginMila && password == envPasswordMila;
-      const isSerhii = login == envLoginSerhii && password == envPasswordSerhii;
+        // -------------------- Create a Blog:
 
-      if (isMila || isSerhii) {
-        const author = isMila ? 'Mila' : 'Serhii';
+        if (!blog?.length) {
+          if (adminUtils.isMasterAdmin(login, password)) {
+            currentBlog = await blogUtils.createNewBlog(title, [author]);
+          } else throw new Error('Access denied! (not a master)');
+        } else currentBlog = blog;
 
-        // -------------------- Get or Create a Blog:
-
-        const currentBlog = await setCurrentBlog(title, [author]);
         console.log(1, 'currentBlog:', currentBlog);
 
         // -------------------- Update Admin:
 
-        const admin = await getAdminByCreds(login, password);
+        const admin = await adminUtils.getAdminByCreds(login, password);
 
         if (admin?.length) {
           const accessInput = {
             login,
             password,
             token: uuid(),
-            name: author,
+            name: admin[0].name,
+            blogs: admin[0].blogs,
           };
 
-          const updatedAccess = (
-            await db.Admin.updateOne({ _id: admin[0]._id }, { ...accessInput })
-          ).modifiedCount;
+          if (adminUtils.isMasterAdmin(login, password))
+            !admin[0].blogs.includes(title) &&
+              blogUtils.handleBlogs(admin, title, accessInput);
 
-          console.log('wasUpdated:', updatedAccess);
+          const updatedAdmin = await adminUtils.updateAdmin(
+            admin,
+            accessInput,
+            input
+          );
 
-          if (updatedAccess) {
-            const admin = await getAdminByCreds(login, password);
+          console.log(1, 'updatedAdmin:', updatedAdmin);
 
-            return {
-              token: admin[0].token,
-              author: admin[0].name,
-              blog: admin[0].blogs[0],
-            };
-          } else throw new Error('Admin update error!');
-        } else console.log('No admin in db:', admin);
+          return updatedAdmin;
+        } else console.log('no admin in db:', admin);
 
         // -------------------- Create Admin:
 
-        const createdAdmin = await createAdmin({
-          login,
-          password,
-          token: uuid(),
-          name: author,
-          blog: title,
-        });
+        if (adminUtils.isMasterAdmin(login, password)) {
+          const createdAdmin = await adminUtils.createAdmin({
+            login,
+            password,
+            token: uuid(),
+            name: author,
+            blog: title,
+          });
 
-        console.log(1, 'createdAdmin:', createdAdmin);
+          console.log(1, 'createdAdmin:', createdAdmin);
 
-        return createdAdmin;
-      } else throw new Error('Access denied!');
+          return createdAdmin;
+        } else throw new Error('Access denied! (not a master)');
+      } else throw new Error('Access denied! (wrong creds)');
     },
   },
 };
