@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addNewBlog = exports.getBlogByTitle = void 0;
+exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Blog } = db_1.default;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,4 +36,15 @@ const addNewBlog = (title, authors) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.addNewBlog = addNewBlog;
+const updateBlog = (blog, blogInput) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield Blog.updateOne({ _id: blog[0]._id }, Object.assign({}, blogInput));
+        const updatedBlog = yield (0, exports.getBlogByTitle)(blog[0].title);
+        return updatedBlog;
+    }
+    catch (e) {
+        console.error(`Error in updateBlogAuthors: ${e.message}`);
+    }
+});
+exports.updateBlog = updateBlog;
 //# sourceMappingURL=blog.service.js.map

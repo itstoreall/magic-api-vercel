@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.setAuthor = exports.isGenAdmin = exports.isAstrAdmin = exports.isMasterAdmin = void 0;
+exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.isAdminByToken = exports.setAuthor = exports.isGenAdmin = exports.isAstrAdmin = exports.isMasterAdmin = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const adminService = __importStar(require("../../services/admin.service"));
 dotenv_1.default.config();
@@ -55,6 +55,8 @@ const setAuthor = (login, pass) => (0, exports.isMasterAdmin)(login, pass)
         ? nameAstr
         : '';
 exports.setAuthor = setAuthor;
+const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.isAdminByToken(token); });
+exports.isAdminByToken = isAdminByToken;
 const getAdminByCreds = (login, password) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.getAdminByCreds(login, password); });
 exports.getAdminByCreds = getAdminByCreds;
 const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.getAdminByToken(token); });
@@ -63,8 +65,9 @@ const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
     const newAdmin = yield adminService.createAdmin(args);
     const successResponse = {
         token: newAdmin.token,
-        author: newAdmin.name,
-        blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
+        name: newAdmin.name,
+        blogs: newAdmin.blogs,
+        // blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
     };
     return successResponse;
 });

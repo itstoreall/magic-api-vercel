@@ -95,6 +95,49 @@ const adminResolvers = {
         }),
     },
     Mutation: {
+        addAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('input:', input);
+            const { blog: title, author, login, password, token } = input;
+            const isMaster = yield adminUtils.isAdminByToken(token);
+            if (isMaster) {
+                const admin = yield adminUtils.getAdminByCreds(login, password);
+                const blog = yield blogUtils.getBlogByTitle(title);
+                // -------------------- Create new Admin:
+                if (!(admin === null || admin === void 0 ? void 0 : admin.length)) {
+                    if (blog === null || blog === void 0 ? void 0 : blog.length) {
+                        if (!blog[0].authors.includes(author)) {
+                            const createdAdmin = yield adminUtils.createAdmin({
+                                blog: title,
+                                name: author,
+                                login,
+                                password,
+                                token: '',
+                            });
+                            console.log(1, 'createdAdmin:', createdAdmin);
+                            const authors = [...blog[0].authors, author];
+                            // const authors = ['Serhii'];
+                            const blogInput = {
+                                title: blog[0].title,
+                                authors,
+                            };
+                            const coauthors = yield blogUtils.updateCoauthors(blog, blogInput);
+                            const res = {
+                                name: createdAdmin.name,
+                                blogs: createdAdmin.blogs,
+                                coauthors,
+                            };
+                            return res;
+                        }
+                        else
+                            throw new Error(`${author} already exists in coauthors`);
+                    }
+                    else
+                        throw new Error('no blog in db');
+                }
+                else
+                    throw new Error('Admin already exists in db (Dublicate)');
+            }
+        }),
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('input:', input);
             const { login, password, blog: title } = input;

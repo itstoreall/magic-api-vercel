@@ -12,9 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = void 0;
+exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.isAdminByToken = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Admin } = db_1.default;
+const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const admin = yield Admin.find({ token });
+        return Boolean(admin === null || admin === void 0 ? void 0 : admin.length);
+    }
+    catch (e) {
+        console.error(`Error in isAdminByToken: ${e.message}`);
+    }
+});
+exports.isAdminByToken = isAdminByToken;
 const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const admin = yield Admin.find({ login, password: pass });
