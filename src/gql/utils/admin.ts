@@ -25,6 +25,9 @@ export const setAuthor = (login: string, pass: string) =>
     ? nameAstr
     : '';
 
+export const isAdminByToken = async (token: string) =>
+  await adminService.isAdminByToken(token);
+
 export const getAdminByCreds = async (login: string, password: string) =>
   await adminService.getAdminByCreds(login, password);
 
@@ -36,8 +39,9 @@ export const createAdmin = async (args: ICreateAdminArgs) => {
 
   const successResponse = {
     token: newAdmin.token,
-    author: newAdmin.name,
-    blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
+    name: newAdmin.name,
+    blogs: newAdmin.blogs,
+    // blog: newAdmin.blogs[newAdmin.blogs.indexOf(args.blog)],
   };
 
   return successResponse;

@@ -18,3 +18,8 @@ export const handleBlogs = (admin: any, title: string, accessInput: any) =>
     .split(' ')
     .map(el => el)
     .includes(title) && accessInput.blogs.push(title);
+
+export const updateCoauthors = async (blog: any, blogInput: any) => {
+  const updatedBlog = await blogService.updateBlog(blog, blogInput);
+  return updatedBlog[0].authors;
+};
