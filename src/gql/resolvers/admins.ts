@@ -18,6 +18,16 @@ export interface IIsAdminResponse {
   blog: string;
 }
 
+export interface IAddAdminInput {
+  input: {
+    blog: string;
+    author: string;
+    login: string;
+    password: string;
+    token: string;
+  };
+}
+
 export interface IUpdateAdminInput {
   input: { login: string; password: string; blog: string };
 }
@@ -84,6 +94,58 @@ const adminResolvers = {
   },
 
   Mutation: {
+    addAdmin: async (_: any, { input }: IAddAdminInput) => {
+      console.log('input:', input);
+
+      const { blog: title, author, login, password, token } = input;
+
+      const isMaster = await adminUtils.isAdminByToken(token);
+
+      if (isMaster) {
+        const admin = await adminUtils.getAdminByCreds(login, password);
+        const blog = await blogUtils.getBlogByTitle(title);
+
+        // -------------------- Create new Admin:
+
+        if (!admin?.length) {
+          if (blog?.length) {
+            if (!blog[0].authors.includes(author)) {
+              const createdAdmin = await adminUtils.createAdmin({
+                blog: title,
+                name: author,
+                login,
+                password,
+                token: '',
+              });
+
+              console.log(1, 'createdAdmin:', createdAdmin);
+
+              const authors = [...blog[0].authors, author];
+              // const authors = ['Serhii'];
+
+              const blogInput = {
+                title: blog[0].title,
+                authors,
+              };
+
+              const coauthors = await blogUtils.updateCoauthors(
+                blog,
+                blogInput
+              );
+
+              const res = {
+                name: createdAdmin.name,
+                blogs: createdAdmin.blogs,
+                coauthors,
+              };
+
+              return res;
+            } else throw new Error(`${author} already exists in coauthors`);
+          } else throw new Error('no blog in db');
+        } else throw new Error('Admin already exists in db (Dublicate)');
+      }
+    },
+
     updateAdmin: async (_: any, { input }: IUpdateAdminInput) => {
       console.log('input:', input);
 

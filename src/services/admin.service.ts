@@ -3,6 +3,15 @@ import db from '../db';
 
 const { Admin } = db;
 
+export const isAdminByToken = async (token: string) => {
+  try {
+    const admin = await Admin.find({ token });
+    return Boolean(admin?.length);
+  } catch (e) {
+    console.error(`Error in isAdminByToken: ${e.message}`);
+  }
+};
+
 export const getAdminByCreds = async (login: string, pass: string) => {
   try {
     const admin = await Admin.find({ login, password: pass });

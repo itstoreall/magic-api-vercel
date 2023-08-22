@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.updateCoauthors = exports.handleBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const blogService = __importStar(require("../../services/blog.service"));
 dotenv_1.default.config();
@@ -52,4 +52,9 @@ const handleBlogs = (admin, title, accessInput) => existingBlogs
     .map(el => el)
     .includes(title) && accessInput.blogs.push(title);
 exports.handleBlogs = handleBlogs;
+const updateCoauthors = (blog, blogInput) => __awaiter(void 0, void 0, void 0, function* () {
+    const updatedBlog = yield blogService.updateBlog(blog, blogInput);
+    return updatedBlog[0].authors;
+});
+exports.updateCoauthors = updateCoauthors;
 //# sourceMappingURL=blog.js.map
