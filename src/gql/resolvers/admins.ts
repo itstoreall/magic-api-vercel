@@ -105,11 +105,24 @@ const adminResolvers = {
         const admin = await adminUtils.getAdminByCreds(login, password);
         const blog = await blogUtils.getBlogByTitle(title);
 
+        const isAdmin = adminUtils
+          .adminConfig()
+          .find(
+            adm =>
+              adm.name === author &&
+              adm.login === login &&
+              adm.password === password
+          );
+
         // -------------------- Create new Admin:
+
+        console.log('isAdmin', isAdmin);
 
         if (!admin?.length) {
           if (blog?.length) {
             if (!blog[0].authors.includes(author)) {
+              if (!isAdmin) throw new Error(`Admin creds does not match`);
+
               const createdAdmin = await adminUtils.createAdmin({
                 blog: title,
                 name: author,
@@ -161,7 +174,7 @@ const adminResolvers = {
 
         if (!blog?.length) {
           if (adminUtils.isMasterAdmin(login, password)) {
-            currentBlog = await blogUtils.createNewBlog(title, [author]);
+            currentBlog = await blogUtils.createNewBlog(title, [author?.name]);
           } else throw new Error('Access denied! (not a master)');
         } else currentBlog = blog;
 
@@ -170,6 +183,8 @@ const adminResolvers = {
         // -------------------- Update Admin:
 
         const admin = await adminUtils.getAdminByCreds(login, password);
+
+        console.log('--->', admin);
 
         if (admin?.length) {
           const accessInput = {
@@ -202,7 +217,7 @@ const adminResolvers = {
             login,
             password,
             token: uuid(),
-            name: author,
+            name: author?.name,
             blog: title,
           });
 

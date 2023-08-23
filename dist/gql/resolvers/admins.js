@@ -102,10 +102,18 @@ const adminResolvers = {
             if (isMaster) {
                 const admin = yield adminUtils.getAdminByCreds(login, password);
                 const blog = yield blogUtils.getBlogByTitle(title);
+                const isAdmin = adminUtils
+                    .adminConfig()
+                    .find(adm => adm.name === author &&
+                    adm.login === login &&
+                    adm.password === password);
                 // -------------------- Create new Admin:
+                console.log('isAdmin', isAdmin);
                 if (!(admin === null || admin === void 0 ? void 0 : admin.length)) {
                     if (blog === null || blog === void 0 ? void 0 : blog.length) {
                         if (!blog[0].authors.includes(author)) {
+                            if (!isAdmin)
+                                throw new Error(`Admin creds does not match`);
                             const createdAdmin = yield adminUtils.createAdmin({
                                 blog: title,
                                 name: author,
@@ -148,7 +156,7 @@ const adminResolvers = {
                 // -------------------- Create a Blog:
                 if (!(blog === null || blog === void 0 ? void 0 : blog.length)) {
                     if (adminUtils.isMasterAdmin(login, password)) {
-                        currentBlog = yield blogUtils.createNewBlog(title, [author]);
+                        currentBlog = yield blogUtils.createNewBlog(title, [author === null || author === void 0 ? void 0 : author.name]);
                     }
                     else
                         throw new Error('Access denied! (not a master)');
@@ -158,6 +166,7 @@ const adminResolvers = {
                 console.log(1, 'currentBlog:', currentBlog);
                 // -------------------- Update Admin:
                 const admin = yield adminUtils.getAdminByCreds(login, password);
+                console.log('--->', admin);
                 if (admin === null || admin === void 0 ? void 0 : admin.length) {
                     const accessInput = {
                         login,
@@ -181,7 +190,7 @@ const adminResolvers = {
                         login,
                         password,
                         token: (0, uuid_1.v4)(),
-                        name: author,
+                        name: author === null || author === void 0 ? void 0 : author.name,
                         blog: title,
                     });
                     console.log(1, 'createdAdmin:', createdAdmin);
