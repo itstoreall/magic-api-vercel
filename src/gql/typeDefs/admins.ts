@@ -14,8 +14,8 @@ const adminTypeDefs = `#graphql
 
   type UpdateAdminResponse {
     token: String
-    author: String
-    blog: String
+    name: String
+    blogs: [String]
   }
 
   type IsAdminResponse {
