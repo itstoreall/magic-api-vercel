@@ -31,36 +31,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCoauthors = exports.pushToAuthorBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
-const dotenv_1 = __importDefault(require("dotenv"));
-const blogService = __importStar(require("../../services/blog.service"));
-dotenv_1.default.config();
-const existingBlogs = process.env.EXISTING_BLOGS;
-const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
-exports.getBlogByTitle = getBlogByTitle;
-const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const newBlog = yield blogService.addNewBlog(title, author);
-    if (newBlog) {
-        console.log('+ new blog has been created:', Boolean(newBlog));
-        return newBlog;
+const adminUtils = __importStar(require("../../utils/admin"));
+const isAdmin = (title, token) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* isAdmin', title, token);
+    const admin = yield adminUtils.getAdminByToken(token);
+    if (admin && admin.blogs.includes(title)) {
+        const currentBlog = admin.blogs[admin.blogs.indexOf(title)];
+        const success = {
+            isAdmin: true,
+            author: admin.name,
+            blog: currentBlog,
+        };
+        console.log(1, 'response:', success);
+        return success;
     }
+    else
+        console.log(0, 'no admin in db');
+    return { isAdmin: false, author: '', blog: '' };
 });
-exports.createNewBlog = createNewBlog;
-const pushToAuthorBlogs = (title, accessInput) => existingBlogs
-    .split(' ')
-    .map(el => el)
-    .includes(title) && accessInput.blogs.push(title);
-exports.pushToAuthorBlogs = pushToAuthorBlogs;
-const updateCoauthors = (blog, blogInput) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedBlog = yield blogService.updateBlog(blog, blogInput);
-    if (updatedBlog) {
-        console.log('+ blog has been updated:', Boolean(updatedBlog));
-        return updatedBlog[0].authors;
-    }
-});
-exports.updateCoauthors = updateCoauthors;
-//# sourceMappingURL=blog.js.map
+exports.default = isAdmin;
+//# sourceMappingURL=isAdmin.js.map

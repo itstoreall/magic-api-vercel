@@ -16,8 +16,9 @@ exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.ge
 const db_1 = __importDefault(require("../db"));
 const { Admin } = db_1.default;
 const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const config = { token };
     try {
-        const admin = yield Admin.find({ token });
+        const admin = yield Admin.find(config).select('-__v').exec();
         return Boolean(admin === null || admin === void 0 ? void 0 : admin.length);
     }
     catch (e) {
@@ -26,8 +27,9 @@ const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.isAdminByToken = isAdminByToken;
 const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, function* () {
+    const config = { login, password: pass };
     try {
-        const admin = yield Admin.find({ login, password: pass });
+        const admin = yield Admin.find(config).select('-__v').exec();
         return admin;
     }
     catch (e) {
@@ -36,8 +38,9 @@ const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.getAdminByCreds = getAdminByCreds;
 const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const config = { token };
     try {
-        const admin = yield Admin.findOne({ token });
+        const admin = yield Admin.findOne(config).select('-__v').exec();
         return admin;
     }
     catch (e) {
@@ -49,7 +52,7 @@ const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, password, token, name, blog } = args;
     const config = { login, password, token, name, blogs: [blog] };
     try {
-        const newAdmin = new db_1.default.Admin(config);
+        const newAdmin = new Admin(config);
         const admin = yield newAdmin.save();
         return admin;
     }
@@ -60,7 +63,7 @@ const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
 exports.createAdmin = createAdmin;
 const updateAdmin = (admin, accessInput) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedAccess = (yield db_1.default.Admin.updateOne({ _id: admin[0]._id }, Object.assign({}, accessInput))).modifiedCount;
+        const updatedAccess = (yield Admin.updateOne({ _id: admin._id }, Object.assign({}, accessInput))).modifiedCount;
         return updatedAccess;
     }
     catch (e) {
