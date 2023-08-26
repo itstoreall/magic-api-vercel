@@ -1,10 +1,10 @@
 import { GraphQLDate } from 'graphql-iso-date';
-import admins from './admins';
+import admin from './admin';
 import articles from './articles';
 
 const resolvers = {
-  Query: { ...admins.Query, ...articles.Query },
-  Mutation: { ...admins.Mutation, ...articles.Mutation },
+  Query: { ...admin.Query, ...articles.Query },
+  Mutation: { ...admin.Mutation, ...articles.Mutation },
   Date: GraphQLDate,
 };
 

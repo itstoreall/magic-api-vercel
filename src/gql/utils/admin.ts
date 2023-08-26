@@ -1,14 +1,9 @@
 import dotenv from 'dotenv';
-import { ICreateAdminArgs } from '../../interfaces/admin';
+import * as ia from '../../interfaces/admin';
 import * as adminService from '../../services/admin.service';
 
 dotenv.config();
 
-// const masterCreds = process.env.CREDS_MASTER;
-// const astrCreds = process.env.CREDS_ASTR;
-// const nameMaster = process.env.AUTHOR_NAME_MASTER;
-// const nameAstr = process.env.CREDS_ASTR;
-// const admins = process.env.ADMINS;
 const adminsCreds = process.env.ADMIN_CREDS;
 
 export const adminConfig = () =>
@@ -43,25 +38,33 @@ export const getAdminByCreds = async (login: string, password: string) =>
 export const getAdminByToken = async (token: string) =>
   await adminService.getAdminByToken(token);
 
-export const createAdmin = async (args: ICreateAdminArgs) => {
+export const createAdmin = async (args: ia.ICreateAdminArgs) => {
   const newAdmin = await adminService.createAdmin(args);
 
-  const successResponse = {
-    token: newAdmin.token,
-    name: newAdmin.name,
-    blogs: newAdmin.blogs,
-  };
+  if (newAdmin) {
+    console.log('+ new admin has been creater:', Boolean(newAdmin));
 
-  return successResponse;
+    const successResponse = {
+      token: newAdmin.token,
+      name: newAdmin.name,
+      blogs: newAdmin.blogs,
+    };
+
+    return successResponse;
+  }
 };
 
-export const updateAdmin = async (admin: any, accessInput: any, input: any) => {
+export const updateAdmin = async (
+  admin: ia.IAdmin,
+  accessInput: ia.IAccessInput,
+  input: ia.IUpdateAdminInputProps
+) => {
   const { login, password } = input;
   const updatedAccess = await adminService.updateAdmin(admin, accessInput);
 
-  console.log('wasUpdated:', updatedAccess);
-
   if (updatedAccess) {
+    console.log('+ admin has been updated:', Boolean(updatedAccess));
+
     const admin = await getAdminByCreds(login, password);
 
     const successResponse = {

@@ -39,11 +39,6 @@ exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.ge
 const dotenv_1 = __importDefault(require("dotenv"));
 const adminService = __importStar(require("../../services/admin.service"));
 dotenv_1.default.config();
-// const masterCreds = process.env.CREDS_MASTER;
-// const astrCreds = process.env.CREDS_ASTR;
-// const nameMaster = process.env.AUTHOR_NAME_MASTER;
-// const nameAstr = process.env.CREDS_ASTR;
-// const admins = process.env.ADMINS;
 const adminsCreds = process.env.ADMIN_CREDS;
 const adminConfig = () => adminsCreds.split(' ').map(el => {
     const admin = el.split('#');
@@ -68,19 +63,22 @@ const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* (
 exports.getAdminByToken = getAdminByToken;
 const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
     const newAdmin = yield adminService.createAdmin(args);
-    const successResponse = {
-        token: newAdmin.token,
-        name: newAdmin.name,
-        blogs: newAdmin.blogs,
-    };
-    return successResponse;
+    if (newAdmin) {
+        console.log('+ new admin has been creater:', Boolean(newAdmin));
+        const successResponse = {
+            token: newAdmin.token,
+            name: newAdmin.name,
+            blogs: newAdmin.blogs,
+        };
+        return successResponse;
+    }
 });
 exports.createAdmin = createAdmin;
 const updateAdmin = (admin, accessInput, input) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, password } = input;
     const updatedAccess = yield adminService.updateAdmin(admin, accessInput);
-    console.log('wasUpdated:', updatedAccess);
     if (updatedAccess) {
+        console.log('+ admin has been updated:', Boolean(updatedAccess));
         const admin = yield (0, exports.getAdminByCreds)(login, password);
         const successResponse = {
             token: admin[0].token,

@@ -10,10 +10,14 @@ export const getBlogByTitle = async (title: string) =>
 
 export const createNewBlog = async (title: string, author: string[]) => {
   const newBlog = await blogService.addNewBlog(title, author);
-  return newBlog;
+
+  if (newBlog) {
+    console.log('+ new blog has been created:', Boolean(newBlog));
+    return newBlog;
+  }
 };
 
-export const handleBlogs = (admin: any, title: string, accessInput: any) =>
+export const pushToAuthorBlogs = (title: string, accessInput: any) =>
   existingBlogs
     .split(' ')
     .map(el => el)
@@ -21,5 +25,9 @@ export const handleBlogs = (admin: any, title: string, accessInput: any) =>
 
 export const updateCoauthors = async (blog: any, blogInput: any) => {
   const updatedBlog = await blogService.updateBlog(blog, blogInput);
-  return updatedBlog[0].authors;
+
+  if (updatedBlog) {
+    console.log('+ blog has been updated:', Boolean(updatedBlog));
+    return updatedBlog[0].authors;
+  }
 };
