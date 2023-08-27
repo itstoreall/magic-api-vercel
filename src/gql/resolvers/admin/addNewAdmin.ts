@@ -13,7 +13,8 @@ const isAdmin = (author: string, login: string, pass: string) =>
 const addNewAdmin = async (input: IAddAdminInput) => {
   console.log('* addNewAdmin:', input);
 
-  const { blog: title, author, login, password, token } = input;
+  const { blog: title, author, credentials, token } = input;
+  const { login, password } = credentials;
 
   const isMaster = await adminUtils.isAdminByToken(token);
 
@@ -30,8 +31,6 @@ const addNewAdmin = async (input: IAddAdminInput) => {
           const createdAdmin = await adminUtils.createAdmin({
             blog: title,
             name: author,
-            login,
-            password,
             token: '',
           });
 

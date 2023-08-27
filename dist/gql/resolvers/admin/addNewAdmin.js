@@ -40,7 +40,8 @@ const isAdmin = (author, login, pass) => adminUtils
     .find(adm => adm.name === author && adm.login === login && adm.password === pass);
 const addNewAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* addNewAdmin:', input);
-    const { blog: title, author, login, password, token } = input;
+    const { blog: title, author, credentials, token } = input;
+    const { login, password } = credentials;
     const isMaster = yield adminUtils.isAdminByToken(token);
     if (isMaster) {
         const admin = yield adminUtils.getAdminByCreds(login, password);
@@ -53,8 +54,6 @@ const addNewAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () {
                     const createdAdmin = yield adminUtils.createAdmin({
                         blog: title,
                         name: author,
-                        login,
-                        password,
                         token: '',
                     });
                     const authors = [...blog[0].authors, author];

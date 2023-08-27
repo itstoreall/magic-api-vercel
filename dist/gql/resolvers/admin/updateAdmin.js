@@ -38,7 +38,8 @@ const adminUtils = __importStar(require("../../utils/admin"));
 const utils = __importStar(require("../../../utils"));
 const createBlog = (props) => __awaiter(void 0, void 0, void 0, function* () {
     const { blog, input, author } = props;
-    const { login, password, blog: title } = input;
+    const { credentials, blog: title } = input;
+    const { login, password } = credentials;
     const createNewBlog = () => __awaiter(void 0, void 0, void 0, function* () {
         yield blogUtils.createNewBlog(title, [author === null || author === void 0 ? void 0 : author.name]);
     });
@@ -49,11 +50,10 @@ const createBlog = (props) => __awaiter(void 0, void 0, void 0, function* () {
         : console.log('- blog already exists in db');
 });
 const createAdmin = (input, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const { login, password, blog: title } = input;
+    const { credentials, blog: title } = input;
+    const { login, password } = credentials;
     if (adminUtils.isMasterAdmin(login, password)) {
         const createdAdmin = yield adminUtils.createAdmin({
-            login,
-            password,
             token: (0, uuid_1.v4)(),
             name: author === null || author === void 0 ? void 0 : author.name,
             blog: title,
@@ -64,14 +64,9 @@ const createAdmin = (input, author) => __awaiter(void 0, void 0, void 0, functio
         utils.throwNewError('Access denied! (not a master)');
 });
 const updateAdmin = (input, admin) => __awaiter(void 0, void 0, void 0, function* () {
-    const { login, password, blog: title } = input;
-    const accessInput = {
-        login,
-        password,
-        token: (0, uuid_1.v4)(),
-        name: admin.name,
-        blogs: admin.blogs,
-    };
+    const { credentials, blog: title } = input;
+    const { login, password } = credentials;
+    const accessInput = { token: (0, uuid_1.v4)(), name: admin.name, blogs: admin.blogs };
     const isMaster = adminUtils.isMasterAdmin(login, password);
     // ------------- Add new blog to blogs (for Master):
     if (isMaster)
@@ -85,7 +80,8 @@ const updateAdmin = (input, admin) => __awaiter(void 0, void 0, void 0, function
 });
 const updateAdminHandler = (input) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* updateAdmin input:', input);
-    const { login, password, blog: title } = input;
+    const { credentials, blog: title } = input;
+    const { login, password } = credentials;
     if (adminUtils.isGenAdmin(login, password)) {
         const author = adminUtils.setAuthor(login, password);
         const blog = yield blogUtils.getBlogByTitle(title);

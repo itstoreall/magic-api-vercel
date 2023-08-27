@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 
 export interface IAdminCreds {
-  login: string;
-  password: string;
   token: string;
   name: string;
 }
@@ -33,14 +31,12 @@ export interface IIsAdminResponse {
 export interface IAddAdminInput {
   blog: string;
   author: string;
-  login: string;
-  password: string;
+  credentials: { login: string; password: string };
   token: string;
 }
 
 export interface IUpdateAdminInputProps {
-  login: string;
-  password: string;
+  credentials: { login: string; password: string };
   blog: string;
 }
 
