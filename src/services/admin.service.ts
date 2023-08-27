@@ -13,8 +13,8 @@ export const isAdminByToken = async (token: string) => {
   }
 };
 
-export const getAdminByCreds = async (login: string, pass: string) => {
-  const config = { login, password: pass };
+export const getAdminByCreds = async (name: string) => {
+  const config = { name };
   try {
     const admin = await Admin.find(config).select('-__v').exec();
     return admin;
@@ -34,8 +34,8 @@ export const getAdminByToken = async (token: string) => {
 };
 
 export const createAdmin = async (args: ICreateAdminArgs) => {
-  const { login, password, token, name, blog } = args;
-  const config = { login, password, token, name, blogs: [blog] };
+  const { token, name, blog } = args;
+  const config = { token, name, blogs: [blog] };
   try {
     const newAdmin = new Admin(config);
     const admin = await newAdmin.save();

@@ -2,10 +2,32 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const adminTypeDefs = `#graphql
   type Access {
-    login: String
-    password: String
     token: String
     name: String
+  }
+
+  input CredentialsInput {
+    login: String
+    password: String
+  }
+
+  input AddAuthorInput {
+    blog: String
+    author: String
+    credentials: CredentialsInput
+    token: String
+  }
+
+  input AccessInput {
+    blog: String
+    credentials: CredentialsInput
+    token: String
+  }
+
+  type IsAdminResponse {
+    isAdmin: Boolean
+    author: String
+    blog: String
   }
 
   type AddAdminResponse {
@@ -19,27 +41,6 @@ const adminTypeDefs = `#graphql
     name: String
     blogs: [String]
   }
-
-  type IsAdminResponse {
-    isAdmin: Boolean
-    author: String
-    blog: String
-  }
-
-  input AddAuthorInput {
-    blog: String
-    author: String
-    login: String
-    password: String
-    token: String
-  }
-
-  input AccessInput {
-    blog: String
-    login: String
-    password: String
-    token: String
-  }
   
   type Query {
     #getAdmin(login: String!, password: String!): Access
@@ -49,6 +50,7 @@ const adminTypeDefs = `#graphql
   type Mutation {
     addAdmin(input: AddAuthorInput): AddAdminResponse
     updateAdmin(input: AccessInput): UpdateAdminResponse
+    deleteAdmin(ID: ID!): Boolean
   }
 `;
 exports.default = adminTypeDefs;

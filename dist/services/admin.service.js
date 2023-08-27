@@ -26,8 +26,8 @@ const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.isAdminByToken = isAdminByToken;
-const getAdminByCreds = (login, pass) => __awaiter(void 0, void 0, void 0, function* () {
-    const config = { login, password: pass };
+const getAdminByCreds = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    const config = { name };
     try {
         const admin = yield Admin.find(config).select('-__v').exec();
         return admin;
@@ -49,8 +49,8 @@ const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.getAdminByToken = getAdminByToken;
 const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
-    const { login, password, token, name, blog } = args;
-    const config = { login, password, token, name, blogs: [blog] };
+    const { token, name, blog } = args;
+    const config = { token, name, blogs: [blog] };
     try {
         const newAdmin = new Admin(config);
         const admin = yield newAdmin.save();

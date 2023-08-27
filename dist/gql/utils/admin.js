@@ -57,7 +57,10 @@ const setAuthor = (login, pass) => (0, exports.adminConfig)().find(adm => adm.lo
 exports.setAuthor = setAuthor;
 const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.isAdminByToken(token); });
 exports.isAdminByToken = isAdminByToken;
-const getAdminByCreds = (login, password) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.getAdminByCreds(login, password); });
+const getAdminByCreds = (login, password) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = (0, exports.setAuthor)(login, password).name;
+    return yield adminService.getAdminByCreds(name);
+});
 exports.getAdminByCreds = getAdminByCreds;
 const getAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.getAdminByToken(token); });
 exports.getAdminByToken = getAdminByToken;
@@ -75,7 +78,7 @@ const createAdmin = (args) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.createAdmin = createAdmin;
 const updateAdmin = (admin, accessInput, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const { login, password } = input;
+    const { credentials: { login, password }, } = input;
     const updatedAccess = yield adminService.updateAdmin(admin, accessInput);
     if (updatedAccess) {
         console.log('+ admin has been updated:', Boolean(updatedAccess));
