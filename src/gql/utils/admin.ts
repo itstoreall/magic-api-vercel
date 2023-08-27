@@ -32,8 +32,10 @@ export const setAuthor = (login: string, pass: string) =>
 export const isAdminByToken = async (token: string) =>
   await adminService.isAdminByToken(token);
 
-export const getAdminByCreds = async (login: string, password: string) =>
-  await adminService.getAdminByCreds(login, password);
+export const getAdminByCreds = async (login: string, password: string) => {
+  const name = setAuthor(login, password).name;
+  return await adminService.getAdminByCreds(name);
+};
 
 export const getAdminByToken = async (token: string) =>
   await adminService.getAdminByToken(token);
@@ -59,7 +61,9 @@ export const updateAdmin = async (
   accessInput: ia.IAccessInput,
   input: ia.IUpdateAdminInputProps
 ) => {
-  const { login, password } = input;
+  const {
+    credentials: { login, password },
+  } = input;
   const updatedAccess = await adminService.updateAdmin(admin, accessInput);
 
   if (updatedAccess) {

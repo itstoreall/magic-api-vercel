@@ -7,7 +7,8 @@ import * as utils from '../../../utils';
 
 const createBlog = async (props: ICreateBlogProps) => {
   const { blog, input, author } = props;
-  const { login, password, blog: title } = input;
+  const { credentials, blog: title } = input;
+  const { login, password } = credentials;
 
   const createNewBlog = async () => {
     await blogUtils.createNewBlog(title, [author?.name]);
@@ -24,12 +25,11 @@ const createAdmin = async (
   input: IUpdateAdminInputProps,
   author: { name: string }
 ) => {
-  const { login, password, blog: title } = input;
+  const { credentials, blog: title } = input;
+  const { login, password } = credentials;
 
   if (adminUtils.isMasterAdmin(login, password)) {
     const createdAdmin = await adminUtils.createAdmin({
-      login,
-      password,
       token: uuid(),
       name: author?.name,
       blog: title,
@@ -40,16 +40,10 @@ const createAdmin = async (
 };
 
 const updateAdmin = async (input: IUpdateAdminInputProps, admin: IAdmin) => {
-  const { login, password, blog: title } = input;
+  const { credentials, blog: title } = input;
+  const { login, password } = credentials;
 
-  const accessInput = {
-    login,
-    password,
-    token: uuid(),
-    name: admin.name,
-    blogs: admin.blogs,
-  };
-
+  const accessInput = { token: uuid(), name: admin.name, blogs: admin.blogs };
   const isMaster = adminUtils.isMasterAdmin(login, password);
 
   // ------------- Add new blog to blogs (for Master):
@@ -70,7 +64,8 @@ const updateAdmin = async (input: IUpdateAdminInputProps, admin: IAdmin) => {
 const updateAdminHandler = async (input: IUpdateAdminInputProps) => {
   console.log('* updateAdmin input:', input);
 
-  const { login, password, blog: title } = input;
+  const { credentials, blog: title } = input;
+  const { login, password } = credentials;
 
   if (adminUtils.isGenAdmin(login, password)) {
     const author = adminUtils.setAuthor(login, password);

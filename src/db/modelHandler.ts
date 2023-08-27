@@ -1,8 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const AdminSchema = new mongoose.Schema({
-  login: String,
-  password: String,
   token: String,
   name: String,
   blogs: { type: [Schema.Types.String], default: [] },

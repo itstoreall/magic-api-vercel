@@ -17,44 +17,6 @@ const isAdmin_1 = __importDefault(require("./isAdmin"));
 const updateAdmin_1 = __importDefault(require("./updateAdmin"));
 const addNewAdmin_1 = __importDefault(require("./addNewAdmin"));
 dotenv_1.default.config();
-// export interface IIsAdminArgs {
-//   token: string;
-//   blog: string;
-// }
-// export type IsAdminRes = Promise<IIsAdminResponse>;
-// export interface IIsAdminResponse {
-//   isAdmin: boolean;
-//   author: string;
-//   blog: string;
-// }
-// export interface IAddAdminInput {
-//   blog: string;
-//   author: string;
-//   login: string;
-//   password: string;
-//   token: string;
-// }
-// export interface IUpdateAdminInputProps {
-//   login: string;
-//   password: string;
-//   blog: string;
-// }
-// export interface IUpdateAdminInput {
-//   input: IUpdateAdminInputProps;
-// }
-/*
-interface IAdminResolvers {
-  Query: {
-    isAdmin: (parent: any, args: IIsAdminArgs) => IsAdminRes;
-  };
-  // Mutation: {
-  //   updateAdmin: (
-  //     parent: any,
-  //     args: IUpdateAdminInput
-  //   ) => Promise<IUpdateAdminResponse>;
-  // };
-}
-*/
 const adminResolvers = {
     Query: {
         /*
