@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const isAdmin_1 = __importDefault(require("./isAdmin"));
-const updateAdmin_1 = __importDefault(require("./updateAdmin"));
 const addNewAdmin_1 = __importDefault(require("./addNewAdmin"));
+const updateAdmin_1 = __importDefault(require("./updateAdmin"));
+const deleteAdmin_1 = __importDefault(require("./deleteAdmin"));
 dotenv_1.default.config();
 const adminResolvers = {
     Query: {
@@ -52,6 +53,10 @@ const adminResolvers = {
         updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
             return yield (0, updateAdmin_1.default)(input);
+        }),
+        deleteAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            return yield (0, deleteAdmin_1.default)(input);
         }),
     },
 };

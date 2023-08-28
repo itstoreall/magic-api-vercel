@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { IAdmin, IUpdateAdminInputProps } from '../../../interfaces/admin';
+import { IAdmin, IAdminInputProps } from '../../../interfaces/admin';
 import { ICreateBlogProps } from '../../../interfaces/blog';
 import * as blogUtils from '../../utils/blog';
 import * as adminUtils from '../../utils/admin';
@@ -22,7 +22,7 @@ const createBlog = async (props: ICreateBlogProps) => {
 };
 
 const createAdmin = async (
-  input: IUpdateAdminInputProps,
+  input: IAdminInputProps,
   author: { name: string }
 ) => {
   const { credentials, blog: title } = input;
@@ -39,7 +39,7 @@ const createAdmin = async (
   } else utils.throwNewError('Access denied! (not a master)');
 };
 
-const updateAdmin = async (input: IUpdateAdminInputProps, admin: IAdmin) => {
+const updateAdmin = async (input: IAdminInputProps, admin: IAdmin) => {
   const { credentials, blog: title } = input;
   const { login, password } = credentials;
 
@@ -61,7 +61,7 @@ const updateAdmin = async (input: IUpdateAdminInputProps, admin: IAdmin) => {
   return await adminUtils.updateAdmin(admin, accessInput, input);
 };
 
-const updateAdminHandler = async (input: IUpdateAdminInputProps) => {
+const updateAdminHandler = async (input: IAdminInputProps) => {
   console.log('* updateAdmin input:', input);
 
   const { credentials, blog: title } = input;

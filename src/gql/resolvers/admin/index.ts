@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
+import { IsAdminRes } from '../../../types/admin';
 import * as ia from '../../../interfaces/admin';
 import isAdmin from './isAdmin';
-import updateAdmin from './updateAdmin';
 import addNewAdmin from './addNewAdmin';
-import { IsAdminRes } from '../../../types/admin';
+import updateAdmin from './updateAdmin';
+import deleteAdmin from './deleteAdmin';
 
 dotenv.config();
 
@@ -42,9 +43,14 @@ const adminResolvers = {
       return await addNewAdmin(input);
     },
 
-    updateAdmin: async (_: any, { input }: ia.IUpdateAdminInput) => {
+    updateAdmin: async (_: any, { input }: ia.IAdminInput) => {
       console.log('');
       return await updateAdmin(input);
+    },
+
+    deleteAdmin: async (_: any, { input }: ia.IAdminInput) => {
+      console.log('');
+      return await deleteAdmin(input);
     },
   },
 };
