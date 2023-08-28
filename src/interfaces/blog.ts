@@ -1,7 +1,7 @@
-import { IUpdateAdminInputProps } from './admin';
+import { IAdminInputProps } from './admin';
 
 export interface ICreateBlogProps {
   blog: { length: number };
-  input: IUpdateAdminInputProps;
+  input: IAdminInputProps;
   author: { name: string };
 }

@@ -35,11 +35,11 @@ export interface IAddAdminInput {
   token: string;
 }
 
-export interface IUpdateAdminInputProps {
+export interface IAdminInputProps {
   credentials: { login: string; password: string };
   blog: string;
 }
 
-export interface IUpdateAdminInput {
-  input: IUpdateAdminInputProps;
+export interface IAdminInput {
+  input: IAdminInputProps;
 }
