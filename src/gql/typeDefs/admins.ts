@@ -9,7 +9,7 @@ const adminTypeDefs = `#graphql
     password: String
   }
 
-  input AddAuthorInput {
+  input HandleAuthorInput {
     blog: String
     author: String
     credentials: CredentialsInput
@@ -46,9 +46,9 @@ const adminTypeDefs = `#graphql
   }
 
   type Mutation {
-    addAdmin(input: AddAuthorInput): AddAdminResponse
+    addAdmin(input: HandleAuthorInput): AddAdminResponse
     updateAdmin(input: AccessInput): UpdateAdminResponse
-    deleteAdmin(ID: ID!): Boolean
+    deleteAdmin(input: HandleAuthorInput): Boolean
   }
 `;
 

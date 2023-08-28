@@ -59,7 +59,7 @@ export const createAdmin = async (args: ia.ICreateAdminArgs) => {
 export const updateAdmin = async (
   admin: ia.IAdmin,
   accessInput: ia.IAccessInput,
-  input: ia.IUpdateAdminInputProps
+  input: ia.IAdminInputProps
 ) => {
   const {
     credentials: { login, password },
