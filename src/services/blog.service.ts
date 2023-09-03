@@ -22,11 +22,25 @@ export const addNewBlog = async (title: string, authors: string[]) => {
 };
 
 export const updateBlog = async (blog: any, blogInput: any) => {
+  console.log('blog --->', blog);
+  console.log('blogInput --->', blogInput);
   try {
     await Blog.updateOne({ _id: blog[0]._id }, { ...blogInput });
     const updatedBlog = await getBlogByTitle(blog[0].title);
     return updatedBlog;
   } catch (e) {
     console.error(`Error in updateBlogAuthors: ${e.message}`);
+  }
+};
+
+export const deleteAdminFromBlog = async (name: string, title: string) => {
+  try {
+    const blog = await Blog.findOne({ title });
+    const authors = blog.authors.filter(auth => auth !== name);
+    const blogInput = { title: blog.title, authors };
+    const updatedBlog = await updateBlog([blog], blogInput);
+    return updatedBlog;
+  } catch (e) {
+    console.error(`Error in deleteAdminFromBlog: ${e.message}`);
   }
 };

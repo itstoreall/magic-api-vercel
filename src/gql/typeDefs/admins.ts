@@ -1,25 +1,31 @@
 const adminTypeDefs = `#graphql
   type Access {
-    token: String
-    name: String
+    token: String!
+    name: String!
   }
 
   input CredentialsInput {
-    login: String
-    password: String
+    login: String!
+    password: String!
   }
 
-  input HandleAuthorInput {
-    blog: String
-    author: String
-    credentials: CredentialsInput
-    token: String
+  input AddNewAuthorInput {
+    blog: String!
+    author: String!
+    credentials: CredentialsInput!
+    token: String!
   }
 
   input AccessInput {
-    blog: String
-    credentials: CredentialsInput
+    blog: String!
+    credentials: CredentialsInput!
     token: String
+  }
+
+  type AllAdminsResponse {
+    id: ID
+    name: String
+    blogs: [String]
   }
 
   type IsAdminResponse {
@@ -28,7 +34,7 @@ const adminTypeDefs = `#graphql
     blog: String
   }
 
-  type AddAdminResponse {
+  type AddNewAuthorResponse {
     name: String
     blogs: [String]
     coauthors: [String]
@@ -41,14 +47,13 @@ const adminTypeDefs = `#graphql
   }
   
   type Query {
-    #getAdmin(login: String!, password: String!): Access
+    getAllAdmins(token: String!): [AllAdminsResponse]
     isAdmin(token: String! blog: String!): IsAdminResponse
   }
 
   type Mutation {
-    addAdmin(input: HandleAuthorInput): AddAdminResponse
+    addNewAuthor(input: AddNewAuthorInput): AddNewAuthorResponse
     updateAdmin(input: AccessInput): UpdateAdminResponse
-    deleteAdmin(input: HandleAuthorInput): Boolean
   }
 `;
 

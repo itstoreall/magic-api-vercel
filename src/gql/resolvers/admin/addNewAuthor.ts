@@ -10,7 +10,7 @@ const isAdmin = (author: string, login: string, pass: string) =>
       adm => adm.name === author && adm.login === login && adm.password === pass
     );
 
-const addNewAdmin = async (input: IAddAdminInput) => {
+const addNewAuthor = async (input: IAddAdminInput) => {
   console.log('* addNewAdmin:', input);
 
   const { blog: title, author, credentials, token } = input;
@@ -58,4 +58,4 @@ const addNewAdmin = async (input: IAddAdminInput) => {
   }
 };
 
-export default addNewAdmin;
+export default addNewAuthor;

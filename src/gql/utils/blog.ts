@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
+import { IDelAuthorFromBlogInput } from '../../interfaces/admin';
+import { isMasterByToken } from './admin';
 import * as blogService from '../../services/blog.service';
+import * as utils from '../../utils';
 
 dotenv.config();
 
@@ -29,5 +32,24 @@ export const updateCoauthors = async (blog: any, blogInput: any) => {
   if (updatedBlog) {
     console.log('+ blog has been updated:', Boolean(updatedBlog));
     return updatedBlog[0].authors;
+  }
+};
+
+export const deleteAdminFromBlog = async (input: IDelAuthorFromBlogInput) => {
+  const { blog, author, token } = input;
+
+  const isMaster = await isMasterByToken(token);
+  console.log(111, isMaster);
+
+  if (isMaster) {
+    const updatedBlog = await blogService.deleteAdminFromBlog(author, blog);
+
+    if (updatedBlog?.length) {
+      return !updatedBlog[0].authors.includes(author)
+        ? true
+        : utils.throwNewError('authors update Error!');
+    }
+
+    console.log('updatedBlog', updatedBlog);
   }
 };

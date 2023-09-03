@@ -4,13 +4,19 @@ const blogTypeDefs = `#graphql
     authors: [String]
   }
 
+  input DeleteAuthorFromBlogInput {
+    blog: String!
+    author: String!
+    token: String!
+  }
+
   #type Query {
     #getBlog(title: String!): Blog
   #}
 
-  #type Mutation {
-    #updateAdmin(input: AccessInput): UpdateAdminResponse
-  #}
+  type Mutation {
+    deleteAuthorFromBlog(input: DeleteAuthorFromBlogInput): Boolean
+  }
 `;
 
 export default blogTypeDefs;

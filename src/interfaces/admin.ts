@@ -28,18 +28,29 @@ export interface IIsAdminResponse {
   blog: string;
 }
 
+export interface IAdminCredentials {
+  login: string;
+  password: string;
+}
+
 export interface IAddAdminInput {
   blog: string;
   author: string;
-  credentials: { login: string; password: string };
+  credentials: IAdminCredentials;
   token: string;
 }
 
 export interface IAdminInputProps {
-  credentials: { login: string; password: string };
+  credentials: IAdminCredentials;
   blog: string;
 }
 
 export interface IAdminInput {
   input: IAdminInputProps;
+}
+
+export interface IDelAuthorFromBlogInput {
+  blog: string;
+  author: string;
+  token: string;
 }
