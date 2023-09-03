@@ -1,1 +1,1 @@
-{"version":3,"file":"admins.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/admins.ts"],"names":[],"mappings":";;AAAA,MAAM,aAAa,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAoDrB,CAAC;AAEF,kBAAe,aAAa,CAAC"}
+{"version":3,"file":"admins.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/admins.ts"],"names":[],"mappings":";;AAAA,MAAM,aAAa,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAyDrB,CAAC;AAEF,kBAAe,aAAa,CAAC"}

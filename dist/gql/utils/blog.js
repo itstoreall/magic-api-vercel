@@ -35,9 +35,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCoauthors = exports.pushToAuthorBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
+const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
+const utils = __importStar(require("../../utils"));
 dotenv_1.default.config();
 const existingBlogs = process.env.EXISTING_BLOGS;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
@@ -63,4 +65,19 @@ const updateCoauthors = (blog, blogInput) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.updateCoauthors = updateCoauthors;
+const deleteAdminFromBlog = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    const { blog, author, token } = input;
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    console.log(111, isMaster);
+    if (isMaster) {
+        const updatedBlog = yield blogService.deleteAdminFromBlog(author, blog);
+        if (updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.length) {
+            return !updatedBlog[0].authors.includes(author)
+                ? true
+                : utils.throwNewError('authors update Error!');
+        }
+        console.log('updatedBlog', updatedBlog);
+    }
+});
+exports.deleteAdminFromBlog = deleteAdminFromBlog;
 //# sourceMappingURL=blog.js.map

@@ -38,7 +38,7 @@ const utils = __importStar(require("../../../utils"));
 const isAdmin = (author, login, pass) => adminUtils
     .adminConfig()
     .find(adm => adm.name === author && adm.login === login && adm.password === pass);
-const addNewAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () {
+const addNewAuthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* addNewAdmin:', input);
     const { blog: title, author, credentials, token } = input;
     const { login, password } = credentials;
@@ -80,5 +80,5 @@ const addNewAdmin = (input) => __awaiter(void 0, void 0, void 0, function* () {
             utils.throwNewError('Admin already exists in db (Dublicate)');
     }
 });
-exports.default = addNewAdmin;
-//# sourceMappingURL=addNewAdmin.js.map
+exports.default = addNewAuthor;
+//# sourceMappingURL=addNewAuthor.js.map

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.isAdminByToken = void 0;
+exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.getAllAdmins = exports.isAdminByToken = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Admin } = db_1.default;
 const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,6 +26,16 @@ const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.isAdminByToken = isAdminByToken;
+const getAllAdmins = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const admins = yield Admin.find().select('-__v').exec();
+        return admins;
+    }
+    catch (e) {
+        console.error(`Error in getAllAdmins: ${e.message}`);
+    }
+});
+exports.getAllAdmins = getAllAdmins;
 const getAdminByCreds = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const config = { name };
     try {
