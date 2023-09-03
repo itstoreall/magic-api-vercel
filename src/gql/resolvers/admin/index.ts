@@ -2,34 +2,19 @@ import dotenv from 'dotenv';
 import { IsAdminRes } from '../../../types/admin';
 import * as ia from '../../../interfaces/admin';
 import isAdmin from './isAdmin';
-import addNewAdmin from './addNewAdmin';
+import addNewAuthor from './addNewAuthor';
 import updateAdmin from './updateAdmin';
-import deleteAdmin from './deleteAdmin';
+import deleteAuthorFromBlog from './deleteAuthorFromBlog';
+import getAdmins from './getAdmins';
 
 dotenv.config();
 
 const adminResolvers = {
   Query: {
-    /*
-    getAdmin: async (_: any, { login, password }: any) => {
-      try {
-        const admin = await db.Admin.find({ login, password });
-
-        console.log('getAdmin:', admin);
-
-        if (admin?.length) {
-          return {
-            login: admin[0].login,
-            password: admin[0].password,
-            token: admin[0].token,
-            name: admin[0].name,
-          };
-        }
-      } catch (e) {
-        throw new Error(`Failed to fetch admin: ${e}`);
-      }
+    getAllAdmins: async (_: any, { token }: { token: string }) => {
+      const admins = await getAdmins(token);
+      return admins;
     },
-    */
 
     isAdmin: async (_: any, { token, blog }: ia.IIsAdminArgs): IsAdminRes => {
       console.log('');
@@ -38,9 +23,9 @@ const adminResolvers = {
   },
 
   Mutation: {
-    addAdmin: async (_: any, { input }: { input: ia.IAddAdminInput }) => {
+    addNewAuthor: async (_: any, { input }: { input: ia.IAddAdminInput }) => {
       console.log('');
-      return await addNewAdmin(input);
+      return await addNewAuthor(input);
     },
 
     updateAdmin: async (_: any, { input }: ia.IAdminInput) => {
@@ -48,9 +33,12 @@ const adminResolvers = {
       return await updateAdmin(input);
     },
 
-    deleteAdmin: async (_: any, { input }: ia.IAdminInput) => {
+    deleteAuthorFromBlog: async (
+      _: any,
+      { input }: { input: ia.IDelAuthorFromBlogInput }
+    ) => {
       console.log('');
-      return await deleteAdmin(input);
+      return await deleteAuthorFromBlog(input);
     },
   },
 };

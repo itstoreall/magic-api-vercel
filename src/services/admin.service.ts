@@ -13,6 +13,15 @@ export const isAdminByToken = async (token: string) => {
   }
 };
 
+export const getAllAdmins = async () => {
+  try {
+    const admins = await Admin.find().select('-__v').exec();
+    return admins;
+  } catch (e) {
+    console.error(`Error in getAllAdmins: ${e.message}`);
+  }
+};
+
 export const getAdminByCreds = async (name: string) => {
   const config = { name };
   try {

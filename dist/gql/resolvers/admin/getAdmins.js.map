@@ -1,0 +1,1 @@
+{"version":3,"file":"getAdmins.js","sourceRoot":"","sources":["../../../../src/gql/resolvers/admin/getAdmins.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,qEAAuD;AAEvD,MAAM,SAAS,GAAG,CAAO,KAAa,EAAE,EAAE,kDAAC,OAAA,MAAM,UAAU,CAAC,YAAY,CAAC,KAAK,CAAC,CAAA,GAAA,CAAC;AAEhF,kBAAe,SAAS,CAAC"}

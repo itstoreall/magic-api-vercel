@@ -35,9 +35,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.isAdminByToken = exports.setAuthor = exports.isGenAdmin = exports.isMasterAdmin = exports.adminConfig = void 0;
+exports.updateAdmin = exports.createAdmin = exports.getAdminByToken = exports.getAdminByCreds = exports.getAllAdmins = exports.isMasterByToken = exports.isAdminByToken = exports.setAuthor = exports.isGenAdmin = exports.isMasterName = exports.isMasterAdmin = exports.adminConfig = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const adminService = __importStar(require("../../services/admin.service"));
+const utils = __importStar(require("../../utils"));
 dotenv_1.default.config();
 const adminsCreds = process.env.ADMIN_CREDS;
 const adminConfig = () => adminsCreds.split(' ').map(el => {
@@ -49,14 +50,35 @@ const adminConfig = () => adminsCreds.split(' ').map(el => {
     };
 });
 exports.adminConfig = adminConfig;
-const isMasterAdmin = (login, pass) => (0, exports.adminConfig)().find((adm, idx) => adm.login === login && adm.password === pass && idx === 0 ? true : false);
+const isMasterAdmin = (login, pass) => (0, exports.adminConfig)().find((adm, idx) => adm.login === login && adm.password === pass && idx === 0)
+    ? true
+    : false;
 exports.isMasterAdmin = isMasterAdmin;
+const isMasterName = (name) => (0, exports.adminConfig)().find((adm, idx) => adm.name === name && idx === 0)
+    ? true
+    : false;
+exports.isMasterName = isMasterName;
 const isGenAdmin = (login, pass) => (0, exports.adminConfig)().find(adm => adm.login === login && adm.password === pass ? true : false);
 exports.isGenAdmin = isGenAdmin;
 const setAuthor = (login, pass) => (0, exports.adminConfig)().find(adm => adm.login === login && adm.password === pass);
 exports.setAuthor = setAuthor;
 const isAdminByToken = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield adminService.isAdminByToken(token); });
 exports.isAdminByToken = isAdminByToken;
+const isMasterByToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = yield adminService.getAdminByToken(token);
+    return (0, exports.isMasterName)(admin === null || admin === void 0 ? void 0 : admin.name);
+});
+exports.isMasterByToken = isMasterByToken;
+const getAllAdmins = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const isMaster = yield (0, exports.isMasterByToken)(token);
+    if (isMaster) {
+        const admins = yield adminService.getAllAdmins();
+        return admins;
+    }
+    else
+        utils.throwNewError(`is not a Master!`);
+});
+exports.getAllAdmins = getAllAdmins;
 const getAdminByCreds = (login, password) => __awaiter(void 0, void 0, void 0, function* () {
     const name = (0, exports.setAuthor)(login, password).name;
     return yield adminService.getAdminByCreds(name);
@@ -91,7 +113,7 @@ const updateAdmin = (admin, accessInput, input) => __awaiter(void 0, void 0, voi
         return successResponse;
     }
     else
-        throw new Error('Admin update error!');
+        utils.throwNewError(`Admin update error!`);
 });
 exports.updateAdmin = updateAdmin;
 //# sourceMappingURL=admin.js.map

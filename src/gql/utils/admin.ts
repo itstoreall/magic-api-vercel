@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import * as ia from '../../interfaces/admin';
 import * as adminService from '../../services/admin.service';
+import * as utils from '../../utils';
 
 dotenv.config();
 
@@ -17,9 +18,16 @@ export const adminConfig = () =>
   });
 
 export const isMasterAdmin = (login: string, pass: string) =>
-  adminConfig().find((adm, idx) =>
-    adm.login === login && adm.password === pass && idx === 0 ? true : false
-  );
+  adminConfig().find(
+    (adm, idx) => adm.login === login && adm.password === pass && idx === 0
+  )
+    ? true
+    : false;
+
+export const isMasterName = (name: string) =>
+  adminConfig().find((adm, idx) => adm.name === name && idx === 0)
+    ? true
+    : false;
 
 export const isGenAdmin = (login: string, pass: string) =>
   adminConfig().find(adm =>
@@ -31,6 +39,19 @@ export const setAuthor = (login: string, pass: string) =>
 
 export const isAdminByToken = async (token: string) =>
   await adminService.isAdminByToken(token);
+
+export const isMasterByToken = async (token: string) => {
+  const admin = await adminService.getAdminByToken(token);
+  return isMasterName(admin?.name);
+};
+
+export const getAllAdmins = async (token: string) => {
+  const isMaster = await isMasterByToken(token);
+  if (isMaster) {
+    const admins = await adminService.getAllAdmins();
+    return admins;
+  } else utils.throwNewError(`is not a Master!`);
+};
 
 export const getAdminByCreds = async (login: string, password: string) => {
   const name = setAuthor(login, password).name;
@@ -78,5 +99,5 @@ export const updateAdmin = async (
     };
 
     return successResponse;
-  } else throw new Error('Admin update error!');
+  } else utils.throwNewError(`Admin update error!`);
 };

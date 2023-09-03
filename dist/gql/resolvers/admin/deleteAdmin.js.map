@@ -1,1 +1,0 @@
-{"version":3,"file":"deleteAdmin.js","sourceRoot":"","sources":["../../../../src/gql/resolvers/admin/deleteAdmin.ts"],"names":[],"mappings":";;AAEA,MAAM,WAAW,GAAG,CAAC,KAAuB,EAAE,EAAE;IAC9C,OAAO,CAAC,GAAG,CAAC,sBAAsB,EAAE,KAAK,CAAC,CAAC;AAC7C,CAAC,CAAC;AAEF,kBAAe,WAAW,CAAC"}
