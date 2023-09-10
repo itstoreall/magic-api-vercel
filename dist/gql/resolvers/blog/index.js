@@ -13,38 +13,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
-const isAdmin_1 = __importDefault(require("./isAdmin"));
-const addNewAuthor_1 = __importDefault(require("./addNewAuthor"));
-const updateAdmin_1 = __importDefault(require("./updateAdmin"));
-const getAdmins_1 = __importDefault(require("./getAdmins"));
+const getBlogs_1 = __importDefault(require("./getBlogs"));
+const deleteAuthorFromBlog_1 = __importDefault(require("./deleteAuthorFromBlog"));
+const addAuthorToBlog_1 = __importDefault(require("./addAuthorToBlog"));
+// import isAdmin from './isAdmin';
+// import addNewAuthor from './addNewAuthor';
+// import updateAdmin from './updateAdmin';
+// import deleteAuthorFromBlog from './deleteAuthorFromBlog';
+// import getAdmins from './getAdmins';
 dotenv_1.default.config();
 const adminResolvers = {
     Query: {
-        getAllAdmins: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
-            const admins = yield (0, getAdmins_1.default)(token);
-            return admins;
-        }),
-        isAdmin: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log('');
-            return yield (0, isAdmin_1.default)(blog, token);
+        getAllBlogs: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('token', token);
+            const blogs = yield (0, getBlogs_1.default)(token);
+            console.log('blogs', blogs);
+            return blogs;
         }),
     },
     Mutation: {
-        addNewAuthor: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+        addAuthorToBlog: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
-            return yield (0, addNewAuthor_1.default)(input);
+            return yield (0, addAuthorToBlog_1.default)(input);
         }),
-        updateAdmin: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+        deleteAuthorFromBlog: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
-            return yield (0, updateAdmin_1.default)(input);
+            return yield (0, deleteAuthorFromBlog_1.default)(input);
         }),
-        // deleteAuthorFromBlog: async (
-        //   _: any,
-        //   { input }: { input: ia.IDelAuthorFromBlogInput }
-        // ) => {
-        //   console.log('');
-        //   return await deleteAuthorFromBlog(input);
-        // },
     },
 };
 exports.default = adminResolvers;

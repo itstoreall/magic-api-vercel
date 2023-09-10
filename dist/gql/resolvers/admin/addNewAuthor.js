@@ -47,8 +47,8 @@ const addNewAuthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
         const admin = yield adminUtils.getAdminByCreds(login, password);
         const blog = yield blogUtils.getBlogByTitle(title);
         if (!(admin === null || admin === void 0 ? void 0 : admin.length)) {
-            if (blog === null || blog === void 0 ? void 0 : blog.length) {
-                if (!blog[0].authors.includes(author)) {
+            if (blog) {
+                if (!blog.authors.includes(author)) {
                     if (!isAdmin(author, login, password))
                         utils.throwNewError(`Admin creds does not match`);
                     const createdAdmin = yield adminUtils.createAdmin({
@@ -56,9 +56,9 @@ const addNewAuthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
                         name: author,
                         token: '',
                     });
-                    const authors = [...blog[0].authors, author];
+                    const authors = [...blog.authors, author];
                     const blogInput = {
-                        title: blog[0].title,
+                        title: blog.title,
                         authors,
                     };
                     const coauthors = yield blogUtils.updateCoauthors(blog, blogInput);

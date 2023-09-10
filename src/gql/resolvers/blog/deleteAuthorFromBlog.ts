@@ -1,7 +1,7 @@
 import { deleteAdminFromBlog } from '../../../gql/utils/blog';
-import { IDelAuthorFromBlogInput } from '../../../interfaces/admin';
+import { IHandleAuthorInBlogInput } from '../../../interfaces/blog';
 
-const deleteAuthorFromBlog = async (input: IDelAuthorFromBlogInput) => {
+const deleteAuthorFromBlog = async (input: IHandleAuthorInBlogInput) => {
   console.log('* deleteAuthorFromBlog input:', input);
   return await deleteAdminFromBlog(input);
 };

@@ -4,7 +4,6 @@ import * as ia from '../../../interfaces/admin';
 import isAdmin from './isAdmin';
 import addNewAuthor from './addNewAuthor';
 import updateAdmin from './updateAdmin';
-import deleteAuthorFromBlog from './deleteAuthorFromBlog';
 import getAdmins from './getAdmins';
 
 dotenv.config();
@@ -33,13 +32,13 @@ const adminResolvers = {
       return await updateAdmin(input);
     },
 
-    deleteAuthorFromBlog: async (
-      _: any,
-      { input }: { input: ia.IDelAuthorFromBlogInput }
-    ) => {
-      console.log('');
-      return await deleteAuthorFromBlog(input);
-    },
+    // deleteAuthorFromBlog: async (
+    //   _: any,
+    //   { input }: { input: ia.IDelAuthorFromBlogInput }
+    // ) => {
+    //   console.log('');
+    //   return await deleteAuthorFromBlog(input);
+    // },
   },
 };
 

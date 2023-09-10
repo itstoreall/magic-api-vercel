@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { IDelAuthorFromBlogInput } from '../../interfaces/admin';
+import { IHandleAuthorInBlogInput } from '../../interfaces/blog';
 import { isMasterByToken } from './admin';
 import * as blogService from '../../services/blog.service';
 import * as utils from '../../utils';
@@ -20,6 +20,14 @@ export const createNewBlog = async (title: string, author: string[]) => {
   }
 };
 
+export const getAllBlogs = async (token: string) => {
+  const isMaster = await isMasterByToken(token);
+  if (isMaster) {
+    const blogs = await blogService.getAllBlogs();
+    return blogs;
+  } else utils.throwNewError(`is not a Master!`);
+};
+
 export const pushToAuthorBlogs = (title: string, accessInput: any) =>
   existingBlogs
     .split(' ')
@@ -31,25 +39,53 @@ export const updateCoauthors = async (blog: any, blogInput: any) => {
 
   if (updatedBlog) {
     console.log('+ blog has been updated:', Boolean(updatedBlog));
-    return updatedBlog[0].authors;
+    return updatedBlog.authors;
   }
 };
 
-export const deleteAdminFromBlog = async (input: IDelAuthorFromBlogInput) => {
+export const deleteAdminFromBlog = async (input: IHandleAuthorInBlogInput) => {
   const { blog, author, token } = input;
 
   const isMaster = await isMasterByToken(token);
-  console.log(111, isMaster);
 
   if (isMaster) {
     const updatedBlog = await blogService.deleteAdminFromBlog(author, blog);
 
-    if (updatedBlog?.length) {
-      return !updatedBlog[0].authors.includes(author)
+    if (updatedBlog) {
+      return !updatedBlog.authors.includes(author)
         ? true
         : utils.throwNewError('authors update Error!');
     }
 
     console.log('updatedBlog', updatedBlog);
   }
+};
+
+export const addCoauthor = async (input: IHandleAuthorInBlogInput) => {
+  const { blog, author, token } = input;
+
+  const isMaster = await isMasterByToken(token);
+
+  if (isMaster) {
+    const existingBlog = await getBlogByTitle(blog);
+
+    if (existingBlog) {
+      console.log(1, 'existingBlog:', existingBlog.authors.includes(author));
+
+      if (existingBlog.authors.includes(author))
+        utils.throwNewError(`author ${author} already exists in db`);
+
+      const blogInput = {
+        title: blog,
+        authors: [...existingBlog.authors, author],
+      };
+
+      const updatedCoauthors = await updateCoauthors(existingBlog, blogInput);
+      console.log(1, 'updated coauthors:', updatedCoauthors);
+      return updatedCoauthors;
+      // return [];
+    } else utils.throwNewError(`no blog in db`);
+  } else utils.throwNewError(`is not a Master!`);
+
+  return [''];
 };

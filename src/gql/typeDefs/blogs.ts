@@ -10,12 +10,26 @@ const blogTypeDefs = `#graphql
     token: String!
   }
 
-  #type Query {
+  input HandleAuthorInBlogInput {
+    blog: String!
+    author: String!
+    token: String!
+  }
+
+   type AllBlogsResponse {
+    id: ID
+    title: String
+    authors: [String]
+  }
+
+  type Query {
+    getAllBlogs(token: String!): [AllBlogsResponse]
     #getBlog(title: String!): Blog
-  #}
+  }
 
   type Mutation {
-    deleteAuthorFromBlog(input: DeleteAuthorFromBlogInput): Boolean
+    deleteAuthorFromBlog(input: HandleAuthorInBlogInput): Boolean
+    addAuthorToBlog(input: HandleAuthorInBlogInput): Boolean
   }
 `;
 
