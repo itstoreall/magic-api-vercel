@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
@@ -52,6 +52,16 @@ const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.createNewBlog = createNewBlog;
+const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (isMaster) {
+        const blogs = yield blogService.getAllBlogs();
+        return blogs;
+    }
+    else
+        utils.throwNewError(`is not a Master!`);
+});
+exports.getAllBlogs = getAllBlogs;
 const pushToAuthorBlogs = (title, accessInput) => existingBlogs
     .split(' ')
     .map(el => el)
@@ -61,18 +71,17 @@ const updateCoauthors = (blog, blogInput) => __awaiter(void 0, void 0, void 0, f
     const updatedBlog = yield blogService.updateBlog(blog, blogInput);
     if (updatedBlog) {
         console.log('+ blog has been updated:', Boolean(updatedBlog));
-        return updatedBlog[0].authors;
+        return updatedBlog.authors;
     }
 });
 exports.updateCoauthors = updateCoauthors;
 const deleteAdminFromBlog = (input) => __awaiter(void 0, void 0, void 0, function* () {
     const { blog, author, token } = input;
     const isMaster = yield (0, admin_1.isMasterByToken)(token);
-    console.log(111, isMaster);
     if (isMaster) {
         const updatedBlog = yield blogService.deleteAdminFromBlog(author, blog);
-        if (updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.length) {
-            return !updatedBlog[0].authors.includes(author)
+        if (updatedBlog) {
+            return !updatedBlog.authors.includes(author)
                 ? true
                 : utils.throwNewError('authors update Error!');
         }
@@ -80,4 +89,30 @@ const deleteAdminFromBlog = (input) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteAdminFromBlog = deleteAdminFromBlog;
+const addCoauthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    const { blog, author, token } = input;
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (isMaster) {
+        const existingBlog = yield (0, exports.getBlogByTitle)(blog);
+        if (existingBlog) {
+            console.log(1, 'existingBlog:', existingBlog.authors.includes(author));
+            if (existingBlog.authors.includes(author))
+                utils.throwNewError(`author ${author} already exists in db`);
+            const blogInput = {
+                title: blog,
+                authors: [...existingBlog.authors, author],
+            };
+            const updatedCoauthors = yield (0, exports.updateCoauthors)(existingBlog, blogInput);
+            console.log(1, 'updated coauthors:', updatedCoauthors);
+            return updatedCoauthors;
+            // return [];
+        }
+        else
+            utils.throwNewError(`no blog in db`);
+    }
+    else
+        utils.throwNewError(`is not a Master!`);
+    return [''];
+});
+exports.addCoauthor = addCoauthor;
 //# sourceMappingURL=blog.js.map

@@ -2,9 +2,18 @@ import db from '../db';
 
 const { Blog } = db;
 
+export const getAllBlogs = async () => {
+  try {
+    const blogs = await Blog.find().select('-__v').exec();
+    return blogs;
+  } catch (e) {
+    console.error(`Error in getAllBlogs: ${e.message}`);
+  }
+};
+
 export const getBlogByTitle = async (title: string) => {
   try {
-    const blog = await Blog.find({ title });
+    const blog = await Blog.findOne({ title });
     return blog;
   } catch (e) {
     console.error(`Error in getBlogByTitle: ${e.message}`);
@@ -22,11 +31,9 @@ export const addNewBlog = async (title: string, authors: string[]) => {
 };
 
 export const updateBlog = async (blog: any, blogInput: any) => {
-  console.log('blog --->', blog);
-  console.log('blogInput --->', blogInput);
   try {
-    await Blog.updateOne({ _id: blog[0]._id }, { ...blogInput });
-    const updatedBlog = await getBlogByTitle(blog[0].title);
+    await Blog.updateOne({ _id: blog._id }, { ...blogInput });
+    const updatedBlog = await getBlogByTitle(blog.title);
     return updatedBlog;
   } catch (e) {
     console.error(`Error in updateBlogAuthors: ${e.message}`);
@@ -35,10 +42,10 @@ export const updateBlog = async (blog: any, blogInput: any) => {
 
 export const deleteAdminFromBlog = async (name: string, title: string) => {
   try {
-    const blog = await Blog.findOne({ title });
+    const blog = await getBlogByTitle(title);
     const authors = blog.authors.filter(auth => auth !== name);
     const blogInput = { title: blog.title, authors };
-    const updatedBlog = await updateBlog([blog], blogInput);
+    const updatedBlog = await updateBlog(blog, blogInput);
     return updatedBlog;
   } catch (e) {
     console.error(`Error in deleteAdminFromBlog: ${e.message}`);

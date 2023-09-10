@@ -43,7 +43,7 @@ const createBlog = (props) => __awaiter(void 0, void 0, void 0, function* () {
     const createNewBlog = () => __awaiter(void 0, void 0, void 0, function* () {
         yield blogUtils.createNewBlog(title, [author === null || author === void 0 ? void 0 : author.name]);
     });
-    !(blog === null || blog === void 0 ? void 0 : blog.length)
+    !blog
         ? adminUtils.isMasterAdmin(login, password)
             ? yield createNewBlog()
             : utils.throwNewError('Access denied! (not a master)')

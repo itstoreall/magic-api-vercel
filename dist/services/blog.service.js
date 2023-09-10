@@ -12,12 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAdminFromBlog = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = void 0;
+exports.deleteAdminFromBlog = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = exports.getAllBlogs = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Blog } = db_1.default;
+const getAllBlogs = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const blogs = yield Blog.find().select('-__v').exec();
+        return blogs;
+    }
+    catch (e) {
+        console.error(`Error in getAllBlogs: ${e.message}`);
+    }
+});
+exports.getAllBlogs = getAllBlogs;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const blog = yield Blog.find({ title });
+        const blog = yield Blog.findOne({ title });
         return blog;
     }
     catch (e) {
@@ -37,11 +47,9 @@ const addNewBlog = (title, authors) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.addNewBlog = addNewBlog;
 const updateBlog = (blog, blogInput) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('blog --->', blog);
-    console.log('blogInput --->', blogInput);
     try {
-        yield Blog.updateOne({ _id: blog[0]._id }, Object.assign({}, blogInput));
-        const updatedBlog = yield (0, exports.getBlogByTitle)(blog[0].title);
+        yield Blog.updateOne({ _id: blog._id }, Object.assign({}, blogInput));
+        const updatedBlog = yield (0, exports.getBlogByTitle)(blog.title);
         return updatedBlog;
     }
     catch (e) {
@@ -51,10 +59,10 @@ const updateBlog = (blog, blogInput) => __awaiter(void 0, void 0, void 0, functi
 exports.updateBlog = updateBlog;
 const deleteAdminFromBlog = (name, title) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const blog = yield Blog.findOne({ title });
+        const blog = yield (0, exports.getBlogByTitle)(title);
         const authors = blog.authors.filter(auth => auth !== name);
         const blogInput = { title: blog.title, authors };
-        const updatedBlog = yield (0, exports.updateBlog)([blog], blogInput);
+        const updatedBlog = yield (0, exports.updateBlog)(blog, blogInput);
         return updatedBlog;
     }
     catch (e) {
