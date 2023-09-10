@@ -28,7 +28,7 @@ const blogTypeDefs = `#graphql
   }
 
   type Mutation {
-    deleteAuthorFromBlog(input: DeleteAuthorFromBlogInput): Boolean
+    deleteAuthorFromBlog(input: HandleAuthorInBlogInput): Boolean
     addAuthorToBlog(input: HandleAuthorInBlogInput): Boolean
   }
 `;

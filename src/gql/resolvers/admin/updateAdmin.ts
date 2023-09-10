@@ -14,7 +14,7 @@ const createBlog = async (props: ICreateBlogProps) => {
     await blogUtils.createNewBlog(title, [author?.name]);
   };
 
-  !blog?.length
+  !blog
     ? adminUtils.isMasterAdmin(login, password)
       ? await createNewBlog()
       : utils.throwNewError('Access denied! (not a master)')

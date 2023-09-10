@@ -23,8 +23,8 @@ const addNewAuthor = async (input: IAddAdminInput) => {
     const blog = await blogUtils.getBlogByTitle(title);
 
     if (!admin?.length) {
-      if (blog?.length) {
-        if (!blog[0].authors.includes(author)) {
+      if (blog) {
+        if (!blog.authors.includes(author)) {
           if (!isAdmin(author, login, password))
             utils.throwNewError(`Admin creds does not match`);
 
@@ -34,10 +34,10 @@ const addNewAuthor = async (input: IAddAdminInput) => {
             token: '',
           });
 
-          const authors = [...blog[0].authors, author];
+          const authors = [...blog.authors, author];
 
           const blogInput = {
-            title: blog[0].title,
+            title: blog.title,
             authors,
           };
 

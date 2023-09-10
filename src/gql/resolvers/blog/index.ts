@@ -34,7 +34,7 @@ const adminResolvers = {
 
     deleteAuthorFromBlog: async (
       _: any,
-      { input }: { input: ib.IDelAuthorFromBlogInput }
+      { input }: { input: ib.IHandleAuthorInBlogInput }
     ) => {
       console.log('');
       return await deleteAuthorFromBlog(input);

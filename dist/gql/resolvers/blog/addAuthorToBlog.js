@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const blog_1 = require("../../../gql/utils/blog");
 const addAuthorToBlog = (input) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* addAuthorToBlog input:', input);
-    // return await deleteAdminFromBlog(input);
+    const updatedCoauthors = yield (0, blog_1.addCoauthor)(input);
+    return updatedCoauthors.includes(input.author) ? true : false;
 });
 exports.default = addAuthorToBlog;
 //# sourceMappingURL=addAuthorToBlog.js.map
