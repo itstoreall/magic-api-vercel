@@ -2,6 +2,15 @@ import db from '../db';
 
 const { Blog } = db;
 
+export const getAllBlogs = async () => {
+  try {
+    const blogs = await Blog.find().select('-__v').exec();
+    return blogs;
+  } catch (e) {
+    console.error(`Error in getAllBlogs: ${e.message}`);
+  }
+};
+
 export const getBlogByTitle = async (title: string) => {
   try {
     const blog = await Blog.find({ title });

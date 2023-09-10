@@ -12,9 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAdminFromBlog = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = void 0;
+exports.deleteAdminFromBlog = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = exports.getAllBlogs = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Blog } = db_1.default;
+const getAllBlogs = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const blogs = yield Blog.find().select('-__v').exec();
+        return blogs;
+    }
+    catch (e) {
+        console.error(`Error in getAllBlogs: ${e.message}`);
+    }
+});
+exports.getAllBlogs = getAllBlogs;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const blog = yield Blog.find({ title });

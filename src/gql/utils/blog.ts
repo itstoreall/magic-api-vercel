@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { IDelAuthorFromBlogInput } from '../../interfaces/admin';
+import { IDelAuthorFromBlogInput } from '../../interfaces/blog';
 import { isMasterByToken } from './admin';
 import * as blogService from '../../services/blog.service';
 import * as utils from '../../utils';
@@ -18,6 +18,14 @@ export const createNewBlog = async (title: string, author: string[]) => {
     console.log('+ new blog has been created:', Boolean(newBlog));
     return newBlog;
   }
+};
+
+export const getAllBlogs = async (token: string) => {
+  const isMaster = await isMasterByToken(token);
+  if (isMaster) {
+    const blogs = await blogService.getAllBlogs();
+    return blogs;
+  } else utils.throwNewError(`is not a Master!`);
 };
 
 export const pushToAuthorBlogs = (title: string, accessInput: any) =>

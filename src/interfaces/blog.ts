@@ -5,3 +5,15 @@ export interface ICreateBlogProps {
   input: IAdminInputProps;
   author: { name: string };
 }
+
+export interface IDelAuthorFromBlogInput {
+  blog: string;
+  author: string;
+  token: string;
+}
+
+export interface IHandleAuthorInBlogInput {
+  blog: string;
+  author: string;
+  token: string;
+}

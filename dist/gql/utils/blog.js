@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
@@ -52,6 +52,16 @@ const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.createNewBlog = createNewBlog;
+const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (isMaster) {
+        const blogs = yield blogService.getAllBlogs();
+        return blogs;
+    }
+    else
+        utils.throwNewError(`is not a Master!`);
+});
+exports.getAllBlogs = getAllBlogs;
 const pushToAuthorBlogs = (title, accessInput) => existingBlogs
     .split(' ')
     .map(el => el)
