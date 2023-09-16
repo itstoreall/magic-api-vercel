@@ -1,4 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
+import modCfg from './config';
+import { AdminModel } from '../interfaces/modelHandler';
+import { BlogModel } from '../interfaces/modelHandler';
+import { IModelsResponse } from '../interfaces/modelHandler';
+import { ArticleModel } from '../interfaces/modelHandler';
+import { LabelModelsConfig } from 'admin';
 
 const AdminSchema = new mongoose.Schema({
   token: String,
@@ -31,16 +37,34 @@ const DevArticleSchema = new mongoose.Schema({
   tags: { type: [Schema.Types.String], default: [] },
 });
 
-const Admin = mongoose.model('admin', AdminSchema);
-const Blog = mongoose.model('blog', BlogSchema);
-const ProdArticle = mongoose.model('prod_astraia_article', ProdArticleSchema);
-const DevArticle = mongoose.model('dev_astraia_article', DevArticleSchema);
+const { admin, blog, articles } = modCfg;
 
-const models = {
-  Admin,
-  Blog,
-  ProdArticle,
-  DevArticle,
+const modelHandler = (label?: LabelModelsConfig) => {
+  const Admin = mongoose.model<AdminModel>(admin.prod, AdminSchema);
+  const Blog = mongoose.model<BlogModel>(blog.prod, BlogSchema);
+
+  const models: IModelsResponse = {
+    Admin,
+    Blog,
+    ProdArticle: null,
+    DevArticle: null,
+  };
+
+  if (label) {
+    console.log(1, 'label', label);
+
+    models.ProdArticle = mongoose.model<ArticleModel>(
+      articles[label].prod,
+      ProdArticleSchema
+    );
+
+    models.DevArticle = mongoose.model<ArticleModel>(
+      articles[label].dev,
+      DevArticleSchema
+    );
+  }
+
+  return models;
 };
 
-export default models;
+export default modelHandler;
