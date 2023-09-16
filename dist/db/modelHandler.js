@@ -22,8 +22,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const config_1 = __importDefault(require("./config"));
 const AdminSchema = new mongoose_1.default.Schema({
     token: String,
     name: String,
@@ -44,15 +48,22 @@ const defaultConfig = {
 };
 const ProdArticleSchema = new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } }));
 const DevArticleSchema = new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } }));
-const Admin = mongoose_1.default.model('admin', AdminSchema);
-const Blog = mongoose_1.default.model('blog', BlogSchema);
-const ProdArticle = mongoose_1.default.model('prod_astraia_article', ProdArticleSchema);
-const DevArticle = mongoose_1.default.model('dev_astraia_article', DevArticleSchema);
-const models = {
-    Admin,
-    Blog,
-    ProdArticle,
-    DevArticle,
+const { admin, blog, articles } = config_1.default;
+const modelHandler = (label) => {
+    const Admin = mongoose_1.default.model(admin.prod, AdminSchema);
+    const Blog = mongoose_1.default.model(blog.prod, BlogSchema);
+    const models = {
+        Admin,
+        Blog,
+        ProdArticle: null,
+        DevArticle: null,
+    };
+    if (label) {
+        console.log(1, 'label', label);
+        models.ProdArticle = mongoose_1.default.model(articles[label].prod, ProdArticleSchema);
+        models.DevArticle = mongoose_1.default.model(articles[label].dev, DevArticleSchema);
+    }
+    return models;
 };
-exports.default = models;
+exports.default = modelHandler;
 //# sourceMappingURL=modelHandler.js.map
