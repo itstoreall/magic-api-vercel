@@ -35,21 +35,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../constants");
-const db_1 = __importDefault(require("../../db"));
-const web3Storage = __importStar(require("../../ipfs/web3Storage"));
+const constants_1 = require("../../../constants");
+const db_1 = __importDefault(require("../../../db"));
+const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
+const getArticles_1 = __importDefault(require("./getArticles"));
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
 const articleResolvers = {
     Query: {
-        articles: () => __awaiter(void 0, void 0, void 0, function* () {
-            try {
-                const res = yield db_1.default.CurrentModel.find();
-                console.log('articles:', res === null || res === void 0 ? void 0 : res.length);
-                return res;
-            }
-            catch (error) {
-                throw new Error('Failed to fetch articles');
-            }
+        articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            const articles = yield (0, getArticles_1.default)(blog);
+            return articles;
         }),
         getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
             const article = yield db_1.default.CurrentModel.find({ _id: ID });
@@ -141,4 +137,4 @@ const articleResolvers = {
     },
 };
 exports.default = articleResolvers;
-//# sourceMappingURL=articles.js.map
+//# sourceMappingURL=index.js.map

@@ -1,21 +1,16 @@
-import { DEFAULT_IPFS_CID } from '../../constants';
-import db from '../../db';
-import * as web3Storage from '../../ipfs/web3Storage';
+import { DEFAULT_IPFS_CID } from '../../../constants';
+import db from '../../../db';
+import * as web3Storage from '../../../ipfs/web3Storage';
+import getArticles from './getArticles';
 
 const defaultCid = DEFAULT_IPFS_CID;
 
 const articleResolvers = {
   Query: {
-    articles: async () => {
-      try {
-        const res = await db.CurrentModel.find();
-
-        console.log('articles:', res?.length);
-
-        return res;
-      } catch (error) {
-        throw new Error('Failed to fetch articles');
-      }
+    articles: async (_: any, { blog }: { blog: string }) => {
+      console.log('');
+      const articles = await getArticles(blog);
+      return articles;
     },
 
     getArticleById: async (_: any, { ID }: any) => {

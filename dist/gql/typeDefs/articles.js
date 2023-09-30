@@ -24,7 +24,8 @@ const articleTypeDefs = `#graphql
   }
 
   type Query {
-    articles: [Article]
+    #articles: [Article]
+    articles(blog: String!): [Article]
     getArticleById(ID: ID!): Article
     getArticleByTitle(title: String!): Article
   }

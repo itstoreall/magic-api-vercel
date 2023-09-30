@@ -17,6 +17,12 @@ const CurrentModel =
     ? models(astraia.label as LabelModelsConfig).ProdArticle
     : process.env.NODE_ENV === 'development' &&
       models(astraia.label as LabelModelsConfig).DevArticle;
+
+// const CurrentModel =
+//   process.env.NODE_ENV === 'production'
+//     ? models(astraia.label as LabelModelsConfig).ProdArticle
+//     : process.env.NODE_ENV === 'development' &&
+//       models(astraia.label as LabelModelsConfig).DevArticle;
 // */
 
 // const CurrentModel = ProdArticle

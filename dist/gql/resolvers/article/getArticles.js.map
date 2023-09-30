@@ -1,0 +1,1 @@
+{"version":3,"file":"getArticles.js","sourceRoot":"","sources":["../../../../src/gql/resolvers/article/getArticles.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,kEAAoD;AAEpD,MAAM,WAAW,GAAG,CAAO,IAAY,EAAE,EAAE,kDACzC,OAAA,MAAM,YAAY,CAAC,cAAc,CAAC,IAAI,CAAC,CAAA,GAAA,CAAC;AAE1C,kBAAe,WAAW,CAAC"}
