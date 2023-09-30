@@ -63,6 +63,7 @@ const modelHandler = (label) => {
         models.ProdArticle = mongoose_1.default.model(articles[label].prod, ProdArticleSchema);
         models.DevArticle = mongoose_1.default.model(articles[label].dev, DevArticleSchema);
     }
+    console.log('models', models);
     return models;
 };
 exports.default = modelHandler;

@@ -8,7 +8,8 @@ import resolvers from './gql/resolvers';
 
 const nodeEnv = process.env.NODE_ENV;
 const PORT = process.env.PORT || 4001;
-const model = db.CurrentModel.modelName;
+// const model = db.CurrentModel.modelName;
+// const model = db.CurrentModel.modelName;
 
 const app = express();
 
@@ -23,6 +24,6 @@ startStandaloneServer(server, {
   listen: { port: Number(PORT) },
 }).then(({ url }) => {
   console.log(``);
-  console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)} - ${model} db`);
+  console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)}`); //  - ${model} db
   console.log(``);
 });

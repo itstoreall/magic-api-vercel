@@ -1,5 +1,5 @@
 import { DEFAULT_IPFS_CID } from '../../../constants';
-import db from '../../../db';
+import db, { setCurrentModel } from '../../../db';
 import * as web3Storage from '../../../ipfs/web3Storage';
 import getArticles from './getArticles';
 
@@ -14,7 +14,8 @@ const articleResolvers = {
     },
 
     getArticleById: async (_: any, { ID }: any) => {
-      const article = await db.CurrentModel.find({ _id: ID });
+      const article = await setCurrentModel('healthy').find({ _id: ID });
+      // const article = await db.CurrentModel.find({ _id: ID });
 
       console.log('getArticleById:', article);
 
@@ -32,7 +33,7 @@ const articleResolvers = {
     },
 
     async getArticleByTitle(_: any, { title }: any) {
-      const article = await db.CurrentModel.find({ title });
+      const article = await setCurrentModel('healthy').find({ title });
 
       console.log('getArticleByTitle:', article);
 
@@ -59,7 +60,9 @@ const articleResolvers = {
         cid = await web3Storage.upload(base64);
       }
 
-      const createArticle = new db.CurrentModel({
+      const f = setCurrentModel('healthy');
+
+      const createArticle = new f({
         title: input.title,
         description: input.description,
         text: input.text,
@@ -67,6 +70,14 @@ const articleResolvers = {
         ipfs: cid,
         tags: input.tags,
       });
+      // const createArticle = new db.CurrentModel({
+      //   title: input.title,
+      //   description: input.description,
+      //   text: input.text,
+      //   author: input.author,
+      //   ipfs: cid,
+      //   tags: input.tags,
+      // });
 
       const res = await createArticle.save();
 
@@ -85,8 +96,11 @@ const articleResolvers = {
     },
 
     deleteArticle: async (_: any, { ID }: { ID: string }) => {
-      const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
-        .deletedCount;
+      const wasDeleted = (
+        await setCurrentModel('healthy').deleteOne({ _id: ID })
+      ).deletedCount;
+      // const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
+      //   .deletedCount;
 
       console.log('wasDeleted:', wasDeleted);
 
@@ -113,11 +127,17 @@ const articleResolvers = {
       console.log('onlyText', onlyText);
 
       const wasEdited = (
-        await db.CurrentModel.updateOne(
+        await setCurrentModel('healthy').updateOne(
           { _id: ID },
           base64 ? { ...updatedImage } : { ...onlyText }
         )
       ).modifiedCount;
+      // const wasEdited = (
+      //   await db.CurrentModel.updateOne(
+      //     { _id: ID },
+      //     base64 ? { ...updatedImage } : { ...onlyText }
+      //   )
+      // ).modifiedCount;
 
       console.log('wasEdited:', wasEdited);
 

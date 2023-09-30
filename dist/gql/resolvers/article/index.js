@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../../../constants");
-const db_1 = __importDefault(require("../../../db"));
+const db_1 = require("../../../db");
 const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
 const getArticles_1 = __importDefault(require("./getArticles"));
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
@@ -48,7 +48,8 @@ const articleResolvers = {
             return articles;
         }),
         getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const article = yield db_1.default.CurrentModel.find({ _id: ID });
+            const article = yield (0, db_1.setCurrentModel)('healthy').find({ _id: ID });
+            // const article = await db.CurrentModel.find({ _id: ID });
             console.log('getArticleById:', article);
             return {
                 id: article[0]._id,
@@ -64,7 +65,7 @@ const articleResolvers = {
         }),
         getArticleByTitle(_, { title }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const article = yield db_1.default.CurrentModel.find({ title });
+                const article = yield (0, db_1.setCurrentModel)('healthy').find({ title });
                 console.log('getArticleByTitle:', article);
                 return {
                     id: article[0]._id,
@@ -87,7 +88,8 @@ const articleResolvers = {
             if (base64) {
                 cid = yield web3Storage.upload(base64);
             }
-            const createArticle = new db_1.default.CurrentModel({
+            const f = (0, db_1.setCurrentModel)('healthy');
+            const createArticle = new f({
                 title: input.title,
                 description: input.description,
                 text: input.text,
@@ -95,6 +97,14 @@ const articleResolvers = {
                 ipfs: cid,
                 tags: input.tags,
             });
+            // const createArticle = new db.CurrentModel({
+            //   title: input.title,
+            //   description: input.description,
+            //   text: input.text,
+            //   author: input.author,
+            //   ipfs: cid,
+            //   tags: input.tags,
+            // });
             const res = yield createArticle.save();
             console.log('addArticle:', res);
             return {
@@ -109,8 +119,9 @@ const articleResolvers = {
             };
         }),
         deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const wasDeleted = (yield db_1.default.CurrentModel.deleteOne({ _id: ID }))
-                .deletedCount;
+            const wasDeleted = (yield (0, db_1.setCurrentModel)('healthy').deleteOne({ _id: ID })).deletedCount;
+            // const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
+            //   .deletedCount;
             console.log('wasDeleted:', wasDeleted);
             return wasDeleted;
         }),
@@ -128,7 +139,13 @@ const articleResolvers = {
                 const onlyText = Object.assign({}, articleInput);
                 delete onlyText.image;
                 console.log('onlyText', onlyText);
-                const wasEdited = (yield db_1.default.CurrentModel.updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
+                const wasEdited = (yield (0, db_1.setCurrentModel)('healthy').updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
+                // const wasEdited = (
+                //   await db.CurrentModel.updateOne(
+                //     { _id: ID },
+                //     base64 ? { ...updatedImage } : { ...onlyText }
+                //   )
+                // ).modifiedCount;
                 console.log('wasEdited:', wasEdited);
                 return wasEdited;
                 // */

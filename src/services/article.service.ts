@@ -1,11 +1,14 @@
-import db from '../db';
+import db, { setCurrentModel } from '../db';
 
-const { CurrentModel } = db;
+// const { CurrentModel } = db;
 
 export const getAllArticles = async (blog: string) => {
-  console.log('blog', blog);
+  const CurrentArticleModel = setCurrentModel(blog);
+
+  console.log('CurrentArticleModel ---->', CurrentArticleModel);
+
   try {
-    const articles = await CurrentModel.find().select('-__v').exec();
+    const articles = await setCurrentModel(blog).find().select('-__v').exec();
     return articles;
   } catch (e) {
     console.error(`Error in getAllArticles: ${e.message}`);

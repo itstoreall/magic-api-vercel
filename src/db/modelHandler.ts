@@ -64,6 +64,8 @@ const modelHandler = (label?: LabelModelsConfig) => {
     );
   }
 
+  console.log('models', models);
+
   return models;
 };
 

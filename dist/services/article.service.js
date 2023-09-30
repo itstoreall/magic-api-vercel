@@ -8,17 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllArticles = void 0;
-const db_1 = __importDefault(require("../db"));
-const { CurrentModel } = db_1.default;
+const db_1 = require("../db");
+// const { CurrentModel } = db;
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('blog', blog);
+    const CurrentArticleModel = (0, db_1.setCurrentModel)(blog);
+    console.log('CurrentArticleModel ---->', CurrentArticleModel);
     try {
-        const articles = yield CurrentModel.find().select('-__v').exec();
+        const articles = yield (0, db_1.setCurrentModel)(blog).find().select('-__v').exec();
         return articles;
     }
     catch (e) {
