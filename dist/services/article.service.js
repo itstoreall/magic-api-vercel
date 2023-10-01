@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getArticleById = exports.getAllArticles = void 0;
+exports.createArticle = exports.getArticleById = exports.getAllArticles = void 0;
 const db_1 = require("../db");
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -29,4 +29,15 @@ const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getArticleById = getArticleById;
+const createArticle = (blog, newArticleInput) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const currentModel = (0, db_1.setCurrentModel)(blog);
+        const createArticle = new currentModel(newArticleInput);
+        return yield createArticle.save();
+    }
+    catch (e) {
+        console.error(`Error in createArticle: ${e.message}`);
+    }
+});
+exports.createArticle = createArticle;
 //# sourceMappingURL=article.service.js.map

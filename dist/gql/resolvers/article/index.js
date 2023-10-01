@@ -35,12 +35,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../../constants");
 const db_1 = require("../../../db");
 const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
 const getArticles_1 = __importDefault(require("./getArticles"));
 const getArticleById_1 = __importDefault(require("./getArticleById"));
-const defaultCid = constants_1.DEFAULT_IPFS_CID;
+const addArticle_1 = __importDefault(require("./addArticle"));
 const articleResolvers = {
     Query: {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -72,41 +71,9 @@ const articleResolvers = {
         */
     },
     Mutation: {
-        addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
-            const base64 = input.image;
-            let cid = defaultCid;
-            if (base64) {
-                cid = yield web3Storage.upload(base64);
-            }
-            const f = (0, db_1.setCurrentModel)('healthy');
-            const createArticle = new f({
-                title: input.title,
-                description: input.description,
-                text: input.text,
-                author: input.author,
-                ipfs: cid,
-                tags: input.tags,
-            });
-            // const createArticle = new db.CurrentModel({
-            //   title: input.title,
-            //   description: input.description,
-            //   text: input.text,
-            //   author: input.author,
-            //   ipfs: cid,
-            //   tags: input.tags,
-            // });
-            const res = yield createArticle.save();
-            console.log('addArticle:', res);
-            return {
-                title: res.title,
-                description: res.description,
-                text: res.text,
-                author: res.author,
-                ipfs: res.ipfs,
-                views: res.views,
-                tags: res.tags,
-                timestamp: res.timestamp,
-            };
+        addArticle: (_, { blog, input }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            return yield (0, addArticle_1.default)(blog, input);
         }),
         deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
             const wasDeleted = (yield (0, db_1.setCurrentModel)('healthy').deleteOne({ _id: ID })).deletedCount;

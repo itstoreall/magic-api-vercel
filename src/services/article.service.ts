@@ -15,3 +15,13 @@ export const getArticleById = async (blog: string, ID: string) => {
     console.error(`Error in getArticleById: ${e.message}`);
   }
 };
+
+export const createArticle = async (blog: string, newArticleInput: any) => {
+  try {
+    const currentModel = setCurrentModel(blog);
+    const createArticle = new currentModel(newArticleInput);
+    return await createArticle.save();
+  } catch (e) {
+    console.error(`Error in createArticle: ${e.message}`);
+  }
+};

@@ -1,10 +1,8 @@
-import { DEFAULT_IPFS_CID } from '../../../constants';
 import { setCurrentModel } from '../../../db';
 import * as web3Storage from '../../../ipfs/web3Storage';
 import getArticles from './getArticles';
 import getArticleById from './getArticleById';
-
-const defaultCid = DEFAULT_IPFS_CID;
+import addArticle from './addArticle';
 
 const articleResolvers = {
   Query: {
@@ -40,47 +38,9 @@ const articleResolvers = {
   },
 
   Mutation: {
-    addArticle: async (_: any, { input }: any) => {
-      const base64 = input.image;
-      let cid: string = defaultCid;
-
-      if (base64) {
-        cid = await web3Storage.upload(base64);
-      }
-
-      const f = setCurrentModel('healthy');
-
-      const createArticle = new f({
-        title: input.title,
-        description: input.description,
-        text: input.text,
-        author: input.author,
-        ipfs: cid,
-        tags: input.tags,
-      });
-      // const createArticle = new db.CurrentModel({
-      //   title: input.title,
-      //   description: input.description,
-      //   text: input.text,
-      //   author: input.author,
-      //   ipfs: cid,
-      //   tags: input.tags,
-      // });
-
-      const res = await createArticle.save();
-
-      console.log('addArticle:', res);
-
-      return {
-        title: res.title,
-        description: res.description,
-        text: res.text,
-        author: res.author,
-        ipfs: res.ipfs,
-        views: res.views,
-        tags: res.tags,
-        timestamp: res.timestamp,
-      };
+    addArticle: async (_: any, { blog, input }: any) => {
+      console.log('');
+      return await addArticle(blog, input);
     },
 
     deleteArticle: async (_: any, { ID }: { ID: string }) => {

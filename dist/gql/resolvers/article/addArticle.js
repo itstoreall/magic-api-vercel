@@ -32,31 +32,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
-const constants_1 = require("../../constants");
-const web3Storage = __importStar(require("../../ipfs/web3Storage"));
-const articleService = __importStar(require("../../services/article.service"));
-const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getAllArticles(blog); });
-exports.getAllArticles = getAllArticles;
-const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
-exports.getArticleById = getArticleById;
-const getIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
-    let cid = constants_1.DEFAULT_IPFS_CID;
-    if (base64)
-        cid = yield web3Storage.upload(base64);
-    return cid;
-});
+const articleUtils = __importStar(require("../../utils/article"));
 const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const cid = yield getIpfsCid(input.image);
-    const newArticleInput = {
-        title: input.title,
-        description: input.description,
-        text: input.text,
-        author: input.author,
-        ipfs: cid,
-        tags: input.tags,
+    console.log('* addArticle:', blog, input.title);
+    const createdArticle = yield articleUtils.addArticle(blog, input);
+    console.log(1, 'new article created:', createdArticle.title);
+    return {
+        title: createdArticle.title,
+        description: createdArticle.description,
+        text: createdArticle.text,
+        author: createdArticle.author,
+        ipfs: createdArticle.ipfs,
+        views: createdArticle.views,
+        tags: createdArticle.tags,
+        timestamp: createdArticle.timestamp,
     };
-    return yield articleService.createArticle(blog, newArticleInput);
 });
-exports.addArticle = addArticle;
-//# sourceMappingURL=article.js.map
+exports.default = addArticle;
+//# sourceMappingURL=addArticle.js.map
