@@ -35,7 +35,7 @@ export const upload = async (base64Img: string) => {
     const storage = getStorage();
     const cid = await storage.put(files as Iterable<Filelike>);
 
-    console.log('web3.storage CID:', cid);
+    console.log('+ web3.storage CID:', cid);
 
     return cid || defaultCid;
     // */
