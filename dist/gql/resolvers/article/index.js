@@ -40,6 +40,7 @@ const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
 const getArticles_1 = __importDefault(require("./getArticles"));
 const getArticleById_1 = __importDefault(require("./getArticleById"));
 const addArticle_1 = __importDefault(require("./addArticle"));
+const deleteArticle_1 = __importDefault(require("./deleteArticle"));
 const articleResolvers = {
     Query: {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -75,12 +76,9 @@ const articleResolvers = {
             console.log('');
             return yield (0, addArticle_1.default)(blog, input);
         }),
-        deleteArticle: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const wasDeleted = (yield (0, db_1.setCurrentModel)('healthy').deleteOne({ _id: ID })).deletedCount;
-            // const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
-            //   .deletedCount;
-            console.log('wasDeleted:', wasDeleted);
-            return wasDeleted;
+        deleteArticle: (_, { blog, ID }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            return yield (0, deleteArticle_1.default)(blog, ID);
         }),
         editArticle(_, { ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {

@@ -3,6 +3,7 @@ import * as web3Storage from '../../../ipfs/web3Storage';
 import getArticles from './getArticles';
 import getArticleById from './getArticleById';
 import addArticle from './addArticle';
+import deleteArticle from './deleteArticle';
 
 const articleResolvers = {
   Query: {
@@ -43,16 +44,9 @@ const articleResolvers = {
       return await addArticle(blog, input);
     },
 
-    deleteArticle: async (_: any, { ID }: { ID: string }) => {
-      const wasDeleted = (
-        await setCurrentModel('healthy').deleteOne({ _id: ID })
-      ).deletedCount;
-      // const wasDeleted = (await db.CurrentModel.deleteOne({ _id: ID }))
-      //   .deletedCount;
-
-      console.log('wasDeleted:', wasDeleted);
-
-      return wasDeleted;
+    deleteArticle: async (_: any, { blog, ID }: any) => {
+      console.log('');
+      return await deleteArticle(blog, ID);
     },
 
     async editArticle(_: any, { ID, articleInput }: any) {

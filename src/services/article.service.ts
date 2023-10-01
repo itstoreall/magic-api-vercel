@@ -25,3 +25,11 @@ export const createArticle = async (blog: string, newArticleInput: any) => {
     console.error(`Error in createArticle: ${e.message}`);
   }
 };
+
+export const deleteArticle = async (blog: string, ID: string) => {
+  try {
+    return (await setCurrentModel(blog).deleteOne({ _id: ID })).deletedCount;
+  } catch (e) {
+    console.error(`Error in createArticle: ${e.message}`);
+  }
+};

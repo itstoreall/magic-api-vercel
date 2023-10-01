@@ -26,3 +26,6 @@ export const addArticle = async (blog: string, input: any) => {
   };
   return await articleService.createArticle(blog, newArticleInput);
 };
+
+export const deleteArticle = async (blog: string, ID: string) =>
+  await articleService.deleteArticle(blog, ID);

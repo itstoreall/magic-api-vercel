@@ -32,33 +32,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
-const constants_1 = require("../../constants");
-const web3Storage = __importStar(require("../../ipfs/web3Storage"));
-const articleService = __importStar(require("../../services/article.service"));
-const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getAllArticles(blog); });
-exports.getAllArticles = getAllArticles;
-const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
-exports.getArticleById = getArticleById;
-const getIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
-    let cid = constants_1.DEFAULT_IPFS_CID;
-    if (base64)
-        cid = yield web3Storage.upload(base64);
-    return cid;
+const articleUtils = __importStar(require("../../utils/article"));
+const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* deleteArticle:', blog, ID);
+    const wasDeleted = yield articleUtils.deleteArticle(blog, ID);
+    console.log(1, 'article was deleted:', Boolean(wasDeleted));
+    return wasDeleted;
 });
-const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const cid = yield getIpfsCid(input.image);
-    const newArticleInput = {
-        title: input.title,
-        description: input.description,
-        text: input.text,
-        author: input.author,
-        ipfs: cid,
-        tags: input.tags,
-    };
-    return yield articleService.createArticle(blog, newArticleInput);
-});
-exports.addArticle = addArticle;
-const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.deleteArticle(blog, ID); });
-exports.deleteArticle = deleteArticle;
-//# sourceMappingURL=article.js.map
+exports.default = deleteArticle;
+//# sourceMappingURL=deleteArticle.js.map

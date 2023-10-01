@@ -48,7 +48,7 @@ const upload = (base64Img) => __awaiter(void 0, void 0, void 0, function* () {
         const files = prepareFiles(base64Img);
         const storage = getStorage();
         const cid = yield storage.put(files);
-        console.log('web3.storage CID:', cid);
+        console.log('+ web3.storage CID:', cid);
         return cid || defaultCid;
         // */
     }
