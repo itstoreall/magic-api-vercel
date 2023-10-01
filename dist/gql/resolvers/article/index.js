@@ -39,47 +39,37 @@ const constants_1 = require("../../../constants");
 const db_1 = require("../../../db");
 const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
 const getArticles_1 = __importDefault(require("./getArticles"));
+const getArticleById_1 = __importDefault(require("./getArticleById"));
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
 const articleResolvers = {
     Query: {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
-            const articles = yield (0, getArticles_1.default)(blog);
-            return articles;
+            return yield (0, getArticles_1.default)(blog);
         }),
-        getArticleById: (_, { ID }) => __awaiter(void 0, void 0, void 0, function* () {
-            const article = yield (0, db_1.setCurrentModel)('healthy').find({ _id: ID });
-            // const article = await db.CurrentModel.find({ _id: ID });
-            console.log('getArticleById:', article);
-            return {
-                id: article[0]._id,
-                title: article[0].title,
-                description: article[0].description,
-                text: article[0].text,
-                author: article[0].author,
-                ipfs: article[0].ipfs,
-                views: article[0].views,
-                tags: article[0].tags,
-                timestamp: article[0].timestamp,
-            };
+        getArticleById: (_, { blog, ID }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            return yield (0, getArticleById_1.default)(blog, ID);
         }),
-        getArticleByTitle(_, { title }) {
-            return __awaiter(this, void 0, void 0, function* () {
-                const article = yield (0, db_1.setCurrentModel)('healthy').find({ title });
-                console.log('getArticleByTitle:', article);
-                return {
-                    id: article[0]._id,
-                    title: article[0].title,
-                    description: article[0].description,
-                    text: article[0].text,
-                    author: article[0].author,
-                    ipfs: article[0].ipfs,
-                    views: article[0].views,
-                    tags: article[0].tags,
-                    timestamp: article[0].timestamp,
-                };
-            });
+        /*
+        async getArticleByTitle(_: any, { title }: any) {
+          const article = await setCurrentModel('healthy').find({ title });
+    
+          console.log('getArticleByTitle:', article);
+    
+          return {
+            id: article[0]._id,
+            title: article[0].title,
+            description: article[0].description,
+            text: article[0].text,
+            author: article[0].author,
+            ipfs: article[0].ipfs,
+            views: article[0].views,
+            tags: article[0].tags,
+            timestamp: article[0].timestamp,
+          };
         },
+        */
     },
     Mutation: {
         addArticle: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {

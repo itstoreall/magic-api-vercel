@@ -32,10 +32,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getArticleById = exports.getAllArticles = void 0;
-const articleService = __importStar(require("../../services/article.service"));
-const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getAllArticles(blog); });
-exports.getAllArticles = getAllArticles;
-const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
-exports.getArticleById = getArticleById;
-//# sourceMappingURL=article.js.map
+const articleUtils = __importStar(require("../../utils/article"));
+const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    const article = yield articleUtils.getArticleById(blog, ID);
+    return {
+        id: article._id,
+        title: article.title,
+        description: article.description,
+        text: article.text,
+        author: article.author,
+        ipfs: article.ipfs,
+        views: article.views,
+        tags: article.tags,
+        timestamp: article.timestamp,
+    };
+});
+exports.default = getArticleById;
+//# sourceMappingURL=getArticleById.js.map

@@ -11,8 +11,6 @@ const typeDefs_1 = __importDefault(require("./gql/typeDefs"));
 const resolvers_1 = __importDefault(require("./gql/resolvers"));
 const nodeEnv = process.env.NODE_ENV;
 const PORT = process.env.PORT || 4001;
-// const model = db.CurrentModel.modelName;
-// const model = db.CurrentModel.modelName;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 const server = new server_1.ApolloServer({
@@ -23,7 +21,7 @@ const server = new server_1.ApolloServer({
     listen: { port: Number(PORT) },
 }).then(({ url }) => {
     console.log(``);
-    console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)}`); //  - ${model} db
+    console.log(`  * ${nodeEnv} server ★(◔.◔)★ ${String(url)}`);
     console.log(``);
 });
 //# sourceMappingURL=index.js.map

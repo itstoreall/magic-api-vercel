@@ -1,7 +1,8 @@
 import { DEFAULT_IPFS_CID } from '../../../constants';
-import db, { setCurrentModel } from '../../../db';
+import { setCurrentModel } from '../../../db';
 import * as web3Storage from '../../../ipfs/web3Storage';
 import getArticles from './getArticles';
+import getArticleById from './getArticleById';
 
 const defaultCid = DEFAULT_IPFS_CID;
 
@@ -9,29 +10,15 @@ const articleResolvers = {
   Query: {
     articles: async (_: any, { blog }: { blog: string }) => {
       console.log('');
-      const articles = await getArticles(blog);
-      return articles;
+      return await getArticles(blog);
     },
 
-    getArticleById: async (_: any, { ID }: any) => {
-      const article = await setCurrentModel('healthy').find({ _id: ID });
-      // const article = await db.CurrentModel.find({ _id: ID });
-
-      console.log('getArticleById:', article);
-
-      return {
-        id: article[0]._id,
-        title: article[0].title,
-        description: article[0].description,
-        text: article[0].text,
-        author: article[0].author,
-        ipfs: article[0].ipfs,
-        views: article[0].views,
-        tags: article[0].tags,
-        timestamp: article[0].timestamp,
-      };
+    getArticleById: async (_: any, { blog, ID }: any) => {
+      console.log('');
+      return await getArticleById(blog, ID);
     },
 
+    /*
     async getArticleByTitle(_: any, { title }: any) {
       const article = await setCurrentModel('healthy').find({ title });
 
@@ -49,6 +36,7 @@ const articleResolvers = {
         timestamp: article[0].timestamp,
       };
     },
+    */
   },
 
   Mutation: {

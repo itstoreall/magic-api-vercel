@@ -51,8 +51,6 @@ const modelHandler = (label?: LabelModelsConfig) => {
   };
 
   if (label) {
-    console.log(1, 'label', label);
-
     models.ProdArticle = mongoose.model<ArticleModel>(
       articles[label].prod,
       ProdArticleSchema
@@ -63,8 +61,6 @@ const modelHandler = (label?: LabelModelsConfig) => {
       DevArticleSchema
     );
   }
-
-  console.log('models', models);
 
   return models;
 };
