@@ -24,14 +24,14 @@ const articleTypeDefs = `#graphql
   }
 
   type Query {
-    articles: [Article]
-    getArticleById(ID: ID!): Article
-    getArticleByTitle(title: String!): Article
+    articles(blog: String!): [Article]
+    getArticleById(blog: String!, ID: ID!): Article
+    #getArticleByTitle(title: String!): Article
   }
 
   type Mutation {
-    addArticle(input: ArticleInput): Article
-    deleteArticle(ID: ID!): Boolean
+    addArticle(blog: String!, input: ArticleInput!): Article
+    deleteArticle(blog: String!, ID: ID!): Boolean
     editArticle(ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;

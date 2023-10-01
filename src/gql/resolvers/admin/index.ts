@@ -11,8 +11,8 @@ dotenv.config();
 const adminResolvers = {
   Query: {
     getAllAdmins: async (_: any, { token }: { token: string }) => {
-      const admins = await getAdmins(token);
-      return admins;
+      console.log('');
+      return await getAdmins(token);
     },
 
     isAdmin: async (_: any, { token, blog }: ia.IIsAdminArgs): IsAdminRes => {

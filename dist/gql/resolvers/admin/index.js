@@ -21,8 +21,8 @@ dotenv_1.default.config();
 const adminResolvers = {
     Query: {
         getAllAdmins: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
-            const admins = yield (0, getAdmins_1.default)(token);
-            return admins;
+            console.log('');
+            return yield (0, getAdmins_1.default)(token);
         }),
         isAdmin: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
