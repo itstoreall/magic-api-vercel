@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
+exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
 const constants_1 = require("../../constants");
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
@@ -40,14 +40,20 @@ const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getAllArticles = getAllArticles;
 const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
 exports.getArticleById = getArticleById;
-const getIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
+const createIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
     let cid = constants_1.DEFAULT_IPFS_CID;
     if (base64)
         cid = yield web3Storage.upload(base64);
     return cid;
 });
+const updateIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
+    let cid;
+    if (base64)
+        cid = yield web3Storage.upload(base64);
+    return cid;
+});
 const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const cid = yield getIpfsCid(input.image);
+    const cid = yield createIpfsCid(input.image);
     const newArticleInput = {
         title: input.title,
         description: input.description,
@@ -61,4 +67,14 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
 exports.addArticle = addArticle;
 const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.deleteArticle(blog, ID); });
 exports.deleteArticle = deleteArticle;
+const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
+    const base64 = input.image;
+    const cid = yield updateIpfsCid(base64);
+    const newImage = Object.assign(Object.assign({}, input), { ipfs: cid });
+    const onlyText = Object.assign({}, input);
+    delete onlyText.image;
+    const artInput = base64 ? newImage : onlyText;
+    return yield articleService.updateArticle(blog, ID, artInput);
+});
+exports.editArticle = editArticle;
 //# sourceMappingURL=article.js.map

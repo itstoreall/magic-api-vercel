@@ -16,11 +16,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const getBlogs_1 = __importDefault(require("./getBlogs"));
 const deleteAuthorFromBlog_1 = __importDefault(require("./deleteAuthorFromBlog"));
 const addAuthorToBlog_1 = __importDefault(require("./addAuthorToBlog"));
-// import isAdmin from './isAdmin';
-// import addNewAuthor from './addNewAuthor';
-// import updateAdmin from './updateAdmin';
-// import deleteAuthorFromBlog from './deleteAuthorFromBlog';
-// import getAdmins from './getAdmins';
 dotenv_1.default.config();
 const adminResolvers = {
     Query: {

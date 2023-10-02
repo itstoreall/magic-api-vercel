@@ -31,14 +31,6 @@ const adminResolvers = {
       console.log('');
       return await updateAdmin(input);
     },
-
-    // deleteAuthorFromBlog: async (
-    //   _: any,
-    //   { input }: { input: ia.IDelAuthorFromBlogInput }
-    // ) => {
-    //   console.log('');
-    //   return await deleteAuthorFromBlog(input);
-    // },
   },
 };
 
