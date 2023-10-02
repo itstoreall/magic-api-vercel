@@ -48,9 +48,3 @@ export interface IAdminInputProps {
 export interface IAdminInput {
   input: IAdminInputProps;
 }
-
-// export interface IDelAuthorFromBlogInput {
-//   blog: string;
-//   author: string;
-//   token: string;
-// }

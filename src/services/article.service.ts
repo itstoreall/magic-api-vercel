@@ -33,3 +33,12 @@ export const deleteArticle = async (blog: string, ID: string) => {
     console.error(`Error in createArticle: ${e.message}`);
   }
 };
+
+export const updateArticle = async (blog: string, ID: string, input: any) => {
+  try {
+    return (await setCurrentModel(blog).updateOne({ _id: ID }, { ...input }))
+      .modifiedCount;
+  } catch (e) {
+    console.error(`Error in updateArticle: ${e.message}`);
+  }
+};

@@ -38,13 +38,6 @@ const adminResolvers = {
             console.log('');
             return yield (0, updateAdmin_1.default)(input);
         }),
-        // deleteAuthorFromBlog: async (
-        //   _: any,
-        //   { input }: { input: ia.IDelAuthorFromBlogInput }
-        // ) => {
-        //   console.log('');
-        //   return await deleteAuthorFromBlog(input);
-        // },
     },
 };
 exports.default = adminResolvers;

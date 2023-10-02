@@ -1,15 +1,8 @@
 import dotenv from 'dotenv';
-// import { IsAdminRes } from '../../../types/admin';
-// import * as ia from '../../../interfaces/admin';
 import * as ib from '../../../interfaces/blog';
 import getBlogs from './getBlogs';
 import deleteAuthorFromBlog from './deleteAuthorFromBlog';
 import addAuthorToBlog from './addAuthorToBlog';
-// import isAdmin from './isAdmin';
-// import addNewAuthor from './addNewAuthor';
-// import updateAdmin from './updateAdmin';
-// import deleteAuthorFromBlog from './deleteAuthorFromBlog';
-// import getAdmins from './getAdmins';
 
 dotenv.config();
 
