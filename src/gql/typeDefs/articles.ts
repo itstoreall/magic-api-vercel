@@ -30,7 +30,7 @@ const articleTypeDefs = `#graphql
   type Mutation {
     addArticle(blog: String!, input: ArticleInput!): Article
     deleteArticle(blog: String!, ID: ID!): Boolean
-    editArticle(ID: ID!, articleInput: ArticleInput): Boolean
+    editArticle(blog: String!, ID: ID!, articleInput: ArticleInput): Boolean
   }
 `;
 

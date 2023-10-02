@@ -1,9 +1,8 @@
-import { setCurrentModel } from '../../../db';
-import * as web3Storage from '../../../ipfs/web3Storage';
 import getArticles from './getArticles';
 import getArticleById from './getArticleById';
 import addArticle from './addArticle';
 import deleteArticle from './deleteArticle';
+import editArticle from './editArticle';
 
 const articleResolvers = {
   Query: {
@@ -49,42 +48,9 @@ const articleResolvers = {
       return await deleteArticle(blog, ID);
     },
 
-    async editArticle(_: any, { ID, articleInput }: any) {
-      console.log('articleInput -->', articleInput);
-
-      // /*
-      const base64 = articleInput.image;
-
-      let cid: string;
-
-      if (base64) {
-        console.log('is base64 -->', base64);
-        cid = await web3Storage.upload(base64);
-      }
-
-      const updatedImage = { ...articleInput, ipfs: cid };
-      const onlyText = { ...articleInput };
-      delete onlyText.image;
-
-      console.log('onlyText', onlyText);
-
-      const wasEdited = (
-        await setCurrentModel('healthy').updateOne(
-          { _id: ID },
-          base64 ? { ...updatedImage } : { ...onlyText }
-        )
-      ).modifiedCount;
-      // const wasEdited = (
-      //   await db.CurrentModel.updateOne(
-      //     { _id: ID },
-      //     base64 ? { ...updatedImage } : { ...onlyText }
-      //   )
-      // ).modifiedCount;
-
-      console.log('wasEdited:', wasEdited);
-
-      return wasEdited;
-      // */
+    async editArticle(_: any, { blog, ID, articleInput }: any) {
+      console.log('');
+      return await editArticle(blog, ID, articleInput);
     },
   },
 };

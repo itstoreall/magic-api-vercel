@@ -8,14 +8,20 @@ export const getAllArticles = async (blog: string) =>
 export const getArticleById = async (blog: string, ID: string) =>
   await articleService.getArticleById(blog, ID);
 
-const getIpfsCid = async (base64: string) => {
+const createIpfsCid = async (base64: string) => {
   let cid: string = DEFAULT_IPFS_CID;
   if (base64) cid = await web3Storage.upload(base64);
   return cid;
 };
 
+const updateIpfsCid = async (base64: string) => {
+  let cid: string;
+  if (base64) cid = await web3Storage.upload(base64);
+  return cid;
+};
+
 export const addArticle = async (blog: string, input: any) => {
-  const cid = await getIpfsCid(input.image);
+  const cid = await createIpfsCid(input.image);
   const newArticleInput = {
     title: input.title,
     description: input.description,
@@ -29,3 +35,13 @@ export const addArticle = async (blog: string, input: any) => {
 
 export const deleteArticle = async (blog: string, ID: string) =>
   await articleService.deleteArticle(blog, ID);
+
+export const editArticle = async (blog: string, ID: string, input: any) => {
+  const base64 = input.image;
+  const cid = await updateIpfsCid(base64);
+  const newImage = { ...input, ipfs: cid };
+  const onlyText = { ...input };
+  delete onlyText.image;
+  const artInput = base64 ? newImage : onlyText;
+  return await articleService.updateArticle(blog, ID, artInput);
+};

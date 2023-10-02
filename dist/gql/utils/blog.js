@@ -105,7 +105,6 @@ const addCoauthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
             const updatedCoauthors = yield (0, exports.updateCoauthors)(existingBlog, blogInput);
             console.log(1, 'updated coauthors:', updatedCoauthors);
             return updatedCoauthors;
-            // return [];
         }
         else
             utils.throwNewError(`no blog in db`);

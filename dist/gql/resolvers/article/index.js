@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,12 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const db_1 = require("../../../db");
-const web3Storage = __importStar(require("../../../ipfs/web3Storage"));
 const getArticles_1 = __importDefault(require("./getArticles"));
 const getArticleById_1 = __importDefault(require("./getArticleById"));
 const addArticle_1 = __importDefault(require("./addArticle"));
 const deleteArticle_1 = __importDefault(require("./deleteArticle"));
+const editArticle_1 = __importDefault(require("./editArticle"));
 const articleResolvers = {
     Query: {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -80,30 +56,10 @@ const articleResolvers = {
             console.log('');
             return yield (0, deleteArticle_1.default)(blog, ID);
         }),
-        editArticle(_, { ID, articleInput }) {
+        editArticle(_, { blog, ID, articleInput }) {
             return __awaiter(this, void 0, void 0, function* () {
-                console.log('articleInput -->', articleInput);
-                // /*
-                const base64 = articleInput.image;
-                let cid;
-                if (base64) {
-                    console.log('is base64 -->', base64);
-                    cid = yield web3Storage.upload(base64);
-                }
-                const updatedImage = Object.assign(Object.assign({}, articleInput), { ipfs: cid });
-                const onlyText = Object.assign({}, articleInput);
-                delete onlyText.image;
-                console.log('onlyText', onlyText);
-                const wasEdited = (yield (0, db_1.setCurrentModel)('healthy').updateOne({ _id: ID }, base64 ? Object.assign({}, updatedImage) : Object.assign({}, onlyText))).modifiedCount;
-                // const wasEdited = (
-                //   await db.CurrentModel.updateOne(
-                //     { _id: ID },
-                //     base64 ? { ...updatedImage } : { ...onlyText }
-                //   )
-                // ).modifiedCount;
-                console.log('wasEdited:', wasEdited);
-                return wasEdited;
-                // */
+                console.log('');
+                return yield (0, editArticle_1.default)(blog, ID, articleInput);
             });
         },
     },

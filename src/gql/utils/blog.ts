@@ -83,7 +83,6 @@ export const addCoauthor = async (input: IHandleAuthorInBlogInput) => {
       const updatedCoauthors = await updateCoauthors(existingBlog, blogInput);
       console.log(1, 'updated coauthors:', updatedCoauthors);
       return updatedCoauthors;
-      // return [];
     } else utils.throwNewError(`no blog in db`);
   } else utils.throwNewError(`is not a Master!`);
 

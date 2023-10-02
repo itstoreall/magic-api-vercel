@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteArticle = exports.createArticle = exports.getArticleById = exports.getAllArticles = void 0;
+exports.updateArticle = exports.deleteArticle = exports.createArticle = exports.getArticleById = exports.getAllArticles = void 0;
 const db_1 = require("../db");
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -49,4 +49,14 @@ const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteArticle = deleteArticle;
+const updateArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return (yield (0, db_1.setCurrentModel)(blog).updateOne({ _id: ID }, Object.assign({}, input)))
+            .modifiedCount;
+    }
+    catch (e) {
+        console.error(`Error in updateArticle: ${e.message}`);
+    }
+});
+exports.updateArticle = updateArticle;
 //# sourceMappingURL=article.service.js.map
