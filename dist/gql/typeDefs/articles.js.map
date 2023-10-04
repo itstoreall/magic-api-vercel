@@ -1,1 +1,1 @@
-{"version":3,"file":"articles.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/articles.ts"],"names":[],"mappings":";;AAAA,MAAM,eAAe,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAmCvB,CAAC;AAEF,kBAAe,eAAe,CAAC"}
+{"version":3,"file":"articles.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/articles.ts"],"names":[],"mappings":";;AAAA,MAAM,eAAe,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAoCvB,CAAC;AAEF,kBAAe,eAAe,CAAC"}

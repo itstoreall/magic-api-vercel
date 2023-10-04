@@ -60,6 +60,7 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
         text: input.text,
         author: input.author,
         ipfs: cid,
+        views: input.views,
         tags: input.tags,
     };
     return yield articleService.createArticle(blog, newArticleInput);

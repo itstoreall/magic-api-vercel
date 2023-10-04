@@ -18,6 +18,7 @@ const articleTypeDefs = `#graphql
     author: String!
     image: String
     ipfs: String
+    views: String
     tags: [String]
   }
 
