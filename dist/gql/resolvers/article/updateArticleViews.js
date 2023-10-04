@@ -33,11 +33,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleUtils = __importStar(require("../../utils/article"));
-const getArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('* getArticles:', blog);
-    const articles = yield articleUtils.getAllArticles(blog);
-    console.log(1, 'articles:', articles === null || articles === void 0 ? void 0 : articles.length);
-    return yield articleUtils.getAllArticles(blog);
+const updateArticleViews = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* updateArticleViews:', blog, ID);
+    const isUpdated = yield articleUtils.updateArticleViews(blog, ID);
+    console.log(1, 'article views updated:', isUpdated);
+    return isUpdated;
 });
-exports.default = getArticles;
-//# sourceMappingURL=getArticles.js.map
+exports.default = updateArticleViews;
+//# sourceMappingURL=updateArticleViews.js.map

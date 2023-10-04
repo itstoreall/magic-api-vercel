@@ -3,15 +3,17 @@ import getArticleById from './getArticleById';
 import addArticle from './addArticle';
 import deleteArticle from './deleteArticle';
 import editArticle from './editArticle';
+import updateArticleViews from './updateArticleViews';
+import * as i from '../../../interfaces/gql';
 
 const articleResolvers = {
   Query: {
-    articles: async (_: any, { blog }: { blog: string }) => {
+    articles: async (_: any, { blog }: i.IStringProps) => {
       console.log('');
       return await getArticles(blog);
     },
 
-    getArticleById: async (_: any, { blog, ID }: any) => {
+    getArticleById: async (_: any, { blog, ID }: i.IStringProps) => {
       console.log('');
       return await getArticleById(blog, ID);
     },
@@ -38,19 +40,24 @@ const articleResolvers = {
   },
 
   Mutation: {
-    addArticle: async (_: any, { blog, input }: any) => {
+    addArticle: async (_: any, { blog, input }: i.IStringInputProps) => {
       console.log('');
       return await addArticle(blog, input);
     },
 
-    deleteArticle: async (_: any, { blog, ID }: any) => {
+    deleteArticle: async (_: any, { blog, ID }: i.IStringProps) => {
       console.log('');
       return await deleteArticle(blog, ID);
     },
 
-    async editArticle(_: any, { blog, ID, articleInput }: any) {
+    async editArticle(_: any, { blog, ID, articleInput }: i.IEditArticleProps) {
       console.log('');
       return await editArticle(blog, ID, articleInput);
+    },
+
+    async updateArticleViews(_: any, { blog, ID }: i.IStringProps) {
+      console.log('');
+      return await updateArticleViews(blog, ID);
     },
   },
 };

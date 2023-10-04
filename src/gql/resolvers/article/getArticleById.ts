@@ -1,7 +1,10 @@
 import * as articleUtils from '../../utils/article';
 
 const getArticleById = async (blog: string, ID: string) => {
+  console.log('* getArticleById:', blog, ID);
   const article = await articleUtils.getArticleById(blog, ID);
+
+  console.log(1, 'article:', article.title);
 
   return {
     id: article._id,
