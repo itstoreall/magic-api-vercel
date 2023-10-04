@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
+exports.updateArticleViews = exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
 const constants_1 = require("../../constants");
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
@@ -77,4 +77,11 @@ const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, funct
     return yield articleService.updateArticle(blog, ID, artInput);
 });
 exports.editArticle = editArticle;
+const updateArticleViews = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    const article = (yield (0, exports.getArticleById)(blog, ID)).toObject();
+    const newView = Number(article.views) > 0 ? Number(article.views) + 1 : 1;
+    const artInput = Object.assign(Object.assign({}, article), { views: newView });
+    return Boolean(yield articleService.updateArticle(blog, ID, artInput));
+});
+exports.updateArticleViews = updateArticleViews;
 //# sourceMappingURL=article.js.map
