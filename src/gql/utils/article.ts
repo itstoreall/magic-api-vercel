@@ -28,6 +28,7 @@ export const addArticle = async (blog: string, input: any) => {
     text: input.text,
     author: input.author,
     ipfs: cid,
+    views: input.views,
     tags: input.tags,
   };
   return await articleService.createArticle(blog, newArticleInput);
