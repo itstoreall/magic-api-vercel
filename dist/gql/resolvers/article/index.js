@@ -17,6 +17,7 @@ const getArticleById_1 = __importDefault(require("./getArticleById"));
 const addArticle_1 = __importDefault(require("./addArticle"));
 const deleteArticle_1 = __importDefault(require("./deleteArticle"));
 const editArticle_1 = __importDefault(require("./editArticle"));
+const updateArticleViews_1 = __importDefault(require("./updateArticleViews"));
 const articleResolvers = {
     Query: {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,6 +61,12 @@ const articleResolvers = {
             return __awaiter(this, void 0, void 0, function* () {
                 console.log('');
                 return yield (0, editArticle_1.default)(blog, ID, articleInput);
+            });
+        },
+        updateArticleViews(_, { blog, ID }) {
+            return __awaiter(this, void 0, void 0, function* () {
+                console.log('');
+                return yield (0, updateArticleViews_1.default)(blog, ID);
             });
         },
     },

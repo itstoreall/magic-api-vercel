@@ -45,3 +45,10 @@ export const editArticle = async (blog: string, ID: string, input: any) => {
   const artInput = base64 ? newImage : onlyText;
   return await articleService.updateArticle(blog, ID, artInput);
 };
+
+export const updateArticleViews = async (blog: string, ID: string) => {
+  const article = (await getArticleById(blog, ID)).toObject();
+  const newView = Number(article.views) > 0 ? Number(article.views) + 1 : 1;
+  const artInput = { ...article, views: newView };
+  return Boolean(await articleService.updateArticle(blog, ID, artInput));
+};
