@@ -40,20 +40,20 @@ const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getAllArticles = getAllArticles;
 const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
 exports.getArticleById = getArticleById;
-const createIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
+const createIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, function* () {
     let cid = constants_1.DEFAULT_IPFS_CID;
     if (base64)
-        cid = yield web3Storage.upload(base64);
+        cid = yield web3Storage.upload(blog, base64);
     return cid;
 });
-const updateIpfsCid = (base64) => __awaiter(void 0, void 0, void 0, function* () {
+const updateIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, function* () {
     let cid;
     if (base64)
-        cid = yield web3Storage.upload(base64);
+        cid = yield web3Storage.upload(blog, base64);
     return cid;
 });
 const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const cid = yield createIpfsCid(input.image);
+    const cid = yield createIpfsCid(blog, input.image);
     const newArticleInput = {
         title: input.title,
         description: input.description,
@@ -70,7 +70,7 @@ const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* 
 exports.deleteArticle = deleteArticle;
 const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
     const base64 = input.image;
-    const cid = yield updateIpfsCid(base64);
+    const cid = yield updateIpfsCid(blog, base64);
     const newImage = Object.assign(Object.assign({}, input), { ipfs: cid });
     const onlyText = Object.assign({}, input);
     delete onlyText.image;
