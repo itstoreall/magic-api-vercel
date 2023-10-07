@@ -20,20 +20,21 @@ const getStorage = (blog: string) => {
 };
 
 // Preparation
-const prepareFiles = (base64Data: string) => {
+const prepareFiles = (blog: string, base64Data: string) => {
   if (!base64Data?.includes('base64')) return null;
 
   const base64 = base64Data.split(';base64,').pop();
   const buffer = Buffer.from(base64, 'base64');
+  const fileName = blog === 'astraia' ? 'astraia' : 'healthy';
 
-  return [new File([buffer], 'astraia-image.jpg')];
+  return [new File([buffer], `${fileName}-image.jpg`)];
 };
 
 // Uploader
 export const upload = async (blog: string, base64Img: string) => {
   try {
     // /*
-    const files = prepareFiles(base64Img);
+    const files = prepareFiles(blog, base64Img);
     const storage = getStorage(blog);
     const cid = await storage.put(files as Iterable<Filelike>);
 
