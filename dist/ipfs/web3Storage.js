@@ -24,9 +24,11 @@ const process_1 = __importDefault(require("process"));
 const constants_1 = require("../constants");
 const web3_storage_1 = require("web3.storage");
 const defaultCid = constants_1.DEFAULT_IPFS_CID;
+const astraiaToken = process_1.default.env.WEB3_STORAGE_API_TOKEN_ASTRAIA;
+const healthyToken = process_1.default.env.WEB3_STORAGE_API_TOKEN_HEALTHY;
 // Client
-const getStorage = () => {
-    const token = process_1.default.env.WEB3_STORAGE_API_TOKEN;
+const getStorage = (blog) => {
+    const token = blog === 'astraia' ? astraiaToken : healthyToken;
     if (!token) {
         console.error('ERROR: failed to get web3.storage API token');
         return;
@@ -42,11 +44,11 @@ const prepareFiles = (base64Data) => {
     return [new web3_storage_1.File([buffer], 'astraia-image.jpg')];
 };
 // Uploader
-const upload = (base64Img) => __awaiter(void 0, void 0, void 0, function* () {
+const upload = (blog, base64Img) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // /*
         const files = prepareFiles(base64Img);
-        const storage = getStorage();
+        const storage = getStorage(blog);
         const cid = yield storage.put(files);
         console.log('+ web3.storage CID:', cid);
         return cid || defaultCid;
@@ -58,10 +60,10 @@ const upload = (base64Img) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.upload = upload;
 // Retrieve
-const retrieve = (cid) => __awaiter(void 0, void 0, void 0, function* () {
+const retrieve = (blog, cid) => __awaiter(void 0, void 0, void 0, function* () {
     const retrievedFiles = [];
     try {
-        const storage = getStorage();
+        const storage = getStorage(blog);
         const res = yield storage.get(cid);
         if (!res.ok) {
             console.error(`failed to get web3.storage ${cid}`);
@@ -79,9 +81,9 @@ const retrieve = (cid) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.retrieve = retrieve;
 // Status
-const checkStatus = (cid) => __awaiter(void 0, void 0, void 0, function* () {
+const checkStatus = (blog, cid) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const storage = getStorage();
+        const storage = getStorage(blog);
         return yield storage.status(cid);
     }
     catch (e) {
@@ -90,11 +92,11 @@ const checkStatus = (cid) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.checkStatus = checkStatus;
 // List
-const list = () => __awaiter(void 0, void 0, void 0, function* () {
+const list = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, e_1, _b, _c;
     const imageList = [];
     try {
-        const storage = getStorage();
+        const storage = getStorage(blog);
         try {
             for (var _d = true, _e = __asyncValues(storage.list()), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
                 _c = _f.value;
