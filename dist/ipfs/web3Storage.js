@@ -36,18 +36,19 @@ const getStorage = (blog) => {
     return new web3_storage_1.Web3Storage({ token: token });
 };
 // Preparation
-const prepareFiles = (base64Data) => {
+const prepareFiles = (blog, base64Data) => {
     if (!(base64Data === null || base64Data === void 0 ? void 0 : base64Data.includes('base64')))
         return null;
     const base64 = base64Data.split(';base64,').pop();
     const buffer = Buffer.from(base64, 'base64');
-    return [new web3_storage_1.File([buffer], 'astraia-image.jpg')];
+    const fileName = blog === 'astraia' ? 'astraia' : 'healthy';
+    return [new web3_storage_1.File([buffer], `${fileName}-image.jpg`)];
 };
 // Uploader
 const upload = (blog, base64Img) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // /*
-        const files = prepareFiles(base64Img);
+        const files = prepareFiles(blog, base64Img);
         const storage = getStorage(blog);
         const cid = yield storage.put(files);
         console.log('+ web3.storage CID:', cid);
