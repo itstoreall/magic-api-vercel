@@ -33,6 +33,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const blogUtils = __importStar(require("../../utils/blog"));
-const getBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield blogUtils.getAllBlogs(token); });
-exports.default = getBlogs;
-//# sourceMappingURL=getBlogs.js.map
+const getBlogTags = (token, blog) => __awaiter(void 0, void 0, void 0, function* () { return yield blogUtils.getBlogTags(token, blog); });
+exports.default = getBlogTags;
+//# sourceMappingURL=getBlogTags.js.map

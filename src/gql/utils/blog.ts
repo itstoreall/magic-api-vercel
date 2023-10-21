@@ -12,7 +12,7 @@ export const getBlogByTitle = async (title: string) =>
   await blogService.getBlogByTitle(title);
 
 export const createNewBlog = async (title: string, author: string[]) => {
-  const newBlog = await blogService.addNewBlog(title, author);
+  const newBlog = await blogService.addNewBlog(title, author, []);
 
   if (newBlog) {
     console.log('+ new blog has been created:', Boolean(newBlog));
@@ -26,6 +26,18 @@ export const getAllBlogs = async (token: string) => {
     const blogs = await blogService.getAllBlogs();
     return blogs;
   } else utils.throwNewError(`is not a Master!`);
+};
+
+export const getBlogTags = async (token: string, title: string) => {
+  // return ['yyy'];
+  const isMaster = await isMasterByToken(token);
+  if (!isMaster) return utils.throwNewError(`is not a Master!`);
+
+  const blog = await getBlogByTitle(title);
+
+  console.log('2222', blog);
+
+  return ['tags'];
 };
 
 export const pushToAuthorBlogs = (title: string, accessInput: any) =>

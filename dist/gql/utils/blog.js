@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getBlogTags = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
@@ -45,7 +45,7 @@ const existingBlogs = process.env.EXISTING_BLOGS;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
 exports.getBlogByTitle = getBlogByTitle;
 const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const newBlog = yield blogService.addNewBlog(title, author);
+    const newBlog = yield blogService.addNewBlog(title, author, []);
     if (newBlog) {
         console.log('+ new blog has been created:', Boolean(newBlog));
         return newBlog;
@@ -62,6 +62,16 @@ const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
         utils.throwNewError(`is not a Master!`);
 });
 exports.getAllBlogs = getAllBlogs;
+const getBlogTags = (token, title) => __awaiter(void 0, void 0, void 0, function* () {
+    // return ['yyy'];
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (!isMaster)
+        return utils.throwNewError(`is not a Master!`);
+    const blog = yield (0, exports.getBlogByTitle)(title);
+    console.log('2222', blog);
+    return ['tags'];
+});
+exports.getBlogTags = getBlogTags;
 const pushToAuthorBlogs = (title, accessInput) => existingBlogs
     .split(' ')
     .map(el => el)

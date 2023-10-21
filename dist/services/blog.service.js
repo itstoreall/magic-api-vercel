@@ -35,9 +35,9 @@ const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getBlogByTitle = getBlogByTitle;
-const addNewBlog = (title, authors) => __awaiter(void 0, void 0, void 0, function* () {
+const addNewBlog = (title, authors, tags) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const newBlog = new Blog({ title, authors });
+        const newBlog = new Blog({ title, authors, tags });
         const createdBlog = yield newBlog.save();
         return createdBlog;
     }

@@ -20,9 +20,13 @@ export const getBlogByTitle = async (title: string) => {
   }
 };
 
-export const addNewBlog = async (title: string, authors: string[]) => {
+export const addNewBlog = async (
+  title: string,
+  authors: string[],
+  tags: []
+) => {
   try {
-    const newBlog = new Blog({ title, authors });
+    const newBlog = new Blog({ title, authors, tags });
     const createdBlog = await newBlog.save();
     return createdBlog;
   } catch (e) {

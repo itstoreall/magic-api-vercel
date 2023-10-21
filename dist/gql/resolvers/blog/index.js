@@ -14,16 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const getBlogs_1 = __importDefault(require("./getBlogs"));
+const getBlogTags_1 = __importDefault(require("./getBlogTags"));
 const deleteAuthorFromBlog_1 = __importDefault(require("./deleteAuthorFromBlog"));
 const addAuthorToBlog_1 = __importDefault(require("./addAuthorToBlog"));
 dotenv_1.default.config();
 const adminResolvers = {
     Query: {
         getAllBlogs: (_, { token }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log('token', token);
+            console.log('');
             const blogs = yield (0, getBlogs_1.default)(token);
             console.log('blogs', blogs);
             return blogs;
+        }),
+        getBlogTags: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            const tags = yield (0, getBlogTags_1.default)(token, blog);
+            console.log('tags', tags);
+            return { tags: ['x'] };
         }),
     },
     Mutation: {

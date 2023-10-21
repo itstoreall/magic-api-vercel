@@ -1,18 +1,31 @@
 import dotenv from 'dotenv';
 import * as ib from '../../../interfaces/blog';
 import getBlogs from './getBlogs';
+import getBlogTags from './getBlogTags';
 import deleteAuthorFromBlog from './deleteAuthorFromBlog';
 import addAuthorToBlog from './addAuthorToBlog';
 
 dotenv.config();
 
+export interface IGetBlogTagsProps {
+  token: string;
+  blog: string;
+}
+
 const adminResolvers = {
   Query: {
     getAllBlogs: async (_: any, { token }: { token: string }) => {
-      console.log('token', token);
+      console.log('');
       const blogs = await getBlogs(token);
       console.log('blogs', blogs);
       return blogs;
+    },
+
+    getBlogTags: async (_: any, { token, blog }: IGetBlogTagsProps) => {
+      console.log('');
+      const tags = await getBlogTags(token, blog);
+      console.log('tags', tags);
+      return { tags: ['x'] };
     },
   },
 
