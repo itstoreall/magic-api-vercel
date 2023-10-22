@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
+// import * as ib from '../../../interfaces/blog';
 const getBlogs_1 = __importDefault(require("./getBlogs"));
 const getBlogTags_1 = __importDefault(require("./getBlogTags"));
 const deleteAuthorFromBlog_1 = __importDefault(require("./deleteAuthorFromBlog"));
@@ -30,7 +31,7 @@ const adminResolvers = {
             console.log('');
             const tags = yield (0, getBlogTags_1.default)(token, blog);
             console.log('tags', tags);
-            return { tags: ['x'] };
+            return { tags };
         }),
     },
     Mutation: {

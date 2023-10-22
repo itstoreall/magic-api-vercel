@@ -22,22 +22,16 @@ export const createNewBlog = async (title: string, author: string[]) => {
 
 export const getAllBlogs = async (token: string) => {
   const isMaster = await isMasterByToken(token);
-  if (isMaster) {
-    const blogs = await blogService.getAllBlogs();
-    return blogs;
-  } else utils.throwNewError(`is not a Master!`);
+  if (!isMaster) return utils.throwNewError(`is not a Master!`);
+  const blogs = await blogService.getAllBlogs();
+  return blogs;
 };
 
 export const getBlogTags = async (token: string, title: string) => {
-  // return ['yyy'];
   const isMaster = await isMasterByToken(token);
   if (!isMaster) return utils.throwNewError(`is not a Master!`);
-
   const blog = await getBlogByTitle(title);
-
-  console.log('2222', blog);
-
-  return ['tags'];
+  return blog.tags;
 };
 
 export const pushToAuthorBlogs = (title: string, accessInput: any) =>

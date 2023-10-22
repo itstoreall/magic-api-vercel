@@ -54,22 +54,18 @@ const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, funct
 exports.createNewBlog = createNewBlog;
 const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
     const isMaster = yield (0, admin_1.isMasterByToken)(token);
-    if (isMaster) {
-        const blogs = yield blogService.getAllBlogs();
-        return blogs;
-    }
-    else
-        utils.throwNewError(`is not a Master!`);
+    if (!isMaster)
+        return utils.throwNewError(`is not a Master!`);
+    const blogs = yield blogService.getAllBlogs();
+    return blogs;
 });
 exports.getAllBlogs = getAllBlogs;
 const getBlogTags = (token, title) => __awaiter(void 0, void 0, void 0, function* () {
-    // return ['yyy'];
     const isMaster = yield (0, admin_1.isMasterByToken)(token);
     if (!isMaster)
         return utils.throwNewError(`is not a Master!`);
     const blog = yield (0, exports.getBlogByTitle)(title);
-    console.log('2222', blog);
-    return ['tags'];
+    return blog.tags;
 });
 exports.getBlogTags = getBlogTags;
 const pushToAuthorBlogs = (title, accessInput) => existingBlogs

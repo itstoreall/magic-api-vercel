@@ -27,7 +27,7 @@ const getAllBlogs = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.getAllBlogs = getAllBlogs;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const blog = yield Blog.findOne({ title });
+        const blog = yield Blog.findOne({ title }).select('-__v').exec();
         return blog;
     }
     catch (e) {

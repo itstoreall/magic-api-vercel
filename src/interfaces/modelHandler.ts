@@ -10,6 +10,7 @@ export interface AdminModel extends mongoose.Document {
 export interface BlogModel extends mongoose.Document {
   title: string;
   authors: string[];
+  tags: string[];
 }
 
 export interface ArticleModel extends mongoose.Document {

@@ -1,16 +1,15 @@
 import dotenv from 'dotenv';
-import * as ib from '../../../interfaces/blog';
+import {
+  IGetBlogTagsProps as IGBTP,
+  IHandleAuthorInBlogInput as IHAIBI,
+} from '../../../interfaces/blog';
+// import * as ib from '../../../interfaces/blog';
 import getBlogs from './getBlogs';
 import getBlogTags from './getBlogTags';
 import deleteAuthorFromBlog from './deleteAuthorFromBlog';
 import addAuthorToBlog from './addAuthorToBlog';
 
 dotenv.config();
-
-export interface IGetBlogTagsProps {
-  token: string;
-  blog: string;
-}
 
 const adminResolvers = {
   Query: {
@@ -21,27 +20,21 @@ const adminResolvers = {
       return blogs;
     },
 
-    getBlogTags: async (_: any, { token, blog }: IGetBlogTagsProps) => {
+    getBlogTags: async (_: any, { token, blog }: IGBTP) => {
       console.log('');
       const tags = await getBlogTags(token, blog);
       console.log('tags', tags);
-      return { tags: ['x'] };
+      return { tags };
     },
   },
 
   Mutation: {
-    addAuthorToBlog: async (
-      _: any,
-      { input }: { input: ib.IHandleAuthorInBlogInput }
-    ) => {
+    addAuthorToBlog: async (_: any, { input }: { input: IHAIBI }) => {
       console.log('');
       return await addAuthorToBlog(input);
     },
 
-    deleteAuthorFromBlog: async (
-      _: any,
-      { input }: { input: ib.IHandleAuthorInBlogInput }
-    ) => {
+    deleteAuthorFromBlog: async (_: any, { input }: { input: IHAIBI }) => {
       console.log('');
       return await deleteAuthorFromBlog(input);
     },

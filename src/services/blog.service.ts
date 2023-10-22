@@ -13,7 +13,7 @@ export const getAllBlogs = async () => {
 
 export const getBlogByTitle = async (title: string) => {
   try {
-    const blog = await Blog.findOne({ title });
+    const blog = await Blog.findOne({ title }).select('-__v').exec();
     return blog;
   } catch (e) {
     console.error(`Error in getBlogByTitle: ${e.message}`);
