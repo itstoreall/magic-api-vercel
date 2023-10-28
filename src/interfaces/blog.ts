@@ -16,3 +16,9 @@ export interface IGetBlogTagsProps {
   token: string;
   blog: string;
 }
+
+export interface IUpdateBlogTagsInput {
+  blog: string;
+  tags: string[];
+  token: string;
+}

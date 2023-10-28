@@ -18,6 +18,7 @@ const getBlogs_1 = __importDefault(require("./getBlogs"));
 const getBlogTags_1 = __importDefault(require("./getBlogTags"));
 const deleteAuthorFromBlog_1 = __importDefault(require("./deleteAuthorFromBlog"));
 const addAuthorToBlog_1 = __importDefault(require("./addAuthorToBlog"));
+const updateBlogTags_1 = __importDefault(require("./updateBlogTags"));
 dotenv_1.default.config();
 const adminResolvers = {
     Query: {
@@ -28,11 +29,11 @@ const adminResolvers = {
             return blogs;
         }),
         getBlogTags: (_, { token, blog }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log('');
+            console.log('', token, blog);
             const tags = yield (0, getBlogTags_1.default)(token, blog);
             console.log('tags', tags);
-            return { tags };
-        }),
+            return tags;
+        })
     },
     Mutation: {
         addAuthorToBlog: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,7 +44,12 @@ const adminResolvers = {
             console.log('');
             return yield (0, deleteAuthorFromBlog_1.default)(input);
         }),
-    },
+        updateBlogTags: (_, { input }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            console.log('input -->', input);
+            return yield (0, updateBlogTags_1.default)(input);
+        })
+    }
 };
 exports.default = adminResolvers;
 //# sourceMappingURL=index.js.map

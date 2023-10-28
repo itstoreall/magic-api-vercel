@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAdminFromBlog = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = exports.getAllBlogs = void 0;
+exports.deleteAdminFromBlog = exports.updateBlogTags = exports.updateBlog = exports.addNewBlog = exports.getBlogByTitle = exports.getAllBlogs = void 0;
 const db_1 = __importDefault(require("../db"));
 const { Blog } = db_1.default;
 const getAllBlogs = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,10 +53,22 @@ const updateBlog = (blog, blogInput) => __awaiter(void 0, void 0, void 0, functi
         return updatedBlog;
     }
     catch (e) {
-        console.error(`Error in updateBlogAuthors: ${e.message}`);
+        console.error(`Error in updateBlog: ${e.message}`);
     }
 });
 exports.updateBlog = updateBlog;
+const updateBlogTags = (title, tags) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const updated = (yield Blog.updateOne({ title }, Object.assign({}, tags)))
+            .modifiedCount;
+        console.log(44444, updated);
+        return updated;
+    }
+    catch (e) {
+        console.error(`Error in updateBlogTags: ${e.message}`);
+    }
+});
+exports.updateBlogTags = updateBlogTags;
 const deleteAdminFromBlog = (name, title) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const blog = yield (0, exports.getBlogByTitle)(title);

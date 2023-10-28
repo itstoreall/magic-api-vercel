@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
-import { IHandleAuthorInBlogInput } from '../../interfaces/blog';
+import {
+  IHandleAuthorInBlogInput,
+  IUpdateBlogTagsInput
+} from '../../interfaces/blog';
 import { isMasterByToken } from './admin';
 import * as blogService from '../../services/blog.service';
 import * as utils from '../../utils';
@@ -28,6 +31,7 @@ export const getAllBlogs = async (token: string) => {
 };
 
 export const getBlogTags = async (token: string, title: string) => {
+  console.log(12345);
   const isMaster = await isMasterByToken(token);
   if (!isMaster) return utils.throwNewError(`is not a Master!`);
   const blog = await getBlogByTitle(title);
@@ -83,13 +87,35 @@ export const addCoauthor = async (input: IHandleAuthorInBlogInput) => {
 
       const blogInput = {
         title: blog,
-        authors: [...existingBlog.authors, author],
+        authors: [...existingBlog.authors, author]
       };
 
       const updatedCoauthors = await updateCoauthors(existingBlog, blogInput);
       console.log(1, 'updated coauthors:', updatedCoauthors);
       return updatedCoauthors;
     } else utils.throwNewError(`no blog in db`);
+  } else utils.throwNewError(`is not a Master!`);
+
+  return [''];
+};
+
+export const updateBlogTags = async (input: IUpdateBlogTagsInput) => {
+  const { blog, tags, token } = input;
+
+  const isMaster = await isMasterByToken(token);
+
+  if (isMaster) {
+    console.log(2222, input);
+
+    // const existingBlog = await getBlogByTitle(blog);
+
+    // const blogInput = {
+    //   tags: tags
+    // };
+
+    const updatedTags = await blogService.updateBlogTags(blog, { tags });
+
+    console.log('updatedTags', updatedTags);
   } else utils.throwNewError(`is not a Master!`);
 
   return [''];

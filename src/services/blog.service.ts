@@ -40,7 +40,18 @@ export const updateBlog = async (blog: any, blogInput: any) => {
     const updatedBlog = await getBlogByTitle(blog.title);
     return updatedBlog;
   } catch (e) {
-    console.error(`Error in updateBlogAuthors: ${e.message}`);
+    console.error(`Error in updateBlog: ${e.message}`);
+  }
+};
+
+export const updateBlogTags = async (title: string, tags: any) => {
+  try {
+    const updated = (await Blog.updateOne({ title }, { ...tags }))
+      .modifiedCount;
+    console.log(44444, updated);
+    return updated;
+  } catch (e) {
+    console.error(`Error in updateBlogTags: ${e.message}`);
   }
 };
 

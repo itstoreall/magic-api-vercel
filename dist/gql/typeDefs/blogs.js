@@ -7,12 +7,6 @@ const blogTypeDefs = `#graphql
     tags: [String]
   }
 
-  input DeleteAuthorFromBlogInput {
-    blog: String!
-    author: String!
-    token: String!
-  }
-
   input HandleAuthorInBlogInput {
     blog: String!
     author: String!
@@ -25,25 +19,25 @@ const blogTypeDefs = `#graphql
     token: String!
   }
 
-   type AllBlogsResponse {
+  type AllBlogsResponse {
     id: ID
     title: String
     authors: [String]
   }
 
-   type AllBlogTagsResponse {
+  type AllBlogTagsResponse {
     tags: [String]
   }
 
   type Query {
     getAllBlogs(token: String!): [AllBlogsResponse]
-    getBlogTags(token: String!, blog: String!): AllBlogTagsResponse
+    getBlogTags(token: String!, blog: String!): [String]
     #getBlog(title: String!): Blog
   }
 
   type Mutation {
-    deleteAuthorFromBlog(input: HandleAuthorInBlogInput): Boolean
     addAuthorToBlog(input: HandleAuthorInBlogInput): Boolean
+    deleteAuthorFromBlog(input: HandleAuthorInBlogInput): Boolean
     updateBlogTags(input: HandleBlogTagsInput): Boolean
   }
 `;
