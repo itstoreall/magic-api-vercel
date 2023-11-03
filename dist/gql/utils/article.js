@@ -36,7 +36,11 @@ exports.updateArticleViews = exports.editArticle = exports.deleteArticle = expor
 const constants_1 = require("../../constants");
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
-const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getAllArticles(blog); });
+const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
+    const articles = yield articleService.getAllArticles(blog);
+    const reversedArticles = articles.reverse();
+    return reversedArticles;
+});
 exports.getAllArticles = getAllArticles;
 const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
 exports.getArticleById = getArticleById;
@@ -61,7 +65,7 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
         author: input.author,
         ipfs: cid,
         views: input.views,
-        tags: input.tags,
+        tags: input.tags
     };
     return yield articleService.createArticle(blog, newArticleInput);
 });
