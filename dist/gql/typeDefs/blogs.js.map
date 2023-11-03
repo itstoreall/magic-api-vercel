@@ -1,1 +1,1 @@
-{"version":3,"file":"blogs.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/blogs.ts"],"names":[],"mappings":";;AAAA,MAAM,YAAY,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAiCpB,CAAC;AAEF,kBAAe,YAAY,CAAC"}
+{"version":3,"file":"blogs.js","sourceRoot":"","sources":["../../../src/gql/typeDefs/blogs.ts"],"names":[],"mappings":";;AAAA,MAAM,YAAY,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAwCpB,CAAC;AAEF,kBAAe,YAAY,CAAC"}

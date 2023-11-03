@@ -13,16 +13,20 @@ export const getAllBlogs = async () => {
 
 export const getBlogByTitle = async (title: string) => {
   try {
-    const blog = await Blog.findOne({ title });
+    const blog = await Blog.findOne({ title }).select('-__v').exec();
     return blog;
   } catch (e) {
     console.error(`Error in getBlogByTitle: ${e.message}`);
   }
 };
 
-export const addNewBlog = async (title: string, authors: string[]) => {
+export const addNewBlog = async (
+  title: string,
+  authors: string[],
+  tags: []
+) => {
   try {
-    const newBlog = new Blog({ title, authors });
+    const newBlog = new Blog({ title, authors, tags });
     const createdBlog = await newBlog.save();
     return createdBlog;
   } catch (e) {
@@ -36,7 +40,18 @@ export const updateBlog = async (blog: any, blogInput: any) => {
     const updatedBlog = await getBlogByTitle(blog.title);
     return updatedBlog;
   } catch (e) {
-    console.error(`Error in updateBlogAuthors: ${e.message}`);
+    console.error(`Error in updateBlog: ${e.message}`);
+  }
+};
+
+export const updateBlogTags = async (title: string, tags: any) => {
+  try {
+    const updated = (await Blog.updateOne({ title }, { ...tags }))
+      .modifiedCount;
+    console.log(44444, updated);
+    return updated;
+  } catch (e) {
+    console.error(`Error in updateBlogTags: ${e.message}`);
   }
 };
 
