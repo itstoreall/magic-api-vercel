@@ -2,8 +2,11 @@ import { DEFAULT_IPFS_CID } from '../../constants';
 import * as web3Storage from '../../ipfs/web3Storage';
 import * as articleService from '../../services/article.service';
 
-export const getAllArticles = async (blog: string) =>
-  await articleService.getAllArticles(blog);
+export const getAllArticles = async (blog: string) => {
+  const articles = await articleService.getAllArticles(blog);
+  const reversedArticles = articles.reverse();
+  return reversedArticles;
+};
 
 export const getArticleById = async (blog: string, ID: string) =>
   await articleService.getArticleById(blog, ID);
@@ -29,7 +32,7 @@ export const addArticle = async (blog: string, input: any) => {
     author: input.author,
     ipfs: cid,
     views: input.views,
-    tags: input.tags,
+    tags: input.tags
   };
   return await articleService.createArticle(blog, newArticleInput);
 };

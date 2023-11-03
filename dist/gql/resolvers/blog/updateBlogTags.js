@@ -32,7 +32,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const blogUtils = __importStar(require("../../utils/blog"));
-const getBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () { return yield blogUtils.getAllBlogs(token); });
-exports.default = getBlogs;
-//# sourceMappingURL=getBlogs.js.map
+const utils = __importStar(require("../../../gql/utils/blog"));
+const updateBlogTags = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* updateBlogTags input:', input);
+    const updated = yield utils.updateBlogTags(input);
+    return true;
+});
+exports.default = updateBlogTags;
+//# sourceMappingURL=updateBlogTags.js.map

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.updateBlogTags = exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getBlogTags = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
@@ -45,7 +45,7 @@ const existingBlogs = process.env.EXISTING_BLOGS;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
 exports.getBlogByTitle = getBlogByTitle;
 const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const newBlog = yield blogService.addNewBlog(title, author);
+    const newBlog = yield blogService.addNewBlog(title, author, []);
     if (newBlog) {
         console.log('+ new blog has been created:', Boolean(newBlog));
         return newBlog;
@@ -54,14 +54,21 @@ const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, funct
 exports.createNewBlog = createNewBlog;
 const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
     const isMaster = yield (0, admin_1.isMasterByToken)(token);
-    if (isMaster) {
-        const blogs = yield blogService.getAllBlogs();
-        return blogs;
-    }
-    else
-        utils.throwNewError(`is not a Master!`);
+    if (!isMaster)
+        return utils.throwNewError(`is not a Master!`);
+    const blogs = yield blogService.getAllBlogs();
+    return blogs;
 });
 exports.getAllBlogs = getAllBlogs;
+const getBlogTags = (token, title) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(12345);
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (!isMaster)
+        return utils.throwNewError(`is not a Master!`);
+    const blog = yield (0, exports.getBlogByTitle)(title);
+    return blog.tags;
+});
+exports.getBlogTags = getBlogTags;
 const pushToAuthorBlogs = (title, accessInput) => existingBlogs
     .split(' ')
     .map(el => el)
@@ -100,7 +107,7 @@ const addCoauthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
                 utils.throwNewError(`author ${author} already exists in db`);
             const blogInput = {
                 title: blog,
-                authors: [...existingBlog.authors, author],
+                authors: [...existingBlog.authors, author]
             };
             const updatedCoauthors = yield (0, exports.updateCoauthors)(existingBlog, blogInput);
             console.log(1, 'updated coauthors:', updatedCoauthors);
@@ -114,4 +121,21 @@ const addCoauthor = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return [''];
 });
 exports.addCoauthor = addCoauthor;
+const updateBlogTags = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    const { blog, tags, token } = input;
+    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    if (isMaster) {
+        console.log(2222, input);
+        // const existingBlog = await getBlogByTitle(blog);
+        // const blogInput = {
+        //   tags: tags
+        // };
+        const updatedTags = yield blogService.updateBlogTags(blog, { tags });
+        console.log('updatedTags', updatedTags);
+    }
+    else
+        utils.throwNewError(`is not a Master!`);
+    return [''];
+});
+exports.updateBlogTags = updateBlogTags;
 //# sourceMappingURL=blog.js.map

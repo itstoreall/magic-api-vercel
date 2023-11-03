@@ -1,5 +1,5 @@
 import * as blogUtils from '../../utils/blog';
 
-const getAdmins = async (token: string) => await blogUtils.getAllBlogs(token);
+const getBlogs = async (token: string) => await blogUtils.getAllBlogs(token);
 
-export default getAdmins;
+export default getBlogs;

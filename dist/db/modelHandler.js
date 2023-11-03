@@ -36,6 +36,7 @@ const AdminSchema = new mongoose_1.default.Schema({
 const BlogSchema = new mongoose_1.default.Schema({
     title: String,
     authors: { type: [mongoose_1.Schema.Types.String], default: [] },
+    tags: { type: [mongoose_1.Schema.Types.String], default: [] },
 });
 const defaultConfig = {
     title: String,

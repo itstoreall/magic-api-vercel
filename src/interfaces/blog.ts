@@ -11,3 +11,14 @@ export interface IHandleAuthorInBlogInput {
   author: string;
   token: string;
 }
+
+export interface IGetBlogTagsProps {
+  token: string;
+  blog: string;
+}
+
+export interface IUpdateBlogTagsInput {
+  blog: string;
+  tags: string[];
+  token: string;
+}
