@@ -6,7 +6,7 @@ const updateBlogTags = async (input: IUpdateBlogTagsInput) => {
 
   const updated = await utils.updateBlogTags(input);
 
-  return true;
+  return updated;
 };
 
 export default updateBlogTags;

@@ -3,7 +3,7 @@ import {
   IHandleAuthorInBlogInput,
   IUpdateBlogTagsInput
 } from '../../interfaces/blog';
-import { isMasterByToken } from './admin';
+import { isMasterByToken, isAdminByToken } from './admin';
 import * as blogService from '../../services/blog.service';
 import * as utils from '../../utils';
 
@@ -31,8 +31,7 @@ export const getAllBlogs = async (token: string) => {
 };
 
 export const getBlogTags = async (token: string, title: string) => {
-  console.log(12345);
-  const isMaster = await isMasterByToken(token);
+  const isMaster = await isAdminByToken(token);
   if (!isMaster) return utils.throwNewError(`is not a Master!`);
   const blog = await getBlogByTitle(title);
   return blog.tags;
@@ -113,10 +112,14 @@ export const updateBlogTags = async (input: IUpdateBlogTagsInput) => {
     //   tags: tags
     // };
 
-    const updatedTags = await blogService.updateBlogTags(blog, { tags });
+    const uniqueSortedTags = [...new Set(input.tags.sort())];
+
+    const updatedTags = await blogService.updateBlogTags(blog, {
+      tags: uniqueSortedTags
+    });
 
     console.log('updatedTags', updatedTags);
-  } else utils.throwNewError(`is not a Master!`);
 
-  return [''];
+    return updatedTags ? true : false;
+  } else utils.throwNewError(`is not a Master!`);
 };
