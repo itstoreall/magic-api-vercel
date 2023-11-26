@@ -16,7 +16,7 @@ const articleResolvers = {
     getArticleById: async (_: any, { blog, ID }: i.IStringProps) => {
       console.log('');
       return await getArticleById(blog, ID);
-    },
+    }
 
     /*
     async getArticleByTitle(_: any, { title }: any) {
@@ -58,8 +58,8 @@ const articleResolvers = {
     async updateArticleViews(_: any, { blog, ID }: i.IStringProps) {
       console.log('');
       return await updateArticleViews(blog, ID);
-    },
-  },
+    }
+  }
 };
 
 export default articleResolvers;
