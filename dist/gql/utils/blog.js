@@ -61,8 +61,7 @@ const getAllBlogs = (token) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getAllBlogs = getAllBlogs;
 const getBlogTags = (token, title) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(12345);
-    const isMaster = yield (0, admin_1.isMasterByToken)(token);
+    const isMaster = yield (0, admin_1.isAdminByToken)(token);
     if (!isMaster)
         return utils.throwNewError(`is not a Master!`);
     const blog = yield (0, exports.getBlogByTitle)(title);
@@ -130,12 +129,15 @@ const updateBlogTags = (input) => __awaiter(void 0, void 0, void 0, function* ()
         // const blogInput = {
         //   tags: tags
         // };
-        const updatedTags = yield blogService.updateBlogTags(blog, { tags });
+        const uniqueSortedTags = [...new Set(input.tags.sort())];
+        const updatedTags = yield blogService.updateBlogTags(blog, {
+            tags: uniqueSortedTags
+        });
         console.log('updatedTags', updatedTags);
+        return updatedTags ? true : false;
     }
     else
         utils.throwNewError(`is not a Master!`);
-    return [''];
 });
 exports.updateBlogTags = updateBlogTags;
 //# sourceMappingURL=blog.js.map

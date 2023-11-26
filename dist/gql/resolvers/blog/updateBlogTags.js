@@ -36,7 +36,7 @@ const utils = __importStar(require("../../../gql/utils/blog"));
 const updateBlogTags = (input) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* updateBlogTags input:', input);
     const updated = yield utils.updateBlogTags(input);
-    return true;
+    return updated;
 });
 exports.default = updateBlogTags;
 //# sourceMappingURL=updateBlogTags.js.map
