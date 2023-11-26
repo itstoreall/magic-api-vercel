@@ -27,7 +27,7 @@ const articleResolvers = {
         getArticleById: (_, { blog, ID }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
             return yield (0, getArticleById_1.default)(blog, ID);
-        }),
+        })
         /*
         async getArticleByTitle(_: any, { title }: any) {
           const article = await setCurrentModel('healthy').find({ title });
@@ -68,8 +68,8 @@ const articleResolvers = {
                 console.log('');
                 return yield (0, updateArticleViews_1.default)(blog, ID);
             });
-        },
-    },
+        }
+    }
 };
 exports.default = articleResolvers;
 //# sourceMappingURL=index.js.map
