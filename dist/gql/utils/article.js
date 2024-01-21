@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateArticleViews = exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
-const constants_1 = require("../../constants");
+// import { DEFAULT_IPFS_CID } from '../../constants';
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,12 +44,13 @@ const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getAllArticles = getAllArticles;
 const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.getArticleById(blog, ID); });
 exports.getArticleById = getArticleById;
-const createIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, function* () {
-    let cid = constants_1.DEFAULT_IPFS_CID;
-    if (base64)
-        cid = yield web3Storage.upload(blog, base64);
-    return cid;
-});
+/*
+const createIpfsCid = async (blog: string, base64: string) => {
+  let cid: string = DEFAULT_IPFS_CID;
+  if (base64) cid = await web3Storage.upload(blog, base64);
+  return cid;
+};
+*/
 const updateIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, function* () {
     let cid;
     if (base64)
@@ -57,13 +58,14 @@ const updateIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, functi
     return cid;
 });
 const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const cid = yield createIpfsCid(blog, input.image);
+    // const cid = await createIpfsCid(blog, input.image);
     const newArticleInput = {
         title: input.title,
         description: input.description,
         text: input.text,
         author: input.author,
-        ipfs: cid,
+        // ipfs: cid,
+        ipfs: input.image,
         views: input.views,
         tags: input.tags
     };

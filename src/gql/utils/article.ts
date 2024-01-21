@@ -1,4 +1,4 @@
-import { DEFAULT_IPFS_CID } from '../../constants';
+// import { DEFAULT_IPFS_CID } from '../../constants';
 import * as web3Storage from '../../ipfs/web3Storage';
 import * as articleService from '../../services/article.service';
 
@@ -11,11 +11,13 @@ export const getAllArticles = async (blog: string) => {
 export const getArticleById = async (blog: string, ID: string) =>
   await articleService.getArticleById(blog, ID);
 
+/*
 const createIpfsCid = async (blog: string, base64: string) => {
   let cid: string = DEFAULT_IPFS_CID;
   if (base64) cid = await web3Storage.upload(blog, base64);
   return cid;
 };
+*/
 
 const updateIpfsCid = async (blog: string, base64: string) => {
   let cid: string;
@@ -24,13 +26,15 @@ const updateIpfsCid = async (blog: string, base64: string) => {
 };
 
 export const addArticle = async (blog: string, input: any) => {
-  const cid = await createIpfsCid(blog, input.image);
+  // const cid = await createIpfsCid(blog, input.image);
+
   const newArticleInput = {
     title: input.title,
     description: input.description,
     text: input.text,
     author: input.author,
-    ipfs: cid,
+    // ipfs: cid,
+    ipfs: input.image,
     views: input.views,
     tags: input.tags
   };
