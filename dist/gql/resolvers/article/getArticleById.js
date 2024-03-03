@@ -36,18 +36,21 @@ const articleUtils = __importStar(require("../../utils/article"));
 const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* getArticleById:', blog, ID);
     const article = yield articleUtils.getArticleById(blog, ID);
-    console.log(1, 'article:', article.title);
-    return {
-        id: article._id,
-        title: article.title,
-        description: article.description,
-        text: article.text,
-        author: article.author,
-        ipfs: article.ipfs,
-        views: article.views,
-        tags: article.tags,
-        timestamp: article.timestamp,
-    };
+    console.log(1, 'article:', article);
+    return article
+        ? {
+            id: article._id,
+            title: article.title,
+            description: article.description,
+            text: article.text,
+            author: article.author,
+            ipfs: article.ipfs,
+            image: article.image,
+            views: article.views,
+            tags: article.tags,
+            timestamp: article.timestamp
+        }
+        : {};
 });
 exports.default = getArticleById;
 //# sourceMappingURL=getArticleById.js.map

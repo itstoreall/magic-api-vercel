@@ -19,6 +19,7 @@ export interface ArticleModel extends mongoose.Document {
   text: string;
   author: string;
   ipfs: string;
+  image: string;
   views: string;
   timestamp: Date;
   tags: string[];

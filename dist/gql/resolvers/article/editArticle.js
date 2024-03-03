@@ -34,7 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleUtils = __importStar(require("../../utils/article"));
 const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('* editArticle:', blog, input.title);
+    console.log('* editArticle:', blog, input);
     const wasEdited = yield articleUtils.editArticle(blog, ID, input);
     console.log(1, 'article was updated:', Boolean(wasEdited));
     return wasEdited;

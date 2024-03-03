@@ -8,6 +8,7 @@ const articleTypeDefs = `#graphql
     text: String
     author: String
     ipfs: String
+    image: String
     views: String
     tags: [String]
     timestamp: Date
