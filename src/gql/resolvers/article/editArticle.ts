@@ -1,7 +1,7 @@
 import * as articleUtils from '../../utils/article';
 
 const editArticle = async (blog: string, ID: string, input: any) => {
-  console.log('* editArticle:', blog, input.title);
+  console.log('* editArticle:', blog, input);
 
   const wasEdited = await articleUtils.editArticle(blog, ID, input);
 

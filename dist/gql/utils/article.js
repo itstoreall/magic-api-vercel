@@ -31,9 +31,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateArticleViews = exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
 // import { DEFAULT_IPFS_CID } from '../../constants';
+const config_1 = __importDefault(require("../../db/config"));
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
@@ -66,6 +70,7 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
         author: input.author,
         // ipfs: cid,
         ipfs: input.image,
+        image: input.image || '',
         views: input.views,
         tags: input.tags
     };
@@ -75,13 +80,27 @@ exports.addArticle = addArticle;
 const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.deleteArticle(blog, ID); });
 exports.deleteArticle = deleteArticle;
 const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
-    const base64 = input.image;
-    const cid = yield updateIpfsCid(blog, base64);
-    const newImage = Object.assign(Object.assign({}, input), { ipfs: cid });
-    const onlyText = Object.assign({}, input);
-    delete onlyText.image;
-    const artInput = base64 ? newImage : onlyText;
-    return yield articleService.updateArticle(blog, ID, artInput);
+    console.log('modelsConfig', config_1.default.articles.astraia.label);
+    if (blog === config_1.default.articles.astraia.label) {
+        console.log(111);
+        // const base64 = input.image;
+        // const cid = await updateIpfsCid(blog, base64);
+        // const newImage = { ...input, ipfs: cid };
+        // const onlyText = { ...input };
+        // delete onlyText.image;
+        // const artInput = base64 ? newImage : onlyText;
+        return yield articleService.updateArticle(blog, ID, input);
+    }
+    if (blog === config_1.default.articles.healthy.label) {
+        console.log(222);
+        const base64 = input.image;
+        const cid = yield updateIpfsCid(blog, base64);
+        const newImage = Object.assign(Object.assign({}, input), { ipfs: cid });
+        const onlyText = Object.assign({}, input);
+        delete onlyText.image;
+        const artInput = base64 ? newImage : onlyText;
+        return yield articleService.updateArticle(blog, ID, artInput);
+    }
 });
 exports.editArticle = editArticle;
 const updateArticleViews = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {

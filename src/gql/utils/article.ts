@@ -1,4 +1,5 @@
 // import { DEFAULT_IPFS_CID } from '../../constants';
+import modelsConfig from '../../db/config';
 import * as web3Storage from '../../ipfs/web3Storage';
 import * as articleService from '../../services/article.service';
 
@@ -35,6 +36,7 @@ export const addArticle = async (blog: string, input: any) => {
     author: input.author,
     // ipfs: cid,
     ipfs: input.image,
+    image: input.image || '',
     views: input.views,
     tags: input.tags
   };
@@ -45,13 +47,29 @@ export const deleteArticle = async (blog: string, ID: string) =>
   await articleService.deleteArticle(blog, ID);
 
 export const editArticle = async (blog: string, ID: string, input: any) => {
-  const base64 = input.image;
-  const cid = await updateIpfsCid(blog, base64);
-  const newImage = { ...input, ipfs: cid };
-  const onlyText = { ...input };
-  delete onlyText.image;
-  const artInput = base64 ? newImage : onlyText;
-  return await articleService.updateArticle(blog, ID, artInput);
+  console.log('modelsConfig', modelsConfig.articles.astraia.label);
+
+  if (blog === modelsConfig.articles.astraia.label) {
+    console.log(111);
+    // const base64 = input.image;
+    // const cid = await updateIpfsCid(blog, base64);
+    // const newImage = { ...input, ipfs: cid };
+    // const onlyText = { ...input };
+    // delete onlyText.image;
+    // const artInput = base64 ? newImage : onlyText;
+    return await articleService.updateArticle(blog, ID, input);
+  }
+
+  if (blog === modelsConfig.articles.healthy.label) {
+    console.log(222);
+    const base64 = input.image;
+    const cid = await updateIpfsCid(blog, base64);
+    const newImage = { ...input, ipfs: cid };
+    const onlyText = { ...input };
+    delete onlyText.image;
+    const artInput = base64 ? newImage : onlyText;
+    return await articleService.updateArticle(blog, ID, artInput);
+  }
 };
 
 export const updateArticleViews = async (blog: string, ID: string) => {

@@ -31,12 +31,12 @@ const config_1 = __importDefault(require("./config"));
 const AdminSchema = new mongoose_1.default.Schema({
     token: String,
     name: String,
-    blogs: { type: [mongoose_1.Schema.Types.String], default: [] },
+    blogs: { type: [mongoose_1.Schema.Types.String], default: [] }
 });
 const BlogSchema = new mongoose_1.default.Schema({
     title: String,
     authors: { type: [mongoose_1.Schema.Types.String], default: [] },
-    tags: { type: [mongoose_1.Schema.Types.String], default: [] },
+    tags: { type: [mongoose_1.Schema.Types.String], default: [] }
 });
 const defaultConfig = {
     title: String,
@@ -44,8 +44,9 @@ const defaultConfig = {
     text: String,
     author: String,
     ipfs: String,
+    image: String,
     views: String,
-    timestamp: { type: Date, default: Date.now },
+    timestamp: { type: Date, default: Date.now }
 };
 const ProdArticleSchema = new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } }));
 const DevArticleSchema = new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } }));
@@ -57,7 +58,7 @@ const modelHandler = (label) => {
         Admin,
         Blog,
         ProdArticle: null,
-        DevArticle: null,
+        DevArticle: null
     };
     if (label) {
         models.ProdArticle = mongoose_1.default.model(articles[label].prod, ProdArticleSchema);
