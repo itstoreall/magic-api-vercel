@@ -43,9 +43,10 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
         text: createdArticle.text,
         author: createdArticle.author,
         ipfs: createdArticle.ipfs,
+        image: createdArticle.image,
         views: createdArticle.views,
         tags: createdArticle.tags,
-        timestamp: createdArticle.timestamp,
+        timestamp: createdArticle.timestamp
     };
 });
 exports.default = addArticle;

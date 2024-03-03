@@ -9,13 +9,13 @@ import { LabelModelsConfig } from 'admin';
 const AdminSchema = new mongoose.Schema({
   token: String,
   name: String,
-  blogs: { type: [Schema.Types.String], default: [] },
+  blogs: { type: [Schema.Types.String], default: [] }
 });
 
 const BlogSchema = new mongoose.Schema({
   title: String,
   authors: { type: [Schema.Types.String], default: [] },
-  tags: { type: [Schema.Types.String], default: [] },
+  tags: { type: [Schema.Types.String], default: [] }
 });
 
 const defaultConfig = {
@@ -24,18 +24,19 @@ const defaultConfig = {
   text: String,
   author: String,
   ipfs: String,
+  image: String,
   views: String,
-  timestamp: { type: Date, default: Date.now },
+  timestamp: { type: Date, default: Date.now }
 };
 
 const ProdArticleSchema = new mongoose.Schema({
   ...defaultConfig,
-  tags: { type: [Schema.Types.String], default: [] },
+  tags: { type: [Schema.Types.String], default: [] }
 });
 
 const DevArticleSchema = new mongoose.Schema({
   ...defaultConfig,
-  tags: { type: [Schema.Types.String], default: [] },
+  tags: { type: [Schema.Types.String], default: [] }
 });
 
 const { admin, blog, articles } = modCfg;
@@ -48,7 +49,7 @@ const modelHandler = (label?: LabelModelsConfig) => {
     Admin,
     Blog,
     ProdArticle: null,
-    DevArticle: null,
+    DevArticle: null
   };
 
   if (label) {

@@ -13,9 +13,10 @@ const addArticle = async (blog: string, input: any) => {
     text: createdArticle.text,
     author: createdArticle.author,
     ipfs: createdArticle.ipfs,
+    image: createdArticle.image,
     views: createdArticle.views,
     tags: createdArticle.tags,
-    timestamp: createdArticle.timestamp,
+    timestamp: createdArticle.timestamp
   };
 };
 
