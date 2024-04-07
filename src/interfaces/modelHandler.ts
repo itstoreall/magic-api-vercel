@@ -23,6 +23,7 @@ export interface ArticleModel extends mongoose.Document {
   views: string;
   timestamp: Date;
   tags: string[];
+  status: string;
 }
 
 export interface IArticlesFieldsModelsConfig {

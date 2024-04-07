@@ -10,8 +10,13 @@ const articleTypeDefs = `#graphql
     ipfs: String
     image: String
     views: String
+    status: String
     tags: [String]
     timestamp: Date
+  }
+
+  type ArticleStatus {
+    status: String
   }
 
   input ArticleInput {
@@ -27,6 +32,7 @@ const articleTypeDefs = `#graphql
 
   type Query {
     articles(blog: String!, label: String): [Article]
+    publishedArticles(blog: String!, label: String): [Article]
     getArticleById(blog: String!, ID: ID!): Article
     #getArticleByTitle(title: String!): Article
   }
@@ -34,6 +40,7 @@ const articleTypeDefs = `#graphql
   type Mutation {
     addArticle(blog: String!, input: ArticleInput!): Article
     deleteArticle(blog: String!, ID: ID!): Boolean
+    publishArticle(blog: String!, ID: ID!): ArticleStatus
     editArticle(blog: String!, ID: ID!, articleInput: ArticleInput!): Boolean
     updateArticleViews(blog: String!, ID: String!): Boolean
   }

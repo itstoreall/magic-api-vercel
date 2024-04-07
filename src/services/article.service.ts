@@ -26,6 +26,15 @@ export const createArticle = async (blog: string, newArticleInput: any) => {
   }
 };
 
+export const publishArticle = async (blog: string, ID: string, input: any) => {
+  try {
+    return (await setCurrentModel(blog).updateOne({ _id: ID }, { ...input }))
+      .modifiedCount;
+  } catch (e) {
+    console.error(`Error in publishArticle: ${e.message}`);
+  }
+};
+
 export const deleteArticle = async (blog: string, ID: string) => {
   try {
     return (await setCurrentModel(blog).deleteOne({ _id: ID })).deletedCount;

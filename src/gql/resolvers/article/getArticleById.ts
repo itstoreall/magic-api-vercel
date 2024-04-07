@@ -16,6 +16,7 @@ const getArticleById = async (blog: string, ID: string) => {
         ipfs: article.ipfs,
         image: article.image,
         views: article.views,
+        status: article.status,
         tags: article.tags,
         timestamp: article.timestamp
       }

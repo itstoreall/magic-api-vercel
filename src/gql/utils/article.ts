@@ -1,7 +1,13 @@
 // import { DEFAULT_IPFS_CID } from '../../constants';
+import * as gc from '../../config/global';
 import modelsConfig from '../../db/config';
 import * as web3Storage from '../../ipfs/web3Storage';
 import * as articleService from '../../services/article.service';
+import { isAstraia } from './blog';
+
+const { created, published, updated, failed } = gc.articleStatus;
+
+// const existingBlogs = process.env.EXISTING_BLOGS;
 
 export const getAllArticles = async (blog: string) => {
   const articles = await articleService.getAllArticles(blog);
@@ -29,39 +35,65 @@ const updateIpfsCid = async (blog: string, base64: string) => {
 export const addArticle = async (blog: string, input: any) => {
   // const cid = await createIpfsCid(blog, input.image);
 
+  // console.log(111, '+ created', blog, await isAstraia(blog));
+
+  const img = (await isAstraia(blog))
+    ? { image: input.image || '' }
+    : { ipfs: input.image };
+
   const newArticleInput = {
     title: input.title,
     description: input.description,
     text: input.text,
     author: input.author,
     // ipfs: cid,
-    ipfs: input.image,
-    image: input.image || '',
+    // ipfs: input.image,
+    // image: input.image || '',
+    ...img,
     views: input.views,
-    tags: input.tags
+    tags: input.tags,
+    status: 'created'
   };
   return await articleService.createArticle(blog, newArticleInput);
+};
+
+export const publishArticle = async (blog: string, ID: string) => {
+  const input = { status: published };
+  const isPublished = await articleService.publishArticle(blog, ID, input);
+  return { status: isPublished ? published : failed };
 };
 
 export const deleteArticle = async (blog: string, ID: string) =>
   await articleService.deleteArticle(blog, ID);
 
 export const editArticle = async (blog: string, ID: string, input: any) => {
-  console.log('modelsConfig', modelsConfig.articles.astraia.label);
-
+  const artticle = await getArticleById(blog, ID);
   if (blog === modelsConfig.articles.astraia.label) {
-    console.log(111);
-    // const base64 = input.image;
-    // const cid = await updateIpfsCid(blog, base64);
-    // const newImage = { ...input, ipfs: cid };
-    // const onlyText = { ...input };
-    // delete onlyText.image;
-    // const artInput = base64 ? newImage : onlyText;
+    /*
+    const base64 = input.image;
+    const cid = await updateIpfsCid(blog, base64);
+    const newImage = { ...input, ipfs: cid };
+    const onlyText = { ...input };
+    delete onlyText.image;
+    const artInput = base64 ? newImage : onlyText;
+    */
+    const createInput = () => {
+      switch (artticle.status) {
+        case created:
+          return created;
+        case published:
+          return updated;
+        case updated:
+          return updated;
+        default:
+          return created;
+      }
+    };
+    input = { ...input, status: createInput() };
     return await articleService.updateArticle(blog, ID, input);
   }
 
   if (blog === modelsConfig.articles.healthy.label) {
-    console.log(222);
     const base64 = input.image;
     const cid = await updateIpfsCid(blog, base64);
     const newImage = { ...input, ipfs: cid };

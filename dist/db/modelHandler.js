@@ -46,6 +46,7 @@ const defaultConfig = {
     ipfs: String,
     image: String,
     views: String,
+    status: String,
     timestamp: { type: Date, default: Date.now }
 };
 const ProdArticleSchema = new mongoose_1.default.Schema(Object.assign(Object.assign({}, defaultConfig), { tags: { type: [mongoose_1.Schema.Types.String], default: [] } }));
