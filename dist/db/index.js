@@ -27,6 +27,6 @@ const setCurrentModel = (blog) => {
 exports.setCurrentModel = setCurrentModel;
 exports.default = {
     Admin: (0, modelHandler_1.default)().Admin,
-    Blog: (0, modelHandler_1.default)().Blog,
+    Blog: (0, modelHandler_1.default)().Blog
 };
 //# sourceMappingURL=index.js.map

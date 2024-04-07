@@ -35,11 +35,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateArticleViews = exports.editArticle = exports.deleteArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
+exports.updateArticleViews = exports.editArticle = exports.deleteArticle = exports.publishArticle = exports.addArticle = exports.getArticleById = exports.getAllArticles = void 0;
 // import { DEFAULT_IPFS_CID } from '../../constants';
+const gc = __importStar(require("../../config/global"));
 const config_1 = __importDefault(require("../../db/config"));
 const web3Storage = __importStar(require("../../ipfs/web3Storage"));
 const articleService = __importStar(require("../../services/article.service"));
+const blog_1 = require("./blog");
+const { created, published, updated, failed } = gc.articleStatus;
+// const existingBlogs = process.env.EXISTING_BLOGS;
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     const articles = yield articleService.getAllArticles(blog);
     const reversedArticles = articles.reverse();
@@ -63,36 +67,49 @@ const updateIpfsCid = (blog, base64) => __awaiter(void 0, void 0, void 0, functi
 });
 const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* () {
     // const cid = await createIpfsCid(blog, input.image);
-    const newArticleInput = {
-        title: input.title,
-        description: input.description,
-        text: input.text,
-        author: input.author,
-        // ipfs: cid,
-        ipfs: input.image,
-        image: input.image || '',
-        views: input.views,
-        tags: input.tags
-    };
+    // console.log(111, '+ created', blog, await isAstraia(blog));
+    const img = (yield (0, blog_1.isAstraia)(blog))
+        ? { image: input.image || '' }
+        : { ipfs: input.image };
+    const newArticleInput = Object.assign(Object.assign({ title: input.title, description: input.description, text: input.text, author: input.author }, img), { views: input.views, tags: input.tags, status: 'created' });
     return yield articleService.createArticle(blog, newArticleInput);
 });
 exports.addArticle = addArticle;
+const publishArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    const input = { status: published };
+    const isPublished = yield articleService.publishArticle(blog, ID, input);
+    return { status: isPublished ? published : failed };
+});
+exports.publishArticle = publishArticle;
 const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () { return yield articleService.deleteArticle(blog, ID); });
 exports.deleteArticle = deleteArticle;
 const editArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('modelsConfig', config_1.default.articles.astraia.label);
+    const artticle = yield (0, exports.getArticleById)(blog, ID);
     if (blog === config_1.default.articles.astraia.label) {
-        console.log(111);
-        // const base64 = input.image;
-        // const cid = await updateIpfsCid(blog, base64);
-        // const newImage = { ...input, ipfs: cid };
-        // const onlyText = { ...input };
-        // delete onlyText.image;
-        // const artInput = base64 ? newImage : onlyText;
+        /*
+        const base64 = input.image;
+        const cid = await updateIpfsCid(blog, base64);
+        const newImage = { ...input, ipfs: cid };
+        const onlyText = { ...input };
+        delete onlyText.image;
+        const artInput = base64 ? newImage : onlyText;
+        */
+        const createInput = () => {
+            switch (artticle.status) {
+                case created:
+                    return created;
+                case published:
+                    return updated;
+                case updated:
+                    return updated;
+                default:
+                    return created;
+            }
+        };
+        input = Object.assign(Object.assign({}, input), { status: createInput() });
         return yield articleService.updateArticle(blog, ID, input);
     }
     if (blog === config_1.default.articles.healthy.label) {
-        console.log(222);
         const base64 = input.image;
         const cid = yield updateIpfsCid(blog, base64);
         const newImage = Object.assign(Object.assign({}, input), { ipfs: cid });

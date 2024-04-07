@@ -33,25 +33,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleUtils = __importStar(require("../../utils/article"));
-const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('* getArticleById:', blog, ID);
-    const article = yield articleUtils.getArticleById(blog, ID);
-    console.log(1, 'article:', article);
-    return article
-        ? {
-            id: article._id,
-            title: article.title,
-            description: article.description,
-            text: article.text,
-            author: article.author,
-            ipfs: article.ipfs,
-            image: article.image,
-            views: article.views,
-            status: article.status,
-            tags: article.tags,
-            timestamp: article.timestamp
-        }
-        : {};
+const gc = __importStar(require("../../../config/global"));
+const { published } = gc.articleStatus;
+const getPublishedArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* getPublishedArticles:', blog);
+    const articles = yield articleUtils.getAllArticles(blog);
+    const publishedArticles = articles.filter(art => art.status === published);
+    console.log(1, 'articles:', publishedArticles === null || publishedArticles === void 0 ? void 0 : publishedArticles.length);
+    return publishedArticles;
 });
-exports.default = getArticleById;
-//# sourceMappingURL=getArticleById.js.map
+exports.default = getPublishedArticles;
+//# sourceMappingURL=getPublishedArticles.js.map

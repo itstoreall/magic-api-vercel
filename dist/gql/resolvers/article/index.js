@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const getArticles_1 = __importDefault(require("./getArticles"));
+const getPublishedArticles_1 = __importDefault(require("./getPublishedArticles"));
 const getArticleById_1 = __importDefault(require("./getArticleById"));
 const addArticle_1 = __importDefault(require("./addArticle"));
+const publishArticle_1 = __importDefault(require("./publishArticle"));
 const deleteArticle_1 = __importDefault(require("./deleteArticle"));
 const editArticle_1 = __importDefault(require("./editArticle"));
 const updateArticleViews_1 = __importDefault(require("./updateArticleViews"));
@@ -23,6 +25,10 @@ const articleResolvers = {
         articles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
             return yield (0, getArticles_1.default)(blog);
+        }),
+        publishedArticles: (_, { blog }) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('');
+            return yield (0, getPublishedArticles_1.default)(blog);
         }),
         getArticleById: (_, { blog, ID }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
@@ -53,6 +59,12 @@ const articleResolvers = {
             console.log('');
             return yield (0, addArticle_1.default)(blog, input);
         }),
+        publishArticle(_, { blog, ID }) {
+            return __awaiter(this, void 0, void 0, function* () {
+                console.log('');
+                return yield (0, publishArticle_1.default)(blog, ID);
+            });
+        },
         deleteArticle: (_, { blog, ID }) => __awaiter(void 0, void 0, void 0, function* () {
             console.log('');
             return yield (0, deleteArticle_1.default)(blog, ID);

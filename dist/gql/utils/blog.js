@@ -35,13 +35,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBlogTags = exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getBlogTags = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = void 0;
+exports.updateBlogTags = exports.addCoauthor = exports.deleteAdminFromBlog = exports.updateCoauthors = exports.pushToAuthorBlogs = exports.getBlogTags = exports.getAllBlogs = exports.createNewBlog = exports.getBlogByTitle = exports.isAstraia = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const admin_1 = require("./admin");
 const blogService = __importStar(require("../../services/blog.service"));
 const utils = __importStar(require("../../utils"));
 dotenv_1.default.config();
 const existingBlogs = process.env.EXISTING_BLOGS;
+const isAstraia = (blog) => __awaiter(void 0, void 0, void 0, function* () { var _a; return ((_a = (yield (0, exports.getBlogByTitle)(blog))) === null || _a === void 0 ? void 0 : _a.title) === existingBlogs.split(' ')[0]; });
+exports.isAstraia = isAstraia;
 const getBlogByTitle = (title) => __awaiter(void 0, void 0, void 0, function* () { return yield blogService.getBlogByTitle(title); });
 exports.getBlogByTitle = getBlogByTitle;
 const createNewBlog = (title, author) => __awaiter(void 0, void 0, void 0, function* () {
@@ -124,7 +126,6 @@ const updateBlogTags = (input) => __awaiter(void 0, void 0, void 0, function* ()
     const { blog, tags, token } = input;
     const isMaster = yield (0, admin_1.isMasterByToken)(token);
     if (isMaster) {
-        console.log(2222, input);
         // const existingBlog = await getBlogByTitle(blog);
         // const blogInput = {
         //   tags: tags
