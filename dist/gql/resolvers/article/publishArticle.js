@@ -33,25 +33,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleUtils = __importStar(require("../../utils/article"));
-const getArticleById = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('* getArticleById:', blog, ID);
-    const article = yield articleUtils.getArticleById(blog, ID);
-    console.log(1, 'article:', article);
-    return article
-        ? {
-            id: article._id,
-            title: article.title,
-            description: article.description,
-            text: article.text,
-            author: article.author,
-            ipfs: article.ipfs,
-            image: article.image,
-            views: article.views,
-            status: article.status,
-            tags: article.tags,
-            timestamp: article.timestamp
-        }
-        : {};
+const publishArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('* publishArticle:', blog);
+    const wasPublished = yield articleUtils.publishArticle(blog, ID);
+    console.log(1, 'article was published:', Boolean(wasPublished));
+    return wasPublished;
 });
-exports.default = getArticleById;
-//# sourceMappingURL=getArticleById.js.map
+exports.default = publishArticle;
+//# sourceMappingURL=publishArticle.js.map

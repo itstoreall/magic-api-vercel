@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateArticle = exports.deleteArticle = exports.createArticle = exports.getArticleById = exports.getAllArticles = void 0;
+exports.updateArticle = exports.deleteArticle = exports.publishArticle = exports.createArticle = exports.getArticleById = exports.getAllArticles = void 0;
 const db_1 = require("../db");
 const getAllArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -40,6 +40,16 @@ const createArticle = (blog, newArticleInput) => __awaiter(void 0, void 0, void 
     }
 });
 exports.createArticle = createArticle;
+const publishArticle = (blog, ID, input) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return (yield (0, db_1.setCurrentModel)(blog).updateOne({ _id: ID }, Object.assign({}, input)))
+            .modifiedCount;
+    }
+    catch (e) {
+        console.error(`Error in publishArticle: ${e.message}`);
+    }
+});
+exports.publishArticle = publishArticle;
 const deleteArticle = (blog, ID) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return (yield (0, db_1.setCurrentModel)(blog).deleteOne({ _id: ID })).deletedCount;

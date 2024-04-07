@@ -11,6 +11,9 @@ dotenv.config();
 
 const existingBlogs = process.env.EXISTING_BLOGS;
 
+export const isAstraia = async (blog: string) =>
+  (await getBlogByTitle(blog))?.title === existingBlogs.split(' ')[0];
+
 export const getBlogByTitle = async (title: string) =>
   await blogService.getBlogByTitle(title);
 
@@ -104,8 +107,6 @@ export const updateBlogTags = async (input: IUpdateBlogTagsInput) => {
   const isMaster = await isMasterByToken(token);
 
   if (isMaster) {
-    console.log(2222, input);
-
     // const existingBlog = await getBlogByTitle(blog);
 
     // const blogInput = {

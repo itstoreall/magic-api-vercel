@@ -27,5 +27,5 @@ export const setCurrentModel = (blog: string) => {
 
 export default {
   Admin: models().Admin,
-  Blog: models().Blog,
+  Blog: models().Blog
 };

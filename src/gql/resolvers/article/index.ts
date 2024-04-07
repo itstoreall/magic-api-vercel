@@ -1,6 +1,8 @@
 import getArticles from './getArticles';
+import getPublishedArticles from './getPublishedArticles';
 import getArticleById from './getArticleById';
 import addArticle from './addArticle';
+import punlishArticle from './publishArticle';
 import deleteArticle from './deleteArticle';
 import editArticle from './editArticle';
 import updateArticleViews from './updateArticleViews';
@@ -11,6 +13,11 @@ const articleResolvers = {
     articles: async (_: any, { blog }: i.IStringProps) => {
       console.log('');
       return await getArticles(blog);
+    },
+
+    publishedArticles: async (_: any, { blog }: i.IStringProps) => {
+      console.log('');
+      return await getPublishedArticles(blog);
     },
 
     getArticleById: async (_: any, { blog, ID }: i.IStringProps) => {
@@ -43,6 +50,11 @@ const articleResolvers = {
     addArticle: async (_: any, { blog, input }: i.IStringInputProps) => {
       console.log('');
       return await addArticle(blog, input);
+    },
+
+    async publishArticle(_: any, { blog, ID }: i.IStringProps) {
+      console.log('');
+      return await punlishArticle(blog, ID);
     },
 
     deleteArticle: async (_: any, { blog, ID }: i.IStringProps) => {

@@ -26,6 +26,7 @@ const defaultConfig = {
   ipfs: String,
   image: String,
   views: String,
+  status: String,
   timestamp: { type: Date, default: Date.now }
 };
 
