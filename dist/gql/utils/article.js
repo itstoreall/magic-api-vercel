@@ -71,7 +71,10 @@ const addArticle = (blog, input) => __awaiter(void 0, void 0, void 0, function* 
     const img = (yield (0, blog_1.isAstraia)(blog))
         ? { image: input.image || '' }
         : { ipfs: input.image };
-    const newArticleInput = Object.assign(Object.assign({ title: input.title, description: input.description, text: input.text, author: input.author }, img), { views: input.views, tags: input.tags, status: 'created' });
+    const description = (yield (0, blog_1.isAstraia)(blog))
+        ? { description: `${input.text.slice(0, 152)}...` }
+        : { description: input.description };
+    const newArticleInput = Object.assign(Object.assign(Object.assign(Object.assign({ title: input.title }, description), { text: input.text, author: input.author }), img), { views: input.views, tags: input.tags, status: 'created' });
     return yield articleService.createArticle(blog, newArticleInput);
 });
 exports.addArticle = addArticle;

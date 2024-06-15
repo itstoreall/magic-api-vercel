@@ -41,9 +41,14 @@ export const addArticle = async (blog: string, input: any) => {
     ? { image: input.image || '' }
     : { ipfs: input.image };
 
+  const description = (await isAstraia(blog))
+    ? { description: `${input.text.slice(0, 152)}...` }
+    : { description: input.description };
+
   const newArticleInput = {
     title: input.title,
-    description: input.description,
+    // description: input.description,
+    ...description,
     text: input.text,
     author: input.author,
     // ipfs: cid,
@@ -54,6 +59,7 @@ export const addArticle = async (blog: string, input: any) => {
     tags: input.tags,
     status: 'created'
   };
+
   return await articleService.createArticle(blog, newArticleInput);
 };
 

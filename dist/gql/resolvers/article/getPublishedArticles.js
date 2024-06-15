@@ -34,11 +34,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleUtils = __importStar(require("../../utils/article"));
 const gc = __importStar(require("../../../config/global"));
-const { published } = gc.articleStatus;
+const { published, updated } = gc.articleStatus;
 const getPublishedArticles = (blog) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('* getPublishedArticles:', blog);
     const articles = yield articleUtils.getAllArticles(blog);
-    const publishedArticles = articles.filter(art => art.status === published);
+    const publishedArticles = articles.filter(art => art.status === published || art.status === updated);
     console.log(1, 'articles:', publishedArticles === null || publishedArticles === void 0 ? void 0 : publishedArticles.length);
     return publishedArticles;
 });
